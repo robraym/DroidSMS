@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">SMS Lcok</string>
+    <string name="accessibility_service_label">SMS Lcok - Proteger mensagens</string>
+    <string name="accessibility_service_description">Bloqueia o aplicativo de mensagens com senha e digital.</string>
+    <string name="device_admin_description">Impede a desinstalacao do SMS Lcok sem desativar a protecao.</string>
+    <string name="device_admin_disable_warning">Ao desativar esta protecao, o SMS Lcok podera ser desinstalado.</string>
+    <string name="auth_title">Mensagens protegidas</string>
+    <string name="auth_subtitle_create">Crie uma senha para proteger o app de mensagens.</string>
+    <string name="auth_subtitle_unlock">Digite a senha para abrir suas mensagens.</string>
+    <string name="settings_subtitle">Ative o servico de acessibilidade do DroidSMS para bloquear o app de mensagens padrao.</string>
+    <string name="password_hint">Senha</string>
+    <string name="confirm_password_hint">Confirmar senha</string>
+    <string name="save_password">Salvar senha</string>
+    <string name="unlock">Entrar</string>
+    <string name="use_fingerprint">Usar digital</string>
+    <string name="change_password">Alterar senha</string>
+    <string name="open_accessibility">Ativar protecao</string>
+    <string name="open_device_admin">Proteger desinstalacao</string>
+    <string name="device_admin_active">Desinstalacao protegida</string>
+    <string name="open_messages">Abrir mensagens</string>
+    <string name="locked_state">Protegido por senha e digital</string>
+    <string name="unlocked_title">Protecao configurada</string>
+    <string name="unlocked_message">Quando alguem abrir o app de mensagens, o DroidSMS vai pedir senha ou digital.</string>
+    <string name="password_required">Informe a senha.</string>
+    <string name="password_mismatch">As senhas nao conferem.</string>
+    <string name="password_short">Use pelo menos 4 caracteres.</string>
+    <string name="password_saved">Senha salva com sucesso.</string>
+    <string name="wrong_password">Senha incorreta.</string>
+    <string name="biometric_title">Digital</string>
+    <string name="biometric_subtitle"></string>
+    <string name="biometric_negative">Cancelar</string>
+    <string name="biometric_unavailable">Digital indisponivel neste aparelho.</string>
+    <string name="biometric_success">Digital confirmada.</string>
+</resources>
