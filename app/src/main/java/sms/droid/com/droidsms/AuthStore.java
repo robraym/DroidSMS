@@ -13,7 +13,7 @@ final class AuthStore {
     static final String KEY_PASSWORD_HASH = "password_hash";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
-    private static final long UNLOCK_WINDOW_MS = 8 * 1000;
+    private static final long UNLOCK_WINDOW_MS = 30 * 60 * 1000;
 
     private AuthStore() {
     }
@@ -54,6 +54,13 @@ final class AuthStore {
         String unlockedPackage = preferences.getString(KEY_UNLOCKED_PACKAGE, "");
         long unlockedUntil = preferences.getLong(KEY_UNLOCKED_UNTIL, 0);
         return TextUtils.equals(unlockedPackage, packageName) && System.currentTimeMillis() < unlockedUntil;
+    }
+
+    static void clearUnlock(Context context) {
+        prefs(context).edit()
+                .remove(KEY_UNLOCKED_PACKAGE)
+                .remove(KEY_UNLOCKED_UNTIL)
+                .apply();
     }
 
     static String sha256(String value) {

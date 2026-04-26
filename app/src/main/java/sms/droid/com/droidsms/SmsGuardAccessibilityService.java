@@ -23,6 +23,8 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             "com.google.android.email"
     ));
     private String lastPackageName = "";
+    private String lastPromptPackageName = "";
+    private long lastPromptAt = 0;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -39,20 +41,32 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         boolean protectedPackage = PROTECTED_PACKAGES.contains(packageName);
 
         if (!protectedPackage) {
+            if (!isNeutralSystemPackage(packageName)) {
+                AuthStore.clearUnlock(this);
+                lastPromptPackageName = "";
+                lastPromptAt = 0;
+            }
             lastPackageName = packageName;
             return;
         }
 
-        if (TextUtils.equals(lastPackageName, packageName) || AuthStore.isUnlocked(this, packageName)) {
+        if (AuthStore.isUnlocked(this, packageName)) {
             lastPackageName = packageName;
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (TextUtils.equals(lastPromptPackageName, packageName) && now - lastPromptAt < 2500) {
             return;
         }
 
         lastPackageName = packageName;
+        lastPromptPackageName = packageName;
+        lastPromptAt = now;
 
         Intent intent = new Intent(this, GuardActivity.class);
         intent.putExtra(GuardActivity.EXTRA_TARGET_PACKAGE, packageName);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 
@@ -62,5 +76,14 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
     static boolean isProtectedPackage(String packageName) {
         return !TextUtils.isEmpty(packageName) && PROTECTED_PACKAGES.contains(packageName);
+    }
+
+    private boolean isNeutralSystemPackage(String packageName) {
+        return TextUtils.equals(packageName, getPackageName())
+                || TextUtils.equals(packageName, "android")
+                || TextUtils.equals(packageName, "com.android.systemui")
+                || TextUtils.equals(packageName, "com.samsung.android.biometrics.app.setting")
+                || TextUtils.equals(packageName, "com.google.android.permissioncontroller")
+                || TextUtils.equals(packageName, "com.android.permissioncontroller");
     }
 }
