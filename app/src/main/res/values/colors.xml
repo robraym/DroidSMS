@@ -2,7 +2,13 @@
     <color name="colorPrimary">#1565C0</color>
     <color name="colorPrimaryDark">#0D47A1</color>
     <color name="colorAccent">#00ACC1</color>
-    <color name="screenBackground">#F5F7FA</color>
-    <color name="textPrimary">#1F2937</color>
-    <color name="textSecondary">#5B6676</color>
+    <color name="screenBackground">#0B0B0F</color>
+    <color name="settingsCard">#1B1B21</color>
+    <color name="settingsCardStroke">#2B2B33</color>
+    <color name="settingsButton">#2F7DFF</color>
+    <color name="settingsIconGreen">#9AC740</color>
+    <color name="settingsIconBlue">#3B82F6</color>
+    <color name="settingsIconPurple">#7C5CFF</color>
+    <color name="textPrimary">#F5F5F7</color>
+    <color name="textSecondary">#B8B8C2</color>
 </resources>

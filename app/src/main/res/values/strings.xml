@@ -1,13 +1,17 @@
 <resources>
-    <string name="app_name">SMS Lcok</string>
-    <string name="accessibility_service_label">SMS Lcok - Proteger mensagens</string>
-    <string name="accessibility_service_description">Bloqueia o aplicativo de mensagens com digital.</string>
-    <string name="device_admin_description">Impede a desinstalacao do SMS Lcok sem desativar a protecao.</string>
-    <string name="device_admin_disable_warning">Ao desativar esta protecao, o SMS Lcok podera ser desinstalado.</string>
-    <string name="auth_title">Mensagens protegidas</string>
+    <string name="app_name">SMS Lock</string>
+    <string name="accessibility_service_label">SMS Lock - Proteger apps</string>
+    <string name="accessibility_service_description">Bloqueia mensagens, configuracoes e email com digital.</string>
+    <string name="device_admin_description">Impede a desinstalacao do SMS Lock sem desativar a protecao.</string>
+    <string name="device_admin_disable_warning">Ao desativar esta protecao, o SMS Lock podera ser desinstalado.</string>
+    <string name="auth_title">Aplicativo protegido</string>
     <string name="auth_subtitle_create">Crie uma senha para proteger o app de mensagens.</string>
-    <string name="auth_subtitle_unlock">Digite a senha para abrir suas mensagens.</string>
-    <string name="settings_subtitle">Ative a protecao para pedir digital ao abrir o app de mensagens padrao.</string>
+    <string name="auth_subtitle_unlock">Confirme sua digital para abrir este aplicativo.</string>
+    <string name="settings_subtitle">Ative a protecao para pedir digital ao abrir mensagens, configuracoes e email.</string>
+    <string name="accessibility_card_title">Protecao dos apps</string>
+    <string name="accessibility_card_summary">Permite detectar quando mensagens, configuracoes ou email forem abertos e pedir a digital.</string>
+    <string name="device_admin_card_title">Bloqueio de remocao</string>
+    <string name="device_admin_card_summary">Impede remover o SMS Lock enquanto a protecao estiver ativa.</string>
     <string name="password_hint">Senha</string>
     <string name="confirm_password_hint">Confirmar senha</string>
     <string name="save_password">Salvar senha</string>
@@ -18,7 +22,7 @@
     <string name="open_device_admin">Proteger desinstalacao</string>
     <string name="device_admin_active">Desinstalacao protegida</string>
     <string name="open_messages">Abrir mensagens</string>
-    <string name="locked_state">SMS protegido por digital</string>
+    <string name="locked_state">Apps protegidos por digital</string>
     <string name="unlocked_title">Protecao configurada</string>
     <string name="unlocked_message">Quando alguem abrir o app de mensagens, o DroidSMS vai pedir senha ou digital.</string>
     <string name="password_required">Informe a senha.</string>

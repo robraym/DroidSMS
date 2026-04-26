@@ -14,7 +14,13 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             "com.google.android.apps.messaging",
             "com.samsung.android.messaging",
             "com.android.mms",
-            "com.android.messaging"
+            "com.android.messaging",
+            "com.android.settings",
+            "com.samsung.android.app.settings",
+            "com.google.android.gm",
+            "com.samsung.android.email.provider",
+            "com.android.email",
+            "com.google.android.email"
     ));
     private String lastPackageName = "";
 

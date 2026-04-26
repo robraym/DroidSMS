@@ -7,19 +7,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputLayout;
 
 public class MainActivity extends AppCompatActivity {
     private TextView txtTitle;
     private TextView txtSubtitle;
     private TextView txtStatus;
-    private TextInputLayout inputPasswordLayout;
-    private TextInputLayout inputConfirmPasswordLayout;
+    private LinearLayout cardAccessibility;
+    private LinearLayout cardDeviceAdmin;
+    private LinearLayout cardStatus;
     private MaterialButton btnPrimary;
     private MaterialButton btnBiometric;
     private DevicePolicyManager devicePolicyManager;
@@ -59,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
         txtStatus = findViewById(R.id.txtStatus);
-        inputPasswordLayout = findViewById(R.id.inputPasswordLayout);
-        inputConfirmPasswordLayout = findViewById(R.id.inputConfirmPasswordLayout);
+        cardAccessibility = findViewById(R.id.cardAccessibility);
+        cardDeviceAdmin = findViewById(R.id.cardDeviceAdmin);
+        cardStatus = findViewById(R.id.cardStatus);
         btnPrimary = findViewById(R.id.btnPrimary);
         btnBiometric = findViewById(R.id.btnBiometric);
     }
@@ -71,14 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
         txtTitle.setText(R.string.unlocked_title);
         txtSubtitle.setText(R.string.settings_subtitle);
-        inputPasswordLayout.setVisibility(View.GONE);
-        inputConfirmPasswordLayout.setVisibility(View.GONE);
 
-        btnPrimary.setVisibility(accessibilityActive ? View.GONE : View.VISIBLE);
+        cardAccessibility.setVisibility(accessibilityActive ? View.GONE : View.VISIBLE);
         btnPrimary.setText(R.string.open_accessibility);
         btnPrimary.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
 
-        btnBiometric.setVisibility(deviceAdminActive ? View.GONE : View.VISIBLE);
+        cardDeviceAdmin.setVisibility(deviceAdminActive ? View.GONE : View.VISIBLE);
         btnBiometric.setText(R.string.open_device_admin);
         btnBiometric.setOnClickListener(view -> {
             requestDeviceAdmin();
@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     ? getString(R.string.device_admin_active)
                     : status + "\n" + getString(R.string.device_admin_active);
         }
+        cardStatus.setVisibility(status.isEmpty() ? View.GONE : View.VISIBLE);
         txtStatus.setText(status);
     }
 
