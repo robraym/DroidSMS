@@ -16,6 +16,8 @@ import java.util.concurrent.Executor;
 
 public class GuardActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_PACKAGE = "sms.droid.com.droidsms.extra.TARGET_PACKAGE";
+    private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
+            | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
     private String targetPackage;
     private boolean promptShown;
@@ -51,7 +53,6 @@ public class GuardActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 AuthStore.markUnlocked(GuardActivity.this, targetPackage);
-                openTargetPackage();
                 finish();
             }
 
@@ -74,7 +75,7 @@ public class GuardActivity extends AppCompatActivity {
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.biometric_title))
-                .setNegativeButtonText(getString(R.string.biometric_negative))
+                .setAllowedAuthenticators(AUTHENTICATORS)
                 .build();
 
         biometricPrompt.authenticate(promptInfo);
@@ -82,8 +83,7 @@ public class GuardActivity extends AppCompatActivity {
 
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
-        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
-                == BiometricManager.BIOMETRIC_SUCCESS;
+        return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
     private void protectBackground() {
@@ -100,18 +100,6 @@ public class GuardActivity extends AppCompatActivity {
         }
 
         window.setAttributes(attributes);
-    }
-
-    private void openTargetPackage() {
-        Intent intent = getPackageManager().getLaunchIntentForPackage(targetPackage);
-        if (intent == null) {
-            closeToHome();
-            return;
-        }
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
     }
 
     private void closeToHome() {

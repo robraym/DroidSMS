@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DroidSMS"
+rootProject.name = "AppLock"
 include ':app'

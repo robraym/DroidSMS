@@ -5,23 +5,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public class SmsGuardAccessibilityService extends AccessibilityService {
-    private static final Set<String> PROTECTED_PACKAGES = new HashSet<>(Arrays.asList(
-            "com.google.android.apps.messaging",
-            "com.samsung.android.messaging",
-            "com.android.mms",
-            "com.android.messaging",
-            "com.android.settings",
-            "com.samsung.android.app.settings",
-            "com.google.android.gm",
-            "com.samsung.android.email.provider",
-            "com.android.email",
-            "com.google.android.email"
-    ));
     private String lastPackageName = "";
     private String lastPromptPackageName = "";
     private long lastPromptAt = 0;
@@ -38,7 +22,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         String packageName = packageNameValue.toString();
-        boolean protectedPackage = PROTECTED_PACKAGES.contains(packageName);
+        boolean protectedPackage = AuthStore.isPackageProtected(this, packageName);
 
         if (!protectedPackage) {
             if (!isNeutralSystemPackage(packageName)) {
@@ -75,7 +59,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     }
 
     static boolean isProtectedPackage(String packageName) {
-        return !TextUtils.isEmpty(packageName) && PROTECTED_PACKAGES.contains(packageName);
+        return !TextUtils.isEmpty(packageName);
     }
 
     private boolean isNeutralSystemPackage(String packageName) {
