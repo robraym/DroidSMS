@@ -50,7 +50,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         Intent intent = new Intent(this, GuardActivity.class);
         intent.putExtra(GuardActivity.EXTRA_TARGET_PACKAGE, packageName);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 
