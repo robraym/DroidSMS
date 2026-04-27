@@ -217,24 +217,36 @@ public class MainActivity extends AppCompatActivity {
             addSectionDivider();
         }
 
+        LinearLayout section = new LinearLayout(this);
+        section.setOrientation(LinearLayout.VERTICAL);
+        section.setBackgroundResource(R.drawable.settings_section_background);
+        section.setPadding(dp(16), dp(16), dp(16), dp(8));
+
         TextView title = new TextView(this);
         title.setText(titleRes);
-        title.setTextColor(getColor(R.color.settingsButton));
-        title.setTextSize(17);
+        title.setTextColor(getColor(R.color.textPrimary));
+        title.setTextSize(18);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        title.setPadding(0, dp(18), 0, 0);
-        listApps.addView(title);
+        section.addView(title);
 
         TextView summary = new TextView(this);
         summary.setText(summaryRes);
         summary.setTextColor(getColor(R.color.textSecondary));
         summary.setTextSize(13);
-        summary.setPadding(0, dp(4), 0, dp(8));
-        listApps.addView(summary);
+        summary.setPadding(0, dp(4), 0, dp(10));
+        section.addView(summary);
 
         for (AppEntry app : apps) {
-            addAppRow(app);
+            section.addView(createAppRow(app), new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
         }
+
+        listApps.addView(section, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
     }
 
     private void addSectionDivider() {
@@ -248,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         listApps.addView(divider, params);
     }
 
-    private void addAppRow(AppEntry app) {
+    private View createAppRow(AppEntry app) {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(android.view.Gravity.CENTER_VERTICAL);
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -286,10 +298,7 @@ public class MainActivity extends AppCompatActivity {
         row.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
         row.addView(checkBox, new LinearLayout.LayoutParams(dp(48), dp(48)));
 
-        listApps.addView(row, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
+        return row;
     }
 
     private List<AppEntry> getLaunchableApps() {
@@ -307,12 +316,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
             CharSequence label = resolveInfo.loadLabel(packageManager);
+            String appLabel = label == null ? packageName : label.toString();
+            if (shouldHideFromProtectedList(packageName, appLabel)) {
+                continue;
+            }
+
             Drawable icon = resolveInfo.loadIcon(packageManager);
             appsByPackage.put(packageName, new AppEntry(
-                    label == null ? packageName : label.toString(),
+                    appLabel,
                     packageName,
                     icon,
-                    getRiskLevel(packageName, label == null ? "" : label.toString())
+                    getRiskLevel(packageName, appLabel)
             ));
         }
 
@@ -327,6 +341,15 @@ public class MainActivity extends AppCompatActivity {
         String normalizedLabel = label.toLowerCase(Locale.ROOT);
         String value = normalizedPackage + " " + normalizedLabel;
 
+        if (containsAny(normalizedPackage,
+                "com.google.android.apps.messaging",
+                "com.samsung.android.messaging",
+                "com.android.mms",
+                "com.android.messaging",
+                "com.android.vending")) {
+            return RISK_HIGH;
+        }
+
         if (containsAny(value,
                 "bank", "banco", "bradesco", "itau", "nubank", "santander", "caixa",
                 "bb.android", "intermedium", "picpay", "paypal", "mercadopago", "wallet",
@@ -334,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
                 "crypto", "authenticator", "auth", "senha", "password", "keeper", "lastpass",
                 "bitwarden", "1password", "email", "mail", "gmail", "outlook", "proton",
                 "message", "mensagem", "sms", "mms", "whatsapp", "telegram", "signal",
+                "play store", "google play", "loja play",
                 "settings", "config", "arquivo", "files", "file", "gallery", "galeria",
                 "photos", "fotos", "drive", "onedrive", "dropbox", "cloud")) {
             return RISK_HIGH;
@@ -350,6 +374,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return RISK_LOW;
+    }
+
+    private boolean shouldHideFromProtectedList(String packageName, String label) {
+        String normalizedPackage = packageName.toLowerCase(Locale.ROOT);
+        String normalizedLabel = label.toLowerCase(Locale.ROOT);
+        String value = normalizedPackage + " " + normalizedLabel;
+
+        return containsAny(value,
+                "secure folder", "pasta segura", "knox secure folder", "securefolder",
+                "app lock", "applock", "calculator vault", "gallery vault", "vault");
     }
 
     private boolean containsAny(String value, String... needles) {

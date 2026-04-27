@@ -4,6 +4,7 @@
     <color name="colorAccent">#00ACC1</color>
     <color name="screenBackground">#0B0B0F</color>
     <color name="settingsCard">#1B1B21</color>
+    <color name="settingsSection">#16161C</color>
     <color name="settingsCardStroke">#2B2B33</color>
     <color name="settingsButton">#2F7DFF</color>
     <color name="settingsIconGreen">#9AC740</color>

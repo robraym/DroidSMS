@@ -179,37 +179,28 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:text="@string/app_selection_title"
+            android:textColor="@color/textPrimary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/app_selection_summary"
+            android:textColor="@color/textSecondary"
+            android:textSize="14sp" />
+
         <LinearLayout
-            android:id="@+id/cardAppSelection"
+            android:id="@+id/listApps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:background="@drawable/settings_card_background"
-            android:orientation="vertical"
-            android:padding="18dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/app_selection_title"
-                android:textColor="@color/textPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/app_selection_summary"
-                android:textColor="@color/textSecondary"
-                android:textSize="14sp" />
-
-            <LinearLayout
-                android:id="@+id/listApps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:orientation="vertical" />
-        </LinearLayout>
+            android:orientation="vertical" />
     </LinearLayout>
 </ScrollView>
