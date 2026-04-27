@@ -12,7 +12,12 @@
     <string name="accessibility_card_summary">Allows App Lock to detect when a protected app is opened and request fingerprint or password.</string>
     <string name="app_selection_title">Protected apps</string>
     <string name="app_selection_summary">Choose which apps should require fingerprint when opened.</string>
-    <string name="select_all_apps">All</string>
+    <string name="risk_high_title">Essentials</string>
+    <string name="risk_high_summary">Banking, messages, email, settings, files, photos, and passwords.</string>
+    <string name="risk_moderate_title">Personal</string>
+    <string name="risk_moderate_summary">Social media, browsers, shopping, work, and apps with personal data.</string>
+    <string name="risk_low_title">Other apps</string>
+    <string name="risk_low_summary">Apps with lower exposure of sensitive data.</string>
     <string name="device_admin_card_title">Removal protection</string>
     <string name="device_admin_card_summary">Prevents App Lock from being removed while protection is active.</string>
     <string name="password_hint">Password</string>

@@ -27,16 +27,17 @@ import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+    private static final int RISK_HIGH = 3;
+    private static final int RISK_MODERATE = 2;
+    private static final int RISK_LOW = 1;
 
     private TextView txtTitle;
     private TextView txtSubtitle;
@@ -187,88 +188,101 @@ public class MainActivity extends AppCompatActivity {
         listApps.removeAllViews();
 
         List<AppEntry> apps = getLaunchableApps();
-        addSelectAllRow(apps);
+        List<AppEntry> highRiskApps = new ArrayList<>();
+        List<AppEntry> moderateRiskApps = new ArrayList<>();
+        List<AppEntry> lowRiskApps = new ArrayList<>();
 
         for (AppEntry app : apps) {
-            LinearLayout row = new LinearLayout(this);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setPadding(0, dp(10), 0, dp(10));
+            if (app.riskLevel == RISK_HIGH) {
+                highRiskApps.add(app);
+            } else if (app.riskLevel == RISK_MODERATE) {
+                moderateRiskApps.add(app);
+            } else {
+                lowRiskApps.add(app);
+            }
+        }
 
-            ImageView icon = new ImageView(this);
-            icon.setImageDrawable(app.icon);
-            LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(42), dp(42));
-            row.addView(icon, iconParams);
+        addRiskSection(R.string.risk_high_title, R.string.risk_high_summary, highRiskApps, false);
+        addRiskSection(R.string.risk_moderate_title, R.string.risk_moderate_summary, moderateRiskApps, !highRiskApps.isEmpty());
+        addRiskSection(R.string.risk_low_title, R.string.risk_low_summary, lowRiskApps,
+                !highRiskApps.isEmpty() || !moderateRiskApps.isEmpty());
+    }
 
-            LinearLayout textColumn = new LinearLayout(this);
-            textColumn.setOrientation(LinearLayout.VERTICAL);
-            textColumn.setPadding(dp(14), 0, dp(8), 0);
+    private void addRiskSection(int titleRes, int summaryRes, List<AppEntry> apps, boolean addDivider) {
+        if (apps.isEmpty()) {
+            return;
+        }
 
-            TextView label = new TextView(this);
-            label.setText(app.label);
-            label.setTextColor(getColor(R.color.textPrimary));
-            label.setTextSize(16);
-            label.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-            textColumn.addView(label);
+        if (addDivider) {
+            addSectionDivider();
+        }
 
-            TextView packageName = new TextView(this);
-            packageName.setText(app.packageName);
-            packageName.setTextColor(getColor(R.color.textSecondary));
-            packageName.setTextSize(12);
-            textColumn.addView(packageName);
+        TextView title = new TextView(this);
+        title.setText(titleRes);
+        title.setTextColor(getColor(R.color.settingsButton));
+        title.setTextSize(17);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setPadding(0, dp(18), 0, 0);
+        listApps.addView(title);
 
-            LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-            row.addView(textColumn, textParams);
+        TextView summary = new TextView(this);
+        summary.setText(summaryRes);
+        summary.setTextColor(getColor(R.color.textSecondary));
+        summary.setTextSize(13);
+        summary.setPadding(0, dp(4), 0, dp(8));
+        listApps.addView(summary);
 
-            CheckBox checkBox = new CheckBox(this);
-            checkBox.setChecked(AuthStore.isPackageProtected(this, app.packageName));
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                    AuthStore.setPackageProtected(this, app.packageName, isChecked));
-            row.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
-            row.addView(checkBox, new LinearLayout.LayoutParams(dp(48), dp(48)));
-
-            listApps.addView(row, new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            ));
+        for (AppEntry app : apps) {
+            addAppRow(app);
         }
     }
 
-    private void addSelectAllRow(List<AppEntry> apps) {
+    private void addSectionDivider() {
+        View divider = new View(this);
+        divider.setBackgroundColor(getColor(R.color.settingsCardStroke));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                Math.max(1, dp(1))
+        );
+        params.setMargins(0, dp(16), 0, 0);
+        listApps.addView(divider, params);
+    }
+
+    private void addAppRow(AppEntry app) {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(android.view.Gravity.CENTER_VERTICAL);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, dp(8), 0, dp(14));
+        row.setPadding(0, dp(10), 0, dp(10));
 
-        TextView icon = new TextView(this);
-        icon.setBackgroundResource(R.drawable.settings_icon_green);
-        icon.setGravity(android.view.Gravity.CENTER);
-        icon.setText("T");
-        icon.setTextColor(getColor(R.color.textPrimary));
-        icon.setTextSize(20);
-        icon.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        row.addView(icon, new LinearLayout.LayoutParams(dp(42), dp(42)));
+        ImageView icon = new ImageView(this);
+        icon.setImageDrawable(app.icon);
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(42), dp(42));
+        row.addView(icon, iconParams);
+
+        LinearLayout textColumn = new LinearLayout(this);
+        textColumn.setOrientation(LinearLayout.VERTICAL);
+        textColumn.setPadding(dp(14), 0, dp(8), 0);
 
         TextView label = new TextView(this);
-        label.setText(R.string.select_all_apps);
+        label.setText(app.label);
         label.setTextColor(getColor(R.color.textPrimary));
-        label.setTextSize(17);
+        label.setTextSize(16);
         label.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        label.setPadding(dp(14), 0, dp(8), 0);
-        row.addView(label, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        textColumn.addView(label);
+
+        TextView packageName = new TextView(this);
+        packageName.setText(app.packageName);
+        packageName.setTextColor(getColor(R.color.textSecondary));
+        packageName.setTextSize(12);
+        textColumn.addView(packageName);
+
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        row.addView(textColumn, textParams);
 
         CheckBox checkBox = new CheckBox(this);
-        checkBox.setChecked(areAllAppsProtected(apps));
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            Set<String> protectedPackages = new HashSet<>();
-            if (isChecked) {
-                for (AppEntry app : apps) {
-                    protectedPackages.add(app.packageName);
-                }
-            }
-            AuthStore.setProtectedPackages(this, protectedPackages);
-            populateInstalledApps();
-        });
+        checkBox.setChecked(AuthStore.isPackageProtected(this, app.packageName));
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                AuthStore.setPackageProtected(this, app.packageName, isChecked));
         row.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
         row.addView(checkBox, new LinearLayout.LayoutParams(dp(48), dp(48)));
 
@@ -276,19 +290,6 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
-    }
-
-    private boolean areAllAppsProtected(List<AppEntry> apps) {
-        if (apps.isEmpty()) {
-            return false;
-        }
-
-        for (AppEntry app : apps) {
-            if (!AuthStore.isPackageProtected(this, app.packageName)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private List<AppEntry> getLaunchableApps() {
@@ -310,7 +311,8 @@ public class MainActivity extends AppCompatActivity {
             appsByPackage.put(packageName, new AppEntry(
                     label == null ? packageName : label.toString(),
                     packageName,
-                    icon
+                    icon,
+                    getRiskLevel(packageName, label == null ? "" : label.toString())
             ));
         }
 
@@ -318,6 +320,45 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(apps, (first, second) ->
                 first.label.toLowerCase(Locale.getDefault()).compareTo(second.label.toLowerCase(Locale.getDefault())));
         return apps;
+    }
+
+    private int getRiskLevel(String packageName, String label) {
+        String normalizedPackage = packageName.toLowerCase(Locale.ROOT);
+        String normalizedLabel = label.toLowerCase(Locale.ROOT);
+        String value = normalizedPackage + " " + normalizedLabel;
+
+        if (containsAny(value,
+                "bank", "banco", "bradesco", "itau", "nubank", "santander", "caixa",
+                "bb.android", "intermedium", "picpay", "paypal", "mercadopago", "wallet",
+                "pay", "pagseguro", "stone", "xpinc", "clear", "rico", "binance", "coin",
+                "crypto", "authenticator", "auth", "senha", "password", "keeper", "lastpass",
+                "bitwarden", "1password", "email", "mail", "gmail", "outlook", "proton",
+                "message", "mensagem", "sms", "mms", "whatsapp", "telegram", "signal",
+                "settings", "config", "arquivo", "files", "file", "gallery", "galeria",
+                "photos", "fotos", "drive", "onedrive", "dropbox", "cloud")) {
+            return RISK_HIGH;
+        }
+
+        if (containsAny(value,
+                "browser", "chrome", "firefox", "edge", "samsung internet", "internet",
+                "facebook", "instagram", "tiktok", "twitter", "linkedin", "snapchat",
+                "discord", "teams", "slack", "zoom", "meet", "shopping", "shop", "amazon",
+                "mercadolivre", "mercado livre", "shopee", "aliexpress", "uber", "99",
+                "ifood", "health", "saude", "calendar", "calendario",
+                "contacts", "contatos", "notes", "notas")) {
+            return RISK_MODERATE;
+        }
+
+        return RISK_LOW;
+    }
+
+    private boolean containsAny(String value, String... needles) {
+        for (String needle : needles) {
+            if (value.contains(needle)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int dp(int value) {
@@ -333,11 +374,13 @@ public class MainActivity extends AppCompatActivity {
         final String label;
         final String packageName;
         final Drawable icon;
+        final int riskLevel;
 
-        AppEntry(String label, String packageName, Drawable icon) {
+        AppEntry(String label, String packageName, Drawable icon, int riskLevel) {
             this.label = label;
             this.packageName = packageName;
             this.icon = icon;
+            this.riskLevel = riskLevel;
         }
     }
 }

@@ -12,7 +12,12 @@
     <string name="accessibility_card_summary">Permite detectar quando um app protegido for aberto e pedir digital ou senha.</string>
     <string name="app_selection_title">Aplicativos protegidos</string>
     <string name="app_selection_summary">Escolha quais aplicativos devem pedir digital ao abrir.</string>
-    <string name="select_all_apps">Todos</string>
+    <string name="risk_high_title">Essenciais</string>
+    <string name="risk_high_summary">Bancos, mensagens, e-mail, configurações, arquivos, fotos e senhas.</string>
+    <string name="risk_moderate_title">Pessoais</string>
+    <string name="risk_moderate_summary">Redes sociais, navegadores, compras, trabalho e apps com dados pessoais.</string>
+    <string name="risk_low_title">Outros apps</string>
+    <string name="risk_low_summary">Apps com menor exposição de dados sensíveis.</string>
     <string name="device_admin_card_title">Bloqueio de remoção</string>
     <string name="device_admin_card_summary">Impede remover o App Lock enquanto a proteção estiver ativa.</string>
     <string name="password_hint">Senha</string>
