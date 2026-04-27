@@ -1,6 +1,7 @@
 package sms.droid.com.droidsms;
 
 import android.app.admin.DevicePolicyManager;
+import android.content.res.ColorStateList;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -292,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
         row.addView(textColumn, textParams);
 
         CheckBox checkBox = new CheckBox(this);
+        checkBox.setButtonTintList(getCheckboxTint());
         checkBox.setChecked(AuthStore.isPackageProtected(this, app.packageName));
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
                 AuthStore.setPackageProtected(this, app.packageName, isChecked));
@@ -299,6 +301,18 @@ public class MainActivity extends AppCompatActivity {
         row.addView(checkBox, new LinearLayout.LayoutParams(dp(48), dp(48)));
 
         return row;
+    }
+
+    private ColorStateList getCheckboxTint() {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_checked},
+                new int[]{-android.R.attr.state_checked}
+        };
+        int[] colors = new int[]{
+                getColor(R.color.settingsButton),
+                getColor(R.color.settingsCardStroke)
+        };
+        return new ColorStateList(states, colors);
     }
 
     private List<AppEntry> getLaunchableApps() {
