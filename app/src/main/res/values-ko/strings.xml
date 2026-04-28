@@ -30,6 +30,8 @@
     <string name="change_password">비밀번호 변경</string>
     <string name="open_accessibility">보호 켜기</string>
     <string name="manage_accessibility">보호 관리</string>
+    <string name="enable_action">켜기</string>
+    <string name="disable_action">끄기</string>
     <string name="open_device_admin">제거 보호</string>
     <string name="disable_device_admin">잠금 해제</string>
     <string name="disable_device_admin_confirm_title">제거 보호를 해제할까요?</string>

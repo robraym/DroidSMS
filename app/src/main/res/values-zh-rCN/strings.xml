@@ -30,6 +30,8 @@
     <string name="change_password">更改密码</string>
     <string name="open_accessibility">启用保护</string>
     <string name="manage_accessibility">管理保护</string>
+    <string name="enable_action">启用</string>
+    <string name="disable_action">关闭</string>
     <string name="open_device_admin">保护卸载</string>
     <string name="disable_device_admin">关闭锁定</string>
     <string name="disable_device_admin_confirm_title">关闭卸载保护？</string>

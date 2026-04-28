@@ -30,6 +30,8 @@
     <string name="change_password">Alterar senha</string>
     <string name="open_accessibility">Ativar proteção</string>
     <string name="manage_accessibility">Gerenciar proteção</string>
+    <string name="enable_action">Ativar</string>
+    <string name="disable_action">Desativar</string>
     <string name="open_device_admin">Proteger desinstalação</string>
     <string name="disable_device_admin">Desativar bloqueio</string>
     <string name="disable_device_admin_confirm_title">Desativar bloqueio?</string>

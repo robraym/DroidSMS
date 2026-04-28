@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/settingsCardStroke">
+    <item>
+        <shape>
+            <solid android:color="#263D73" />
+            <corners android:radius="14dp" />
+            <padding
+                android:left="14dp"
+                android:top="6dp"
+                android:right="14dp"
+                android:bottom="6dp" />
+        </shape>
+    </item>
+</ripple>

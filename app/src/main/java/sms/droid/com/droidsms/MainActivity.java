@@ -31,8 +31,6 @@ import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.button.MaterialButton;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,15 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView txtTitle;
     private TextView txtSubtitle;
-    private TextView txtAccessibilitySummary;
-    private TextView txtDeviceAdminSummary;
-    private TextView badgeAccessibility;
-    private TextView badgeDeviceAdmin;
-    private LinearLayout cardAccessibility;
-    private LinearLayout cardDeviceAdmin;
     private LinearLayout listApps;
-    private MaterialButton btnPrimary;
-    private MaterialButton btnBiometric;
+    private TextView btnPrimary;
+    private TextView btnBiometric;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName deviceAdminComponent;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -159,12 +151,6 @@ public class MainActivity extends AppCompatActivity {
     private void bindViews() {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
-        txtAccessibilitySummary = findViewById(R.id.txtAccessibilitySummary);
-        txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
-        badgeAccessibility = findViewById(R.id.badgeAccessibility);
-        badgeDeviceAdmin = findViewById(R.id.badgeDeviceAdmin);
-        cardAccessibility = findViewById(R.id.cardAccessibility);
-        cardDeviceAdmin = findViewById(R.id.cardDeviceAdmin);
         listApps = findViewById(R.id.listApps);
         btnPrimary = findViewById(R.id.btnPrimary);
         btnBiometric = findViewById(R.id.btnBiometric);
@@ -177,22 +163,10 @@ public class MainActivity extends AppCompatActivity {
         txtTitle.setText(R.string.unlocked_title);
         txtSubtitle.setText(R.string.settings_subtitle);
 
-        cardAccessibility.setVisibility(View.VISIBLE);
-        txtAccessibilitySummary.setText(accessibilityActive
-                ? R.string.accessibility_card_summary_active
-                : R.string.accessibility_card_summary);
-        txtAccessibilitySummary.setVisibility(accessibilityActive ? View.GONE : View.VISIBLE);
-        badgeAccessibility.setVisibility(accessibilityActive ? View.VISIBLE : View.GONE);
-        btnPrimary.setText(accessibilityActive ? R.string.manage_accessibility : R.string.open_accessibility);
+        configureActionButton(btnPrimary, accessibilityActive);
         btnPrimary.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
 
-        cardDeviceAdmin.setVisibility(View.VISIBLE);
-        txtDeviceAdminSummary.setText(deviceAdminActive
-                ? R.string.device_admin_card_summary_active
-                : R.string.device_admin_card_summary);
-        txtDeviceAdminSummary.setVisibility(deviceAdminActive ? View.GONE : View.VISIBLE);
-        badgeDeviceAdmin.setVisibility(deviceAdminActive ? View.VISIBLE : View.GONE);
-        btnBiometric.setText(deviceAdminActive ? R.string.disable_device_admin : R.string.open_device_admin);
+        configureActionButton(btnBiometric, deviceAdminActive);
         btnBiometric.setOnClickListener(view -> {
             if (deviceAdminActive) {
                 confirmDisableDeviceAdmin();
@@ -247,11 +221,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDeviceAdminInactiveState() {
-        txtDeviceAdminSummary.setText(R.string.device_admin_card_summary);
-        txtDeviceAdminSummary.setVisibility(View.VISIBLE);
-        badgeDeviceAdmin.setVisibility(View.GONE);
-        btnBiometric.setText(R.string.open_device_admin);
+        configureActionButton(btnBiometric, false);
         btnBiometric.setOnClickListener(view -> requestDeviceAdmin());
+    }
+
+    private void configureActionButton(TextView button, boolean active) {
+        button.setText(active ? R.string.disable_action : R.string.enable_action);
+        button.setBackgroundResource(active
+                ? R.drawable.status_action_button_disabled
+                : R.drawable.status_action_button_enabled);
     }
 
     private boolean isDeviceAdminActive() {

@@ -30,6 +30,8 @@
     <string name="change_password">Cambia password</string>
     <string name="open_accessibility">Attiva protezione</string>
     <string name="manage_accessibility">Gestisci protezione</string>
+    <string name="enable_action">Attiva</string>
+    <string name="disable_action">Disattiva</string>
     <string name="open_device_admin">Proteggi disinstallazione</string>
     <string name="disable_device_admin">Disattiva blocco</string>
     <string name="disable_device_admin_confirm_title">Disattivare la protezione?</string>

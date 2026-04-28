@@ -30,6 +30,8 @@
     <string name="change_password">Change password</string>
     <string name="open_accessibility">Enable protection</string>
     <string name="manage_accessibility">Manage protection</string>
+    <string name="enable_action">Enable</string>
+    <string name="disable_action">Disable</string>
     <string name="open_device_admin">Protect uninstall</string>
     <string name="disable_device_admin">Disable lock</string>
     <string name="disable_device_admin_confirm_title">Disable removal protection?</string>

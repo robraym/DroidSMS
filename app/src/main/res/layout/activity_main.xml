@@ -34,134 +34,83 @@
             android:textSize="13sp" />
 
         <LinearLayout
-            android:id="@+id/cardAccessibility"
+            android:id="@+id/cardSecurity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
             android:background="@drawable/settings_card_background"
-            android:gravity="center_vertical"
-            android:minHeight="96dp"
             android:orientation="vertical"
             android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/accessibility_card_title"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/badgeAccessibility"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/status_badge_active"
-                        android:text="@string/status_active"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </LinearLayout>
+                android:gravity="center_vertical"
+                android:minHeight="44dp"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/txtAccessibilitySummary"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/accessibility_card_summary"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="13sp" />
+                    android:layout_weight="1"
+                    android:text="@string/accessibility_card_title"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
                     android:id="@+id/btnPrimary"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/status_action_button_enabled"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:minWidth="92dp"
                     android:text="@string/open_accessibility"
-                    android:textAllCaps="false"
                     android:textColor="@color/textPrimary"
-                    android:textSize="14sp"
-                    app:backgroundTint="@color/settingsButton"
-                    app:cornerRadius="21dp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/cardDeviceAdmin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/settings_card_background"
-            android:gravity="center_vertical"
-            android:minHeight="96dp"
-            android:orientation="vertical"
-            android:padding="16dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/settingsCardStroke" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/device_admin_card_title"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/badgeDeviceAdmin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/status_badge_active"
-                        android:text="@string/status_active"
-                        android:textColor="@color/textPrimary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </LinearLayout>
+                android:gravity="center_vertical"
+                android:minHeight="44dp"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/txtDeviceAdminSummary"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/device_admin_card_summary"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="13sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBiometric"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/open_device_admin"
-                    android:textAllCaps="false"
+                    android:layout_weight="1"
+                    android:text="@string/device_admin_card_title"
                     android:textColor="@color/textPrimary"
-                    android:textSize="14sp"
-                    app:backgroundTint="@color/settingsButton"
-                    app:cornerRadius="21dp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnBiometric"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/status_action_button_enabled"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:minWidth="92dp"
+                    android:text="@string/open_device_admin"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 

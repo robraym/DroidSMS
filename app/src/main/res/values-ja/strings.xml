@@ -30,6 +30,8 @@
     <string name="change_password">パスワードを変更</string>
     <string name="open_accessibility">保護を有効化</string>
     <string name="manage_accessibility">保護を管理</string>
+    <string name="enable_action">有効にする</string>
+    <string name="disable_action">無効にする</string>
     <string name="open_device_admin">アンインストールを保護</string>
     <string name="disable_device_admin">ロックを無効化</string>
     <string name="disable_device_admin_confirm_title">削除保護を無効にしますか？</string>
