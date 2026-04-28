@@ -7,7 +7,7 @@
     <string name="auth_title">App protégée</string>
     <string name="auth_subtitle_create">Créez un mot de passe pour protéger vos apps.</string>
     <string name="auth_subtitle_unlock">Confirmez votre empreinte digitale pour ouvrir cette app.</string>
-    <string name="settings_subtitle">Activez la protection et choisissez les apps qui exigent une empreinte ou un mot de passe.</string>
+    <string name="settings_subtitle">Choisissez les apps qui exigent une empreinte ou un mot de passe.</string>
     <string name="accessibility_card_title">Protection des apps</string>
     <string name="accessibility_card_summary">Permet de détecter l’ouverture d’une app protégée et de demander une empreinte ou un mot de passe.</string>
     <string name="accessibility_card_summary_active">La protection des apps est active. Pour la désactiver, ouvrez les paramètres d’accessibilité.</string>

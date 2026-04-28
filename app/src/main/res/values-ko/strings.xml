@@ -7,7 +7,7 @@
     <string name="auth_title">보호된 앱</string>
     <string name="auth_subtitle_create">앱을 보호할 비밀번호를 만드세요.</string>
     <string name="auth_subtitle_unlock">이 앱을 열려면 지문을 확인하세요.</string>
-    <string name="settings_subtitle">보호를 켜고 지문 또는 비밀번호가 필요한 앱을 선택하세요.</string>
+    <string name="settings_subtitle">지문 또는 비밀번호가 필요한 앱을 선택하세요.</string>
     <string name="accessibility_card_title">앱 보호</string>
     <string name="accessibility_card_summary">보호된 앱이 열릴 때 감지하고 지문 또는 비밀번호를 요청합니다.</string>
     <string name="accessibility_card_summary_active">앱 보호가 켜져 있습니다. 끄려면 접근성 설정을 여세요.</string>

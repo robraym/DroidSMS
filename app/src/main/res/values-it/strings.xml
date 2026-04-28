@@ -7,7 +7,7 @@
     <string name="auth_title">App protetta</string>
     <string name="auth_subtitle_create">Crea una password per proteggere le tue app.</string>
     <string name="auth_subtitle_unlock">Conferma la tua impronta digitale per aprire questa app.</string>
-    <string name="settings_subtitle">Attiva la protezione e scegli quali app devono richiedere impronta o password.</string>
+    <string name="settings_subtitle">Scegli le app che devono richiedere impronta o password.</string>
     <string name="accessibility_card_title">Protezione app</string>
     <string name="accessibility_card_summary">Permette di rilevare quando viene aperta un’app protetta e richiedere impronta o password.</string>
     <string name="accessibility_card_summary_active">La protezione app è attiva. Per disattivarla, apri le impostazioni di accessibilità.</string>

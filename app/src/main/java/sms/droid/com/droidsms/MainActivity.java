@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         txtAccessibilitySummary.setText(accessibilityActive
                 ? R.string.accessibility_card_summary_active
                 : R.string.accessibility_card_summary);
+        txtAccessibilitySummary.setVisibility(accessibilityActive ? View.GONE : View.VISIBLE);
         badgeAccessibility.setVisibility(accessibilityActive ? View.VISIBLE : View.GONE);
         btnPrimary.setText(accessibilityActive ? R.string.manage_accessibility : R.string.open_accessibility);
         btnPrimary.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
@@ -189,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         txtDeviceAdminSummary.setText(deviceAdminActive
                 ? R.string.device_admin_card_summary_active
                 : R.string.device_admin_card_summary);
+        txtDeviceAdminSummary.setVisibility(deviceAdminActive ? View.GONE : View.VISIBLE);
         badgeDeviceAdmin.setVisibility(deviceAdminActive ? View.VISIBLE : View.GONE);
         btnBiometric.setText(deviceAdminActive ? R.string.disable_device_admin : R.string.open_device_admin);
         btnBiometric.setOnClickListener(view -> {
@@ -246,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setDeviceAdminInactiveState() {
         txtDeviceAdminSummary.setText(R.string.device_admin_card_summary);
+        txtDeviceAdminSummary.setVisibility(View.VISIBLE);
         badgeDeviceAdmin.setVisibility(View.GONE);
         btnBiometric.setText(R.string.open_device_admin);
         btnBiometric.setOnClickListener(view -> requestDeviceAdmin());

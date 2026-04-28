@@ -7,7 +7,7 @@
     <string name="auth_title">受保护的应用</string>
     <string name="auth_subtitle_create">创建密码以保护你的应用。</string>
     <string name="auth_subtitle_unlock">确认指纹以打开此应用。</string>
-    <string name="settings_subtitle">启用保护，并选择哪些应用需要指纹或密码。</string>
+    <string name="settings_subtitle">选择需要指纹或密码的应用。</string>
     <string name="accessibility_card_title">应用保护</string>
     <string name="accessibility_card_summary">检测受保护应用何时打开，并要求指纹或密码。</string>
     <string name="accessibility_card_summary_active">应用保护已启用。若要关闭，请打开无障碍设置。</string>

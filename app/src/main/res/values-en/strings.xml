@@ -7,7 +7,7 @@
     <string name="auth_title">Protected app</string>
     <string name="auth_subtitle_create">Create a password to protect your apps.</string>
     <string name="auth_subtitle_unlock">Confirm your fingerprint to open this app.</string>
-    <string name="settings_subtitle">Enable protection and choose which apps should require fingerprint or password.</string>
+    <string name="settings_subtitle">Choose apps that should require fingerprint or password.</string>
     <string name="accessibility_card_title">App protection</string>
     <string name="accessibility_card_summary">Allows App Lock to detect when a protected app is opened and request fingerprint or password.</string>
     <string name="accessibility_card_summary_active">App protection is active. To turn it off, open accessibility settings.</string>

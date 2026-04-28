@@ -7,7 +7,7 @@
     <string name="auth_title">Geschützte App</string>
     <string name="auth_subtitle_create">Erstellen Sie ein Passwort, um Ihre Apps zu schützen.</string>
     <string name="auth_subtitle_unlock">Bestätigen Sie Ihren Fingerabdruck, um diese App zu öffnen.</string>
-    <string name="settings_subtitle">Aktivieren Sie den Schutz und wählen Sie Apps aus, die Fingerabdruck oder Passwort erfordern.</string>
+    <string name="settings_subtitle">Wählen Sie Apps aus, die Fingerabdruck oder Passwort erfordern.</string>
     <string name="accessibility_card_title">App-Schutz</string>
     <string name="accessibility_card_summary">Erkennt, wenn eine geschützte App geöffnet wird, und fordert Fingerabdruck oder Passwort an.</string>
     <string name="accessibility_card_summary_active">Der App-Schutz ist aktiv. Öffnen Sie die Bedienungshilfen, um ihn zu deaktivieren.</string>

@@ -7,7 +7,7 @@
     <string name="auth_title">App protegida</string>
     <string name="auth_subtitle_create">Crea una contraseña para proteger tus apps.</string>
     <string name="auth_subtitle_unlock">Confirma tu huella digital para abrir esta app.</string>
-    <string name="settings_subtitle">Activa la protección y elige qué apps deben pedir huella o contraseña.</string>
+    <string name="settings_subtitle">Elige las apps que deben pedir huella o contraseña.</string>
     <string name="accessibility_card_title">Protección de apps</string>
     <string name="accessibility_card_summary">Permite detectar cuando se abre una app protegida y pedir huella o contraseña.</string>
     <string name="accessibility_card_summary_active">La protección de apps está activa. Para desactivarla, abre los ajustes de accesibilidad.</string>

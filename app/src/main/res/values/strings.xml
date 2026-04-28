@@ -7,7 +7,7 @@
     <string name="auth_title">Aplicativo protegido</string>
     <string name="auth_subtitle_create">Crie uma senha para proteger seus aplicativos.</string>
     <string name="auth_subtitle_unlock">Confirme sua digital para abrir este aplicativo.</string>
-    <string name="settings_subtitle">Ative a proteção e escolha quais apps devem pedir digital ou senha.</string>
+    <string name="settings_subtitle">Escolha os apps que devem pedir digital ou senha.</string>
     <string name="accessibility_card_title">Proteção dos apps</string>
     <string name="accessibility_card_summary">Permite detectar quando um app protegido for aberto e pedir digital ou senha.</string>
     <string name="accessibility_card_summary_active">A proteção dos apps está ativa. Para desativar, abra as configurações de acessibilidade.</string>

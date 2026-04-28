@@ -7,7 +7,7 @@
     <string name="auth_title">保護されたアプリ</string>
     <string name="auth_subtitle_create">アプリを保護するためのパスワードを作成します。</string>
     <string name="auth_subtitle_unlock">このアプリを開くには指紋を確認してください。</string>
-    <string name="settings_subtitle">保護を有効にし、指紋またはパスワードを要求するアプリを選択します。</string>
+    <string name="settings_subtitle">指紋またはパスワードを要求するアプリを選択します。</string>
     <string name="accessibility_card_title">アプリ保護</string>
     <string name="accessibility_card_summary">保護されたアプリが開かれたときに検出し、指紋またはパスワードを要求します。</string>
     <string name="accessibility_card_summary_active">アプリ保護は有効です。無効にするにはユーザー補助設定を開いてください。</string>
