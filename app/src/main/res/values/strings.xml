@@ -10,6 +10,7 @@
     <string name="settings_subtitle">Ative a proteção e escolha quais apps devem pedir digital ou senha.</string>
     <string name="accessibility_card_title">Proteção dos apps</string>
     <string name="accessibility_card_summary">Permite detectar quando um app protegido for aberto e pedir digital ou senha.</string>
+    <string name="accessibility_card_summary_active">A proteção dos apps está ativa. Para desativar, abra as configurações de acessibilidade.</string>
     <string name="app_selection_title">Aplicativos protegidos</string>
     <string name="app_selection_summary">Escolha quais aplicativos devem pedir digital ao abrir.</string>
     <string name="risk_high_title">Essenciais</string>
@@ -20,6 +21,7 @@
     <string name="risk_low_summary">Apps com menor exposição de dados sensíveis.</string>
     <string name="device_admin_card_title">Bloqueio de remoção</string>
     <string name="device_admin_card_summary">Impede remover o App Lock enquanto a proteção estiver ativa.</string>
+    <string name="device_admin_card_summary_active">O bloqueio de remoção está ativo. Desative aqui antes de desinstalar o App Lock.</string>
     <string name="password_hint">Senha</string>
     <string name="confirm_password_hint">Confirmar senha</string>
     <string name="save_password">Salvar senha</string>
@@ -27,7 +29,9 @@
     <string name="use_fingerprint">Usar digital</string>
     <string name="change_password">Alterar senha</string>
     <string name="open_accessibility">Ativar proteção</string>
+    <string name="manage_accessibility">Gerenciar proteção</string>
     <string name="open_device_admin">Proteger desinstalação</string>
+    <string name="disable_device_admin">Desativar bloqueio</string>
     <string name="device_admin_active">Desinstalação protegida</string>
     <string name="open_messages">Abrir mensagens</string>
     <string name="locked_state">Apps protegidos por digital ou senha</string>

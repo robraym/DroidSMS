@@ -4,6 +4,43 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+
+        <package android:name="com.google.android.gm" />
+        <package android:name="com.google.android.apps.photos" />
+        <package android:name="com.google.android.apps.docs" />
+        <package android:name="com.google.android.apps.nbu.files" />
+        <package android:name="com.google.android.apps.maps" />
+        <package android:name="com.android.chrome" />
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.google.android.apps.youtube.music" />
+        <package android:name="com.google.android.calendar" />
+        <package android:name="com.google.android.keep" />
+        <package android:name="com.google.android.contacts" />
+        <package android:name="com.google.android.apps.walletnfcrel" />
+        <package android:name="com.samsung.android.email.provider" />
+        <package android:name="com.android.email" />
+        <package android:name="com.google.android.email" />
+        <package android:name="com.microsoft.office.outlook" />
+        <package android:name="ch.protonmail.android" />
+        <package android:name="com.yahoo.mobile.client.android.mail" />
+        <package android:name="me.bluemail.mail" />
+        <package android:name="com.fsck.k9" />
+        <package android:name="com.readdle.spark" />
+        <package android:name="com.zoho.mail" />
+        <package android:name="com.google.android.apps.messaging" />
+        <package android:name="com.samsung.android.messaging" />
+        <package android:name="com.android.mms" />
+        <package android:name="com.android.messaging" />
+        <package android:name="com.android.vending" />
+        <package android:name="com.android.settings" />
+        <package android:name="com.samsung.android.app.settings" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

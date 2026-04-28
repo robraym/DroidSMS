@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
@@ -16,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,10 +41,43 @@ public class MainActivity extends AppCompatActivity {
     private static final int RISK_HIGH = 3;
     private static final int RISK_MODERATE = 2;
     private static final int RISK_LOW = 1;
+    private static final String[] IMPORTANT_APP_PACKAGES = {
+            "com.google.android.gm",
+            "com.google.android.apps.photos",
+            "com.google.android.apps.docs",
+            "com.google.android.apps.nbu.files",
+            "com.google.android.apps.maps",
+            "com.android.chrome",
+            "com.google.android.youtube",
+            "com.google.android.apps.youtube.music",
+            "com.google.android.calendar",
+            "com.google.android.keep",
+            "com.google.android.contacts",
+            "com.google.android.apps.walletnfcrel",
+            "com.samsung.android.email.provider",
+            "com.android.email",
+            "com.google.android.email",
+            "com.microsoft.office.outlook",
+            "ch.protonmail.android",
+            "com.yahoo.mobile.client.android.mail",
+            "me.bluemail.mail",
+            "com.fsck.k9",
+            "com.readdle.spark",
+            "com.zoho.mail",
+            "com.google.android.apps.messaging",
+            "com.samsung.android.messaging",
+            "com.android.mms",
+            "com.android.messaging",
+            "com.android.vending",
+            "com.android.settings",
+            "com.samsung.android.app.settings"
+    };
 
     private TextView txtTitle;
     private TextView txtSubtitle;
     private TextView txtStatus;
+    private TextView txtAccessibilitySummary;
+    private TextView txtDeviceAdminSummary;
     private LinearLayout cardAccessibility;
     private LinearLayout cardDeviceAdmin;
     private LinearLayout cardStatus;
@@ -118,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
         txtStatus = findViewById(R.id.txtStatus);
+        txtAccessibilitySummary = findViewById(R.id.txtAccessibilitySummary);
+        txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
         cardAccessibility = findViewById(R.id.cardAccessibility);
         cardDeviceAdmin = findViewById(R.id.cardDeviceAdmin);
         cardStatus = findViewById(R.id.cardStatus);
@@ -133,14 +170,24 @@ public class MainActivity extends AppCompatActivity {
         txtTitle.setText(R.string.unlocked_title);
         txtSubtitle.setText(R.string.settings_subtitle);
 
-        cardAccessibility.setVisibility(accessibilityActive ? View.GONE : View.VISIBLE);
-        btnPrimary.setText(R.string.open_accessibility);
+        cardAccessibility.setVisibility(View.VISIBLE);
+        txtAccessibilitySummary.setText(accessibilityActive
+                ? R.string.accessibility_card_summary_active
+                : R.string.accessibility_card_summary);
+        btnPrimary.setText(accessibilityActive ? R.string.manage_accessibility : R.string.open_accessibility);
         btnPrimary.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
 
-        cardDeviceAdmin.setVisibility(deviceAdminActive ? View.GONE : View.VISIBLE);
-        btnBiometric.setText(R.string.open_device_admin);
+        cardDeviceAdmin.setVisibility(View.VISIBLE);
+        txtDeviceAdminSummary.setText(deviceAdminActive
+                ? R.string.device_admin_card_summary_active
+                : R.string.device_admin_card_summary);
+        btnBiometric.setText(deviceAdminActive ? R.string.disable_device_admin : R.string.open_device_admin);
         btnBiometric.setOnClickListener(view -> {
-            requestDeviceAdmin();
+            if (deviceAdminActive) {
+                disableDeviceAdmin();
+            } else {
+                requestDeviceAdmin();
+            }
         });
 
         String status = "";
@@ -161,6 +208,17 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminComponent);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.device_admin_description));
         startActivity(intent);
+    }
+
+    private void disableDeviceAdmin() {
+        if (!isDeviceAdminActive()) {
+            showSettingsState();
+            return;
+        }
+
+        devicePolicyManager.removeActiveAdmin(deviceAdminComponent);
+        Toast.makeText(this, R.string.device_admin_disable_warning, Toast.LENGTH_SHORT).show();
+        showSettingsState();
     }
 
     private boolean isDeviceAdminActive() {
@@ -331,7 +389,8 @@ public class MainActivity extends AppCompatActivity {
 
             CharSequence label = resolveInfo.loadLabel(packageManager);
             String appLabel = label == null ? packageName : label.toString();
-            if (shouldHideFromProtectedList(packageName, appLabel)) {
+            if (shouldHideFromProtectedList(packageName, appLabel)
+                    && !AuthStore.isPackageProtected(this, packageName)) {
                 continue;
             }
 
@@ -344,10 +403,39 @@ public class MainActivity extends AppCompatActivity {
             ));
         }
 
+        addImportantInstalledApps(packageManager, appsByPackage);
+
         List<AppEntry> apps = new ArrayList<>(appsByPackage.values());
         Collections.sort(apps, (first, second) ->
                 first.label.toLowerCase(Locale.getDefault()).compareTo(second.label.toLowerCase(Locale.getDefault())));
         return apps;
+    }
+
+    private void addImportantInstalledApps(PackageManager packageManager, Map<String, AppEntry> appsByPackage) {
+        for (String packageName : IMPORTANT_APP_PACKAGES) {
+            if (getPackageName().equals(packageName) || appsByPackage.containsKey(packageName)) {
+                continue;
+            }
+
+            try {
+                ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
+                String appLabel = packageManager.getApplicationLabel(applicationInfo).toString();
+                if (shouldHideFromProtectedList(packageName, appLabel)
+                        && !AuthStore.isPackageProtected(this, packageName)) {
+                    continue;
+                }
+
+                Drawable icon = packageManager.getApplicationIcon(applicationInfo);
+                appsByPackage.put(packageName, new AppEntry(
+                        appLabel,
+                        packageName,
+                        icon,
+                        getRiskLevel(packageName, appLabel)
+                ));
+            } catch (PackageManager.NameNotFoundException ignored) {
+                // App is not installed or not visible on this device.
+            }
+        }
     }
 
     private int getRiskLevel(String packageName, String label) {
@@ -357,6 +445,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (containsAny(normalizedPackage,
                 "com.google.android.apps.messaging",
+                "com.google.android.apps.photos",
+                "com.google.android.apps.docs",
+                "com.google.android.apps.nbu.files",
+                "com.google.android.apps.walletnfcrel",
                 "com.samsung.android.messaging",
                 "com.android.mms",
                 "com.android.messaging",
@@ -397,7 +489,10 @@ public class MainActivity extends AppCompatActivity {
 
         return containsAny(value,
                 "secure folder", "pasta segura", "knox secure folder", "securefolder",
-                "app lock", "applock", "calculator vault", "gallery vault", "vault");
+                "app lock", "applock", "calculator vault", "gallery vault", "vault",
+                "wallet", "carteira", "samsung pass", "samsungpass", "passkey",
+                "authenticator", "autenticador", "bitwarden", "1password", "lastpass",
+                "keeper", "password manager", "gerenciador de senhas");
     }
 
     private boolean containsAny(String value, String... needles) {
