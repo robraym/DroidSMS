@@ -32,6 +32,11 @@
     <string name="manage_accessibility">Manage protection</string>
     <string name="open_device_admin">Protect uninstall</string>
     <string name="disable_device_admin">Disable lock</string>
+    <string name="disable_device_admin_confirm_title">Disable removal protection?</string>
+    <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove App Lock and open protected apps without going through it.</string>
+    <string name="disable_device_admin_confirm_action">Disable</string>
+    <string name="cancel">Cancel</string>
+    <string name="status_active">Active</string>
     <string name="device_admin_active">Uninstall protected</string>
     <string name="open_messages">Open messages</string>
     <string name="locked_state">Apps protected by fingerprint or password</string>

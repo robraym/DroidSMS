@@ -32,6 +32,11 @@
     <string name="manage_accessibility">Gestisci protezione</string>
     <string name="open_device_admin">Proteggi disinstallazione</string>
     <string name="disable_device_admin">Disattiva blocco</string>
+    <string name="disable_device_admin_confirm_title">Disattivare la protezione?</string>
+    <string name="disable_device_admin_confirm_message">Senza questo blocco, chiunque abbia accesso al dispositivo potrà rimuovere App Lock e aprire le app protette senza passare da esso.</string>
+    <string name="disable_device_admin_confirm_action">Disattiva</string>
+    <string name="cancel">Annulla</string>
+    <string name="status_active">Attivo</string>
     <string name="device_admin_active">Disinstallazione protetta</string>
     <string name="open_messages">Apri messaggi</string>
     <string name="locked_state">App protette da impronta o password</string>

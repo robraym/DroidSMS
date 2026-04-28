@@ -32,6 +32,11 @@
     <string name="manage_accessibility">Schutz verwalten</string>
     <string name="open_device_admin">Deinstallation schützen</string>
     <string name="disable_device_admin">Sperre deaktivieren</string>
+    <string name="disable_device_admin_confirm_title">Schutz deaktivieren?</string>
+    <string name="disable_device_admin_confirm_message">Ohne diese Sperre kann jede Person mit Zugriff auf das Gerät App Lock entfernen und geschützte Apps ohne App Lock öffnen.</string>
+    <string name="disable_device_admin_confirm_action">Deaktivieren</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="status_active">Aktiv</string>
     <string name="device_admin_active">Deinstallation geschützt</string>
     <string name="open_messages">Nachrichten öffnen</string>
     <string name="locked_state">Apps durch Fingerabdruck oder Passwort geschützt</string>

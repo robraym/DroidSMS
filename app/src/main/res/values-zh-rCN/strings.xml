@@ -32,6 +32,11 @@
     <string name="manage_accessibility">管理保护</string>
     <string name="open_device_admin">保护卸载</string>
     <string name="disable_device_admin">关闭锁定</string>
+    <string name="disable_device_admin_confirm_title">关闭卸载保护？</string>
+    <string name="disable_device_admin_confirm_message">没有此锁定，任何能使用此设备的人都可以移除 App Lock，并绕过它打开受保护的应用。</string>
+    <string name="disable_device_admin_confirm_action">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="status_active">已启用</string>
     <string name="device_admin_active">卸载已受保护</string>
     <string name="open_messages">打开消息</string>
     <string name="locked_state">应用受指纹或密码保护</string>

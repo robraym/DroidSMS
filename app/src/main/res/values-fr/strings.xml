@@ -32,6 +32,11 @@
     <string name="manage_accessibility">Gérer la protection</string>
     <string name="open_device_admin">Protéger la désinstallation</string>
     <string name="disable_device_admin">Désactiver le verrouillage</string>
+    <string name="disable_device_admin_confirm_title">Désactiver la protection ?</string>
+    <string name="disable_device_admin_confirm_message">Sans ce verrouillage, toute personne ayant accès à l’appareil pourra supprimer App Lock et ouvrir les apps protégées sans passer par lui.</string>
+    <string name="disable_device_admin_confirm_action">Désactiver</string>
+    <string name="cancel">Annuler</string>
+    <string name="status_active">Actif</string>
     <string name="device_admin_active">Désinstallation protégée</string>
     <string name="open_messages">Ouvrir les messages</string>
     <string name="locked_state">Apps protégées par empreinte ou mot de passe</string>
