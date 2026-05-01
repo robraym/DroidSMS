@@ -4,11 +4,22 @@ import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Toast;
+
+import androidx.biometric.BiometricManager;
 
 public class SmsGuardAccessibilityService extends AccessibilityService {
+    private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
+            | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private String lastPackageName = "";
     private String lastPromptPackageName = "";
     private long lastPromptAt = 0;
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        Toast.makeText(this, R.string.app_protection_enabled_message, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -22,6 +33,21 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         String packageName = packageNameValue.toString();
+        if (!isBiometricReady()) {
+            AuthStore.clearUnlock(this);
+            lastPackageName = packageName;
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            return;
+        }
+
+        if (TrustedWifi.isCurrentWifiTrusted(this)) {
+            lastPackageName = packageName;
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            return;
+        }
+
         boolean protectedPackage = AuthStore.isPackageProtected(this, packageName);
 
         if (!protectedPackage) {
@@ -58,6 +84,12 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     public void onInterrupt() {
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Toast.makeText(this, R.string.app_protection_disabled_message, Toast.LENGTH_SHORT).show();
+        return super.onUnbind(intent);
+    }
+
     static boolean isProtectedPackage(String packageName) {
         return !TextUtils.isEmpty(packageName);
     }
@@ -69,5 +101,10 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
                 || TextUtils.equals(packageName, "com.samsung.android.biometrics.app.setting")
                 || TextUtils.equals(packageName, "com.google.android.permissioncontroller")
                 || TextUtils.equals(packageName, "com.android.permissioncontroller");
+    }
+
+    private boolean isBiometricReady() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
     }
 }

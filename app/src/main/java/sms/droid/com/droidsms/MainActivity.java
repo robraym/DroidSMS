@@ -1,5 +1,6 @@
 package sms.droid.com.droidsms;
 
+import android.Manifest;
 import android.app.admin.DevicePolicyManager;
 import android.content.res.ColorStateList;
 import android.content.ComponentName;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -40,6 +42,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_LOCATION_PERMISSION = 1001;
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private static final int RISK_HIGH = 3;
@@ -79,14 +82,23 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView txtTitle;
     private TextView txtSubtitle;
+    private LinearLayout cardDeviceLockWarning;
+    private LinearLayout cardProtectionDisabledWarning;
     private LinearLayout listApps;
-    private TextView btnPrimary;
-    private TextView btnBiometric;
+    private TextView btnDeviceLockSettings;
+    private TextView btnReactivateProtection;
+    private TextView txtTrustedWifiSummary;
+    private TextView btnTrustedWifi;
+    private SwitchCompat switchAccessibility;
+    private SwitchCompat switchDeviceAdmin;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName deviceAdminComponent;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private boolean settingsUnlocked;
     private boolean promptShown;
+    private boolean hasObservedProtectionState;
+    private boolean lastAccessibilityActive;
+    private boolean lastDeviceAdminActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +106,13 @@ public class MainActivity extends AppCompatActivity {
 
         devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         deviceAdminComponent = new ComponentName(this, SmsLockDeviceAdminReceiver.class);
-        setContentView(R.layout.activity_guard);
-        showSettingsBiometricPrompt();
+        if (isSetupComplete() && isBiometricReady()) {
+            setContentView(R.layout.activity_guard);
+            showSettingsBiometricPrompt();
+        } else {
+            settingsUnlocked = true;
+            showSettingsScreen();
+        }
     }
 
     @Override
@@ -115,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void showSettingsBiometricPrompt() {
         if (!isBiometricReady()) {
-            finish();
+            settingsUnlocked = true;
+            showSettingsScreen();
             return;
         }
 
@@ -151,30 +169,103 @@ public class MainActivity extends AppCompatActivity {
     private void bindViews() {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
+        cardDeviceLockWarning = findViewById(R.id.cardDeviceLockWarning);
+        cardProtectionDisabledWarning = findViewById(R.id.cardProtectionDisabledWarning);
         listApps = findViewById(R.id.listApps);
-        btnPrimary = findViewById(R.id.btnPrimary);
-        btnBiometric = findViewById(R.id.btnBiometric);
+        btnDeviceLockSettings = findViewById(R.id.btnDeviceLockSettings);
+        btnReactivateProtection = findViewById(R.id.btnReactivateProtection);
+        txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
+        btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
+        switchAccessibility = findViewById(R.id.switchAccessibility);
+        switchDeviceAdmin = findViewById(R.id.switchDeviceAdmin);
     }
 
     private void showSettingsState() {
         boolean accessibilityActive = isAccessibilityServiceActive();
         boolean deviceAdminActive = isDeviceAdminActive();
+        boolean deviceLockReady = isBiometricReady();
 
         txtTitle.setText(R.string.unlocked_title);
         txtSubtitle.setText(R.string.settings_subtitle);
 
-        configureActionButton(btnPrimary, accessibilityActive);
-        btnPrimary.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+        cardDeviceLockWarning.setVisibility(deviceLockReady ? View.GONE : View.VISIBLE);
+        btnDeviceLockSettings.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS)));
 
-        configureActionButton(btnBiometric, deviceAdminActive);
-        btnBiometric.setOnClickListener(view -> {
+        boolean shouldWarnProtectionDisabled = deviceLockReady && !accessibilityActive;
+        cardProtectionDisabledWarning.setVisibility(shouldWarnProtectionDisabled ? View.VISIBLE : View.GONE);
+        btnReactivateProtection.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+
+        showTrustedWifiState();
+
+        configureSwitch(switchAccessibility, accessibilityActive, deviceLockReady || accessibilityActive);
+        switchAccessibility.setOnClickListener(view -> {
+            if (deviceLockReady || accessibilityActive) {
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            }
+            switchAccessibility.setChecked(accessibilityActive);
+        });
+
+        configureSwitch(switchDeviceAdmin, deviceAdminActive, deviceLockReady || deviceAdminActive);
+        switchDeviceAdmin.setOnClickListener(view -> {
+            if (!deviceLockReady && !deviceAdminActive) {
+                switchDeviceAdmin.setChecked(false);
+                return;
+            }
             if (deviceAdminActive) {
+                switchDeviceAdmin.setChecked(true);
                 confirmDisableDeviceAdmin();
             } else {
+                switchDeviceAdmin.setChecked(false);
                 requestDeviceAdmin();
             }
         });
 
+        notifyProtectionStateChanges(accessibilityActive, deviceAdminActive);
+    }
+
+    private void showTrustedWifiState() {
+        String trustedSsid = AuthStore.getTrustedWifiSsid(this);
+        if (!trustedSsid.isEmpty()) {
+            txtTrustedWifiSummary.setText(getString(R.string.trusted_wifi_configured, trustedSsid));
+            btnTrustedWifi.setText(R.string.trusted_wifi_remove);
+            btnTrustedWifi.setOnClickListener(view -> {
+                AuthStore.clearTrustedWifi(this);
+                showTrustedWifiState();
+            });
+            return;
+        }
+
+        txtTrustedWifiSummary.setText(R.string.trusted_wifi_not_configured);
+        btnTrustedWifi.setText(R.string.trusted_wifi_use_current);
+        btnTrustedWifi.setOnClickListener(view -> saveCurrentTrustedWifi());
+    }
+
+    private void saveCurrentTrustedWifi() {
+        if (!TrustedWifi.hasLocationPermission(this)) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+            return;
+        }
+
+        String ssid = TrustedWifi.getCurrentSsid(this);
+        if (ssid.isEmpty()) {
+            Toast.makeText(this, R.string.trusted_wifi_unavailable, Toast.LENGTH_LONG).show();
+            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            return;
+        }
+
+        AuthStore.setTrustedWifiSsid(this, ssid);
+        Toast.makeText(this, getString(R.string.trusted_wifi_saved, ssid), Toast.LENGTH_SHORT).show();
+        showTrustedWifiState();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERMISSION
+                && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveCurrentTrustedWifi();
+        }
     }
 
     private void requestDeviceAdmin() {
@@ -214,22 +305,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
         devicePolicyManager.removeActiveAdmin(deviceAdminComponent);
-        Toast.makeText(this, R.string.device_admin_disable_warning, Toast.LENGTH_SHORT).show();
         setDeviceAdminInactiveState();
         mainHandler.postDelayed(this::showSettingsState, 500);
         mainHandler.postDelayed(this::showSettingsState, 1200);
     }
 
     private void setDeviceAdminInactiveState() {
-        configureActionButton(btnBiometric, false);
-        btnBiometric.setOnClickListener(view -> requestDeviceAdmin());
+        configureSwitch(switchDeviceAdmin, false, isBiometricReady());
+        switchDeviceAdmin.setOnClickListener(view -> requestDeviceAdmin());
     }
 
-    private void configureActionButton(TextView button, boolean active) {
-        button.setText(active ? R.string.disable_action : R.string.enable_action);
-        button.setBackgroundResource(active
-                ? R.drawable.status_action_button_disabled
-                : R.drawable.status_action_button_enabled);
+    private void configureSwitch(SwitchCompat switchView, boolean checked, boolean enabled) {
+        switchView.setChecked(checked);
+        switchView.setEnabled(enabled);
+        switchView.setAlpha(enabled ? 1f : 0.45f);
+    }
+
+    private void notifyProtectionStateChanges(boolean accessibilityActive, boolean deviceAdminActive) {
+        if (!hasObservedProtectionState) {
+            lastAccessibilityActive = accessibilityActive;
+            lastDeviceAdminActive = deviceAdminActive;
+            hasObservedProtectionState = true;
+            return;
+        }
+
+        if (lastAccessibilityActive != accessibilityActive) {
+            Toast.makeText(this,
+                    accessibilityActive
+                            ? R.string.app_protection_enabled_message
+                            : R.string.app_protection_disabled_message,
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        if (lastDeviceAdminActive != deviceAdminActive) {
+            Toast.makeText(this,
+                    deviceAdminActive
+                            ? R.string.removal_protection_enabled_message
+                            : R.string.removal_protection_disabled_message,
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        lastAccessibilityActive = accessibilityActive;
+        lastDeviceAdminActive = deviceAdminActive;
     }
 
     private boolean isDeviceAdminActive() {
@@ -503,7 +620,17 @@ public class MainActivity extends AppCompatActivity {
                 "app lock", "applock", "calculator vault", "gallery vault", "vault",
                 "wallet", "carteira", "samsung pass", "samsungpass", "passkey",
                 "authenticator", "autenticador", "bitwarden", "1password", "lastpass",
-                "keeper", "password manager", "gerenciador de senhas");
+                "keeper", "password manager", "gerenciador de senhas",
+                "bank", "banco", "bradesco", "itau", "itaú", "nubank", "santander",
+                "caixa", "bb.android", "banco do brasil", "intermedium", "inter bank",
+                "btgpactual", "btg", "c6bank", "c6 bank", "next", "neon", "sicredi",
+                "sicoob", "banrisul", "original", "pan", "bmg", "banestes", "banese",
+                "pagbank", "pagseguro", "picpay", "paypal", "mercadopago",
+                "mercado pago", "recargapay", "iti", "stone", "ton", "sumup",
+                "xpinc", "xp investimentos", "clear", "rico", "modalmais", "nuinvest",
+                "binance", "coinbase", "crypto", "bitcoin", "btc", "ethereum",
+                "trust wallet", "metamask",
+                "whatsapp", "telegram", "signal");
     }
 
     private boolean containsAny(String value, String... needles) {

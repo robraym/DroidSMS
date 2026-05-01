@@ -15,6 +15,7 @@ final class AuthStore {
     static final String PREFS_NAME = "droidsms_security";
     static final String KEY_PASSWORD_HASH = "password_hash";
     private static final String KEY_PROTECTED_PACKAGES = "protected_packages";
+    private static final String KEY_TRUSTED_WIFI_SSID = "trusted_wifi_ssid";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
     private static final long UNLOCK_WINDOW_MS = 30 * 60 * 1000;
@@ -112,6 +113,22 @@ final class AuthStore {
 
         prefs(context).edit()
                 .putStringSet(KEY_PROTECTED_PACKAGES, protectedPackages)
+                .apply();
+    }
+
+    static String getTrustedWifiSsid(Context context) {
+        return prefs(context).getString(KEY_TRUSTED_WIFI_SSID, "");
+    }
+
+    static void setTrustedWifiSsid(Context context, String ssid) {
+        prefs(context).edit()
+                .putString(KEY_TRUSTED_WIFI_SSID, ssid)
+                .apply();
+    }
+
+    static void clearTrustedWifi(Context context) {
+        prefs(context).edit()
+                .remove(KEY_TRUSTED_WIFI_SSID)
                 .apply();
     }
 
