@@ -75,7 +75,10 @@ public class MainActivity extends AppCompatActivity {
             "com.android.messaging",
             "com.android.vending",
             "com.android.settings",
-            "com.samsung.android.app.settings"
+            "com.samsung.android.app.settings",
+            "com.google.android.packageinstaller",
+            "com.android.packageinstaller",
+            "com.samsung.android.packageinstaller"
     };
 
     private TextView txtTitle;
@@ -521,12 +524,19 @@ public class MainActivity extends AppCompatActivity {
         appSwitch.setThumbTintList(ContextCompat.getColorStateList(this, R.color.switch_thumb_tint));
         appSwitch.setTrackTintList(ContextCompat.getColorStateList(this, R.color.switch_track_tint));
         appSwitch.setShowText(false);
+        boolean removalControlPackage = AuthStore.isRemovalControlPackage(app.packageName);
         appSwitch.setChecked(AuthStore.isPackageProtected(this, app.packageName));
+        appSwitch.setEnabled(!removalControlPackage);
+        appSwitch.setAlpha(removalControlPackage ? 0.65f : 1f);
         appSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             AuthStore.setPackageProtected(this, app.packageName, isChecked);
             onSelectionChanged.run();
         });
-        row.setOnClickListener(view -> appSwitch.setChecked(!appSwitch.isChecked()));
+        row.setOnClickListener(view -> {
+            if (!removalControlPackage) {
+                appSwitch.setChecked(!appSwitch.isChecked());
+            }
+        });
         row.addView(appSwitch, new LinearLayout.LayoutParams(dp(56), dp(48)));
 
         return row;

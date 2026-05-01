@@ -41,7 +41,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             return;
         }
 
-        if (TrustedWifi.isCurrentWifiTrusted(this)) {
+        if (TrustedWifi.isCurrentWifiTrusted(this) && !AuthStore.isRemovalControlPackage(packageName)) {
             lastPackageName = packageName;
             lastPromptPackageName = "";
             lastPromptAt = 0;

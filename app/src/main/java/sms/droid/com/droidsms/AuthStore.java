@@ -31,6 +31,14 @@ final class AuthStore {
             "com.android.email",
             "com.google.android.email"
     ));
+    private static final Set<String> REMOVAL_CONTROL_PACKAGES = new HashSet<>(Arrays.asList(
+            "com.android.settings",
+            "com.samsung.android.app.settings",
+            "com.android.vending",
+            "com.google.android.packageinstaller",
+            "com.android.packageinstaller",
+            "com.samsung.android.packageinstaller"
+    ));
 
     private AuthStore() {
     }
@@ -86,11 +94,18 @@ final class AuthStore {
         if (savedPackages == null) {
             return new HashSet<>(DEFAULT_PROTECTED_PACKAGES);
         }
-        return new HashSet<>(savedPackages);
+        Set<String> protectedPackages = new HashSet<>(savedPackages);
+        protectedPackages.addAll(REMOVAL_CONTROL_PACKAGES);
+        return protectedPackages;
     }
 
     static boolean isPackageProtected(Context context, String packageName) {
-        return !TextUtils.isEmpty(packageName) && getProtectedPackages(context).contains(packageName);
+        return !TextUtils.isEmpty(packageName)
+                && (isRemovalControlPackage(packageName) || getProtectedPackages(context).contains(packageName));
+    }
+
+    static boolean isRemovalControlPackage(String packageName) {
+        return !TextUtils.isEmpty(packageName) && REMOVAL_CONTROL_PACKAGES.contains(packageName);
     }
 
     static void setProtectedPackages(Context context, Set<String> packageNames) {
@@ -106,6 +121,8 @@ final class AuthStore {
 
         Set<String> protectedPackages = getProtectedPackages(context);
         if (protectedApp) {
+            protectedPackages.add(packageName);
+        } else if (isRemovalControlPackage(packageName)) {
             protectedPackages.add(packageName);
         } else {
             protectedPackages.remove(packageName);
