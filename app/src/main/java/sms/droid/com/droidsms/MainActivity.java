@@ -2,13 +2,13 @@ package sms.droid.com.droidsms;
 
 import android.Manifest;
 import android.app.admin.DevicePolicyManager;
-import android.content.res.ColorStateList;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ColorDrawable;
@@ -409,12 +409,24 @@ public class MainActivity extends AppCompatActivity {
         section.setBackgroundResource(R.drawable.settings_section_background);
         section.setPadding(dp(16), dp(16), dp(16), dp(8));
 
+        LinearLayout sectionHeader = new LinearLayout(this);
+        sectionHeader.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        sectionHeader.setOrientation(LinearLayout.HORIZONTAL);
+
         TextView title = new TextView(this);
         title.setText(titleRes);
         title.setTextColor(getColor(R.color.textPrimary));
         title.setTextSize(18);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        section.addView(title);
+        sectionHeader.addView(title, new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        ));
+
+        CheckBox selectAll = createSectionSelectAll(apps);
+        sectionHeader.addView(selectAll);
+        section.addView(sectionHeader);
 
         TextView summary = new TextView(this);
         summary.setText(summaryRes);
@@ -424,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         section.addView(summary);
 
         for (AppEntry app : apps) {
-            section.addView(createAppRow(app), new LinearLayout.LayoutParams(
+            section.addView(createAppRow(app, () -> updateSectionSelectAll(selectAll, apps)), new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             ));
@@ -434,6 +446,54 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
+    }
+
+    private CheckBox createSectionSelectAll(List<AppEntry> apps) {
+        CheckBox selectAll = new CheckBox(this);
+        selectAll.setText(R.string.select_all);
+        selectAll.setTextSize(13);
+        selectAll.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        selectAll.setButtonTintList(getSelectAllButtonTint());
+        selectAll.setMinHeight(0);
+        selectAll.setMinimumHeight(0);
+        selectAll.setPadding(dp(8), 0, 0, 0);
+        updateSectionSelectAll(selectAll, apps);
+        selectAll.setOnClickListener(view -> {
+            boolean checked = selectAll.isChecked();
+            for (AppEntry app : apps) {
+                AuthStore.setPackageProtected(this, app.packageName, checked);
+            }
+            populateInstalledApps();
+        });
+        return selectAll;
+    }
+
+    private void updateSectionSelectAll(CheckBox selectAll, List<AppEntry> apps) {
+        boolean checked = areAllAppsProtected(apps);
+        selectAll.setChecked(checked);
+        selectAll.setTextColor(getColor(checked ? R.color.settingsButton : R.color.textSecondary));
+        selectAll.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+    }
+
+    private boolean areAllAppsProtected(List<AppEntry> apps) {
+        for (AppEntry app : apps) {
+            if (!AuthStore.isPackageProtected(this, app.packageName)) {
+                return false;
+            }
+        }
+        return !apps.isEmpty();
+    }
+
+    private ColorStateList getSelectAllButtonTint() {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_checked},
+                new int[]{-android.R.attr.state_checked}
+        };
+        int[] colors = new int[]{
+                getColor(R.color.settingsButton),
+                getColor(R.color.textSecondary)
+        };
+        return new ColorStateList(states, colors);
     }
 
     private void addSectionDivider() {
@@ -447,20 +507,20 @@ public class MainActivity extends AppCompatActivity {
         listApps.addView(divider, params);
     }
 
-    private View createAppRow(AppEntry app) {
+    private View createAppRow(AppEntry app, Runnable onSelectionChanged) {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(android.view.Gravity.CENTER_VERTICAL);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, dp(10), 0, dp(10));
+        row.setPadding(0, dp(8), 0, dp(8));
 
         ImageView icon = new ImageView(this);
         icon.setImageDrawable(app.icon);
-        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(42), dp(42));
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(32), dp(32));
         row.addView(icon, iconParams);
 
         LinearLayout textColumn = new LinearLayout(this);
         textColumn.setOrientation(LinearLayout.VERTICAL);
-        textColumn.setPadding(dp(14), 0, dp(8), 0);
+        textColumn.setPadding(dp(12), 0, dp(8), 0);
 
         TextView label = new TextView(this);
         label.setText(app.label);
@@ -478,27 +538,19 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
         row.addView(textColumn, textParams);
 
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setButtonTintList(getCheckboxTint());
-        checkBox.setChecked(AuthStore.isPackageProtected(this, app.packageName));
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                AuthStore.setPackageProtected(this, app.packageName, isChecked));
-        row.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
-        row.addView(checkBox, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        SwitchCompat appSwitch = new SwitchCompat(this);
+        appSwitch.setThumbTintList(ContextCompat.getColorStateList(this, R.color.switch_thumb_tint));
+        appSwitch.setTrackTintList(ContextCompat.getColorStateList(this, R.color.switch_track_tint));
+        appSwitch.setShowText(false);
+        appSwitch.setChecked(AuthStore.isPackageProtected(this, app.packageName));
+        appSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AuthStore.setPackageProtected(this, app.packageName, isChecked);
+            onSelectionChanged.run();
+        });
+        row.setOnClickListener(view -> appSwitch.setChecked(!appSwitch.isChecked()));
+        row.addView(appSwitch, new LinearLayout.LayoutParams(dp(56), dp(48)));
 
         return row;
-    }
-
-    private ColorStateList getCheckboxTint() {
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_checked},
-                new int[]{-android.R.attr.state_checked}
-        };
-        int[] colors = new int[]{
-                getColor(R.color.settingsButton),
-                getColor(R.color.settingsCardStroke)
-        };
-        return new ColorStateList(states, colors);
     }
 
     private List<AppEntry> getLaunchableApps() {

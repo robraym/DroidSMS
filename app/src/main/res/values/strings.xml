@@ -36,6 +36,7 @@
     <string name="risk_moderate_summary">Redes sociais, navegadores, compras, trabalho e apps com dados pessoais.</string>
     <string name="risk_low_title">Outros apps</string>
     <string name="risk_low_summary">Apps com menor exposição de dados sensíveis.</string>
+    <string name="select_all">Todos</string>
     <string name="device_admin_card_title">Bloqueio de remoção</string>
     <string name="device_admin_card_summary">Impede remover o App Lock enquanto a proteção estiver ativa.</string>
     <string name="device_admin_card_summary_active">O bloqueio de remoção está ativo. Desative aqui antes de desinstalar o App Lock.</string>

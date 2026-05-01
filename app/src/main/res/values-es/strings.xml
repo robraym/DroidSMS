@@ -36,6 +36,7 @@
     <string name="risk_moderate_summary">Redes sociales, navegadores, compras, trabajo y apps con datos personales.</string>
     <string name="risk_low_title">Otras apps</string>
     <string name="risk_low_summary">Apps con menor exposición de datos sensibles.</string>
+    <string name="select_all">Todas</string>
     <string name="device_admin_card_title">Protección contra eliminación</string>
     <string name="device_admin_card_summary">Evita eliminar App Lock mientras la protección esté activa.</string>
     <string name="device_admin_card_summary_active">La protección contra eliminación está activa. Desactívala aquí antes de desinstalar App Lock.</string>
