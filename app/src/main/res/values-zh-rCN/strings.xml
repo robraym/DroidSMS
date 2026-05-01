@@ -36,7 +36,6 @@
     <string name="risk_moderate_summary">社交媒体、浏览器、购物、工作以及包含个人数据的应用。</string>
     <string name="risk_low_title">其他应用</string>
     <string name="risk_low_summary">敏感数据暴露较少的应用。</string>
-    <string name="select_all">全部</string>
     <string name="device_admin_card_title">卸载保护</string>
     <string name="device_admin_card_summary">在保护启用时防止移除 App Lock。</string>
     <string name="device_admin_card_summary_active">卸载保护已启用。卸载 App Lock 前请在此关闭。</string>

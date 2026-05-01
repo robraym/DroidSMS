@@ -36,7 +36,6 @@
     <string name="risk_moderate_summary">Soziale Netzwerke, Browser, Einkäufe, Arbeit und Apps mit persönlichen Daten.</string>
     <string name="risk_low_title">Andere Apps</string>
     <string name="risk_low_summary">Apps mit geringerer Offenlegung sensibler Daten.</string>
-    <string name="select_all">Alle</string>
     <string name="device_admin_card_title">Schutz vor Entfernung</string>
     <string name="device_admin_card_summary">Verhindert das Entfernen von App Lock, solange der Schutz aktiv ist.</string>
     <string name="device_admin_card_summary_active">Der Schutz vor Entfernung ist aktiv. Deaktivieren Sie ihn hier, bevor Sie App Lock deinstallieren.</string>

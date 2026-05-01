@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ColorDrawable;
@@ -19,7 +18,6 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -424,8 +422,8 @@ public class MainActivity extends AppCompatActivity {
                 1
         ));
 
-        CheckBox selectAll = createSectionSelectAll(apps);
-        sectionHeader.addView(selectAll);
+        SwitchCompat selectAll = createSectionSelectAll(apps);
+        sectionHeader.addView(selectAll, new LinearLayout.LayoutParams(dp(56), dp(48)));
         section.addView(sectionHeader);
 
         TextView summary = new TextView(this);
@@ -448,15 +446,11 @@ public class MainActivity extends AppCompatActivity {
         ));
     }
 
-    private CheckBox createSectionSelectAll(List<AppEntry> apps) {
-        CheckBox selectAll = new CheckBox(this);
-        selectAll.setText(R.string.select_all);
-        selectAll.setTextSize(13);
-        selectAll.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        selectAll.setButtonTintList(getSelectAllButtonTint());
-        selectAll.setMinHeight(0);
-        selectAll.setMinimumHeight(0);
-        selectAll.setPadding(dp(8), 0, 0, 0);
+    private SwitchCompat createSectionSelectAll(List<AppEntry> apps) {
+        SwitchCompat selectAll = new SwitchCompat(this);
+        selectAll.setThumbTintList(ContextCompat.getColorStateList(this, R.color.switch_thumb_tint));
+        selectAll.setTrackTintList(ContextCompat.getColorStateList(this, R.color.switch_track_tint));
+        selectAll.setShowText(false);
         updateSectionSelectAll(selectAll, apps);
         selectAll.setOnClickListener(view -> {
             boolean checked = selectAll.isChecked();
@@ -468,11 +462,8 @@ public class MainActivity extends AppCompatActivity {
         return selectAll;
     }
 
-    private void updateSectionSelectAll(CheckBox selectAll, List<AppEntry> apps) {
-        boolean checked = areAllAppsProtected(apps);
-        selectAll.setChecked(checked);
-        selectAll.setTextColor(getColor(checked ? R.color.settingsButton : R.color.textSecondary));
-        selectAll.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+    private void updateSectionSelectAll(SwitchCompat selectAll, List<AppEntry> apps) {
+        selectAll.setChecked(areAllAppsProtected(apps));
     }
 
     private boolean areAllAppsProtected(List<AppEntry> apps) {
@@ -482,18 +473,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return !apps.isEmpty();
-    }
-
-    private ColorStateList getSelectAllButtonTint() {
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_checked},
-                new int[]{-android.R.attr.state_checked}
-        };
-        int[] colors = new int[]{
-                getColor(R.color.settingsButton),
-                getColor(R.color.textSecondary)
-        };
-        return new ColorStateList(states, colors);
     }
 
     private void addSectionDivider() {

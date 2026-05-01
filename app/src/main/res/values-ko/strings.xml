@@ -36,7 +36,6 @@
     <string name="risk_moderate_summary">소셜 미디어, 브라우저, 쇼핑, 업무 및 개인 데이터가 있는 앱.</string>
     <string name="risk_low_title">기타 앱</string>
     <string name="risk_low_summary">민감한 데이터 노출이 적은 앱.</string>
-    <string name="select_all">전체</string>
     <string name="device_admin_card_title">제거 보호</string>
     <string name="device_admin_card_summary">보호가 켜져 있는 동안 App Lock 제거를 방지합니다.</string>
     <string name="device_admin_card_summary_active">제거 보호가 켜져 있습니다. App Lock을 제거하기 전에 여기서 해제하세요.</string>

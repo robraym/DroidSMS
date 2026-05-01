@@ -36,7 +36,6 @@
     <string name="risk_moderate_summary">SNS、ブラウザ、買い物、仕事、個人データを含むアプリ。</string>
     <string name="risk_low_title">その他のアプリ</string>
     <string name="risk_low_summary">機密データの露出が少ないアプリ。</string>
-    <string name="select_all">すべて</string>
     <string name="device_admin_card_title">削除保護</string>
     <string name="device_admin_card_summary">保護が有効な間、App Lock の削除を防ぎます。</string>
     <string name="device_admin_card_summary_active">削除保護は有効です。App Lock をアンインストールする前にここで無効にしてください。</string>
