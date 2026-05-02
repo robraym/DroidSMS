@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Protect apps</string>
-    <string name="accessibility_service_description">Locks selected apps with fingerprint or device password.</string>
+    <string name="accessibility_service_description">Used to detect when selected apps are opened and show the fingerprint or password lock.</string>
     <string name="device_admin_description">Prevents App Lock from being uninstalled until protection is disabled.</string>
     <string name="device_admin_disable_warning">If you disable this protection, App Lock can be uninstalled.</string>
     <string name="auth_title">Protected app</string>
@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">Disable removal protection?</string>
     <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove App Lock and open protected apps without going through it.</string>
     <string name="disable_device_admin_confirm_action">Disable</string>
+    <string name="accessibility_disclosure_title">Prominent disclosure</string>
+    <string name="accessibility_disclosure_message">App Lock needs to use the AccessibilityService API to detect when a protected app is opened and automatically show the fingerprint or password lock screen. Without this service, protection for the apps you choose cannot work. To do this, App Lock accesses window-change events and names of opened apps, including when App Lock is not in the foreground. App Lock does not read messages, passwords, typed text, or screen content, and does not share this data.</string>
+    <string name="accessibility_disclosure_checkbox">I have read this and agree to enable app protection.</string>
+    <string name="not_now">I do not agree</string>
+    <string name="agree">Agree and enable</string>
     <string name="cancel">Cancel</string>
     <string name="status_active">Active</string>
     <string name="status_inactive">Inactive</string>

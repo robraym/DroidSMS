@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteger apps</string>
-    <string name="accessibility_service_description">Bloqueia os aplicativos escolhidos com digital ou senha.</string>
+    <string name="accessibility_service_description">Usado para detectar a abertura dos apps escolhidos e mostrar o bloqueio com digital ou senha.</string>
     <string name="device_admin_description">Impede a desinstalação do App Lock sem desativar a proteção.</string>
     <string name="device_admin_disable_warning">Ao desativar esta proteção, o App Lock poderá ser desinstalado.</string>
     <string name="auth_title">Aplicativo protegido</string>
@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">Desativar bloqueio?</string>
     <string name="disable_device_admin_confirm_message">Sem esse bloqueio, qualquer pessoa com acesso ao aparelho poderá remover o App Lock e abrir os apps protegidos sem passar por ele.</string>
     <string name="disable_device_admin_confirm_action">Desativar</string>
+    <string name="accessibility_disclosure_title">Declaração em destaque</string>
+    <string name="accessibility_disclosure_message">O App Lock precisa usar a API AccessibilityService para detectar quando um aplicativo protegido é aberto e exibir automaticamente a tela de bloqueio com digital ou senha. Sem esse serviço, a proteção dos apps escolhidos não funciona. Para isso, o App Lock acessa eventos de troca de janela e nomes dos aplicativos abertos, inclusive quando o App Lock não está em primeiro plano. O App Lock não lê mensagens, senhas, textos digitados ou conteúdo da tela e não compartilha esses dados.</string>
+    <string name="accessibility_disclosure_checkbox">Li e concordo em ativar a proteção dos apps.</string>
+    <string name="not_now">Não concordo</string>
+    <string name="agree">Concordo e ativar</string>
     <string name="cancel">Cancelar</string>
     <string name="status_active">Ativo</string>
     <string name="status_inactive">Inativo</string>

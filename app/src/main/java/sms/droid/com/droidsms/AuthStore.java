@@ -18,6 +18,7 @@ final class AuthStore {
     private static final String KEY_TRUSTED_WIFI_SSID = "trusted_wifi_ssid";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
+    private static final String KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED = "accessibility_disclosure_accepted";
     private static final long UNLOCK_WINDOW_MS = 30 * 60 * 1000;
     private static final Set<String> DEFAULT_PROTECTED_PACKAGES = new HashSet<>(Arrays.asList(
             "com.google.android.apps.messaging",
@@ -85,6 +86,16 @@ final class AuthStore {
         prefs(context).edit()
                 .remove(KEY_UNLOCKED_PACKAGE)
                 .remove(KEY_UNLOCKED_UNTIL)
+                .apply();
+    }
+
+    static boolean hasAcceptedAccessibilityDisclosure(Context context) {
+        return prefs(context).getBoolean(KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED, false);
+    }
+
+    static void acceptAccessibilityDisclosure(Context context) {
+        prefs(context).edit()
+                .putBoolean(KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED, true)
                 .apply();
     }
 

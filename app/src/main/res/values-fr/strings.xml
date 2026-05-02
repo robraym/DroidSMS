@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">Désactiver la protection ?</string>
     <string name="disable_device_admin_confirm_message">Sans ce verrouillage, toute personne ayant accès à l’appareil pourra supprimer App Lock et ouvrir les apps protégées sans passer par lui.</string>
     <string name="disable_device_admin_confirm_action">Désactiver</string>
+    <string name="accessibility_disclosure_title">Utilisation de l’accessibilité</string>
+    <string name="accessibility_disclosure_message">App Lock utilise l’API d’accessibilité pour identifier l’application ouverte et afficher l’écran de verrouillage pour les apps que vous choisissez. App Lock accède aux événements de changement de fenêtre et aux noms des applications pour cette protection, y compris lorsque App Lock n’est pas ouvert. App Lock ne lit pas les messages, mots de passe ni texte saisi, et ne partage pas ces données.</string>
+    <string name="accessibility_disclosure_checkbox">J’ai lu ceci et j’accepte d’activer la protection des apps.</string>
+    <string name="not_now">Je n’accepte pas</string>
+    <string name="agree">Accepter et activer</string>
     <string name="cancel">Annuler</string>
     <string name="status_active">Actif</string>
     <string name="status_inactive">Inactif</string>

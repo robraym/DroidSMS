@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">Schutz deaktivieren?</string>
     <string name="disable_device_admin_confirm_message">Ohne diese Sperre kann jede Person mit Zugriff auf das Gerät App Lock entfernen und geschützte Apps ohne App Lock öffnen.</string>
     <string name="disable_device_admin_confirm_action">Deaktivieren</string>
+    <string name="accessibility_disclosure_title">Nutzung der Bedienungshilfen</string>
+    <string name="accessibility_disclosure_message">App Lock verwendet die Bedienungshilfen-API, um zu erkennen, welche App geöffnet ist, und den Sperrbildschirm für die von Ihnen ausgewählten Apps anzuzeigen. App Lock greift für diesen Schutz auf Fensterwechsel-Ereignisse und App-Namen zu, auch wenn App Lock nicht geöffnet ist. App Lock liest keine Nachrichten, Passwörter oder eingegebenen Texte und teilt diese Daten nicht.</string>
+    <string name="accessibility_disclosure_checkbox">Ich habe dies gelesen und stimme zu, den App-Schutz zu aktivieren.</string>
+    <string name="not_now">Ich stimme nicht zu</string>
+    <string name="agree">Zustimmen und aktivieren</string>
     <string name="cancel">Abbrechen</string>
     <string name="status_active">Aktiv</string>
     <string name="status_inactive">Inaktiv</string>

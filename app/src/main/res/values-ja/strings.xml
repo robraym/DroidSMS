@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">削除保護を無効にしますか？</string>
     <string name="disable_device_admin_confirm_message">このロックがないと、端末にアクセスできる人が App Lock を削除し、保護されたアプリを App Lock なしで開けるようになります。</string>
     <string name="disable_device_admin_confirm_action">無効にする</string>
+    <string name="accessibility_disclosure_title">ユーザー補助の使用</string>
+    <string name="accessibility_disclosure_message">App Lock はユーザー補助 API を使用して、開かれているアプリを識別し、選択したアプリにロック画面を表示します。この保護のために、App Lock が開いていない場合でも、ウィンドウ変更イベントとアプリ名にアクセスします。App Lock はメッセージ、パスワード、入力したテキストを読み取らず、このデータを共有しません。</string>
+    <string name="accessibility_disclosure_checkbox">内容を読み、アプリ保護を有効にすることに同意します。</string>
+    <string name="not_now">同意しない</string>
+    <string name="agree">同意して有効にする</string>
     <string name="cancel">キャンセル</string>
     <string name="status_active">有効</string>
     <string name="status_inactive">無効</string>

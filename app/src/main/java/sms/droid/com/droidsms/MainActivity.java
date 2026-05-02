@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -194,14 +195,14 @@ public class MainActivity extends AppCompatActivity {
 
         boolean shouldWarnProtectionDisabled = deviceLockReady && !accessibilityActive;
         cardProtectionDisabledWarning.setVisibility(shouldWarnProtectionDisabled ? View.VISIBLE : View.GONE);
-        btnReactivateProtection.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+        btnReactivateProtection.setOnClickListener(view -> openAccessibilitySettingsWithDisclosure());
 
         showTrustedWifiState();
 
         configureSwitch(switchAccessibility, accessibilityActive, deviceLockReady || accessibilityActive);
         switchAccessibility.setOnClickListener(view -> {
             if (deviceLockReady || accessibilityActive) {
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                openAccessibilitySettingsWithDisclosure();
             }
             switchAccessibility.setChecked(accessibilityActive);
         });
@@ -274,6 +275,49 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminComponent);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.device_admin_description));
         startActivity(intent);
+    }
+
+    private void openAccessibilitySettingsWithDisclosure() {
+        if (AuthStore.hasAcceptedAccessibilityDisclosure(this)) {
+            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_accessibility_disclosure, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
+        CheckBox consentCheckBox = dialogView.findViewById(R.id.chkAccessibilityConsent);
+        TextView btnAgree = dialogView.findViewById(R.id.btnAgreeAccessibilityDisclosure);
+        TextView btnNotNow = dialogView.findViewById(R.id.btnDeclineAccessibilityDisclosure);
+
+        btnAgree.setEnabled(false);
+        btnAgree.setAlpha(0.45f);
+        consentCheckBox.setOnCheckedChangeListener((buttonView, checked) -> {
+            btnAgree.setEnabled(checked);
+            btnAgree.setAlpha(checked ? 1f : 0.45f);
+        });
+
+        btnNotNow.setOnClickListener(view -> dialog.dismiss());
+        btnAgree.setOnClickListener(view -> {
+            if (!consentCheckBox.isChecked()) {
+                return;
+            }
+            AuthStore.acceptAccessibilityDisclosure(this);
+            dialog.dismiss();
+            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        });
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        dialog.show();
     }
 
     private void confirmDisableDeviceAdmin() {

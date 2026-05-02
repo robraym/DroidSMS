@@ -54,6 +54,11 @@
     <string name="disable_device_admin_confirm_title">关闭卸载保护？</string>
     <string name="disable_device_admin_confirm_message">没有此锁定，任何能使用此设备的人都可以移除 App Lock，并绕过它打开受保护的应用。</string>
     <string name="disable_device_admin_confirm_action">关闭</string>
+    <string name="accessibility_disclosure_title">无障碍使用说明</string>
+    <string name="accessibility_disclosure_message">App Lock 使用无障碍 API 来识别当前打开的应用，并为你选择的应用显示锁定界面。为了提供此保护，App Lock 会访问窗口切换事件和应用名称，包括 App Lock 未打开时。App Lock 不会读取消息、密码或输入的文字，也不会共享这些数据。</string>
+    <string name="accessibility_disclosure_checkbox">我已阅读并同意启用应用保护。</string>
+    <string name="not_now">不同意</string>
+    <string name="agree">同意并启用</string>
     <string name="cancel">取消</string>
     <string name="status_active">已启用</string>
     <string name="status_inactive">未启用</string>
