@@ -1,8 +1,11 @@
 package sms.droid.com.droidsms;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -16,6 +19,7 @@ import java.util.concurrent.Executor;
 
 public class GuardActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_PACKAGE = "sms.droid.com.droidsms.extra.TARGET_PACKAGE";
+    private static final String TAG = "AppLockGuard";
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
@@ -28,6 +32,12 @@ public class GuardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
         targetPackage = getIntent().getStringExtra(EXTRA_TARGET_PACKAGE);
+        if (TextUtils.isEmpty(targetPackage) || SystemPackages.shouldIgnoreAccessibilityEvent(this, targetPackage)) {
+            debug("guard finish invalid_target=" + targetPackage);
+            finish();
+            return;
+        }
+        debug("guard created target=" + targetPackage);
         protectBackground();
         setContentView(R.layout.activity_guard);
     }
@@ -43,6 +53,7 @@ public class GuardActivity extends AppCompatActivity {
 
     private void showBiometricPrompt() {
         if (!isBiometricReady()) {
+            debug("guard biometric_not_ready target=" + targetPackage);
             closeToHome();
             return;
         }
@@ -52,6 +63,7 @@ public class GuardActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
+                debug("guard auth_success target=" + targetPackage);
                 AuthStore.markUnlocked(GuardActivity.this, targetPackage);
                 finish();
             }
@@ -59,6 +71,7 @@ public class GuardActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
+                debug("guard auth_error target=" + targetPackage + " code=" + errorCode + " message=" + errString);
                 if (errorCode == BiometricPrompt.ERROR_CANCELED && !retriedAfterSystemCancel) {
                     retriedAfterSystemCancel = true;
                     promptShown = false;
@@ -108,5 +121,11 @@ public class GuardActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void debug(String message) {
+        if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            Log.d(TAG, message);
+        }
     }
 }

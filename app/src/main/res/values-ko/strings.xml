@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">제거 보호가 꺼졌습니다.</string>
     <string name="accessibility_card_title">앱 보호</string>
     <string name="accessibility_card_summary">보호된 앱이 열릴 때 감지하고 지문 또는 비밀번호를 요청합니다.</string>
-    <string name="accessibility_card_summary_active">앱 보호가 켜져 있습니다. 끄려면 접근성 설정을 여세요.</string>
+    <string name="accessibility_card_summary_active">켜짐. 선택한 앱은 지문 또는 비밀번호로 보호됩니다.</string>
+    <string name="accessibility_card_summary_inactive">꺼짐. 선택한 앱은 잠기지 않습니다.</string>
     <string name="app_selection_title">보호된 앱</string>
     <string name="app_selection_summary">열 때 지문을 요구할 앱을 선택하세요.</string>
     <string name="risk_high_title">필수</string>

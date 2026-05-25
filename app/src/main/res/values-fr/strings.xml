@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Protection contre la suppression désactivée.</string>
     <string name="accessibility_card_title">Protection des apps</string>
     <string name="accessibility_card_summary">Permet de détecter l’ouverture d’une app protégée et de demander une empreinte ou un mot de passe.</string>
-    <string name="accessibility_card_summary_active">La protection des apps est active. Pour la désactiver, ouvrez les paramètres d’accessibilité.</string>
+    <string name="accessibility_card_summary_active">Activée. Les apps sélectionnées sont protégées par empreinte ou mot de passe.</string>
+    <string name="accessibility_card_summary_inactive">Désactivée. Les apps sélectionnées ne sont pas verrouillées.</string>
     <string name="app_selection_title">Apps protégées</string>
     <string name="app_selection_summary">Choisissez les apps qui doivent demander une empreinte à l’ouverture.</string>
     <string name="risk_high_title">Essentielles</string>

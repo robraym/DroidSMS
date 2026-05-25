@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">卸载保护已关闭。</string>
     <string name="accessibility_card_title">应用保护</string>
     <string name="accessibility_card_summary">检测受保护应用何时打开，并要求指纹或密码。</string>
-    <string name="accessibility_card_summary_active">应用保护已启用。若要关闭，请打开无障碍设置。</string>
+    <string name="accessibility_card_summary_active">已开启。所选应用受指纹或密码保护。</string>
+    <string name="accessibility_card_summary_inactive">已关闭。所选应用不会被锁定。</string>
     <string name="app_selection_title">受保护的应用</string>
     <string name="app_selection_summary">选择打开时需要指纹的应用。</string>
     <string name="risk_high_title">重要应用</string>

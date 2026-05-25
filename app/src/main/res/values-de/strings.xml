@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Schutz vor Entfernung deaktiviert.</string>
     <string name="accessibility_card_title">App-Schutz</string>
     <string name="accessibility_card_summary">Erkennt, wenn eine geschützte App geöffnet wird, und fordert Fingerabdruck oder Passwort an.</string>
-    <string name="accessibility_card_summary_active">Der App-Schutz ist aktiv. Öffnen Sie die Bedienungshilfen, um ihn zu deaktivieren.</string>
+    <string name="accessibility_card_summary_active">Aktiv. Ausgewählte Apps sind per Fingerabdruck oder Passwort geschützt.</string>
+    <string name="accessibility_card_summary_inactive">Deaktiviert. Ausgewählte Apps werden nicht gesperrt.</string>
     <string name="app_selection_title">Geschützte Apps</string>
     <string name="app_selection_summary">Wählen Sie aus, welche Apps beim Öffnen einen Fingerabdruck verlangen.</string>
     <string name="risk_high_title">Wichtig</string>

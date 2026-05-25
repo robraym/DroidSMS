@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             "com.android.vending",
             "com.android.settings",
             "com.samsung.android.app.settings",
+            "com.samsung.android.settings",
             "com.google.android.packageinstaller",
             "com.android.packageinstaller",
             "com.samsung.android.packageinstaller"
@@ -85,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtTitle;
     private TextView txtSubtitle;
     private LinearLayout cardDeviceLockWarning;
-    private LinearLayout cardProtectionDisabledWarning;
     private LinearLayout listApps;
     private TextView btnDeviceLockSettings;
-    private TextView btnReactivateProtection;
+    private TextView txtAccessibilitySummary;
+    private TextView txtDeviceAdminSummary;
     private TextView txtTrustedWifiSummary;
     private TextView btnTrustedWifi;
     private SwitchCompat switchAccessibility;
@@ -172,10 +174,10 @@ public class MainActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
         cardDeviceLockWarning = findViewById(R.id.cardDeviceLockWarning);
-        cardProtectionDisabledWarning = findViewById(R.id.cardProtectionDisabledWarning);
         listApps = findViewById(R.id.listApps);
         btnDeviceLockSettings = findViewById(R.id.btnDeviceLockSettings);
-        btnReactivateProtection = findViewById(R.id.btnReactivateProtection);
+        txtAccessibilitySummary = findViewById(R.id.txtAccessibilitySummary);
+        txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
         txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
         btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
         switchAccessibility = findViewById(R.id.switchAccessibility);
@@ -193,11 +195,8 @@ public class MainActivity extends AppCompatActivity {
         cardDeviceLockWarning.setVisibility(deviceLockReady ? View.GONE : View.VISIBLE);
         btnDeviceLockSettings.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS)));
 
-        boolean shouldWarnProtectionDisabled = deviceLockReady && !accessibilityActive;
-        cardProtectionDisabledWarning.setVisibility(shouldWarnProtectionDisabled ? View.VISIBLE : View.GONE);
-        btnReactivateProtection.setOnClickListener(view -> openAccessibilitySettingsWithDisclosure());
-
         showTrustedWifiState();
+        showSecuritySummaries(accessibilityActive, deviceAdminActive);
 
         configureSwitch(switchAccessibility, accessibilityActive, deviceLockReady || accessibilityActive);
         switchAccessibility.setOnClickListener(view -> {
@@ -223,6 +222,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         notifyProtectionStateChanges(accessibilityActive, deviceAdminActive);
+    }
+
+    private void showSecuritySummaries(boolean accessibilityActive, boolean deviceAdminActive) {
+        txtAccessibilitySummary.setText(accessibilityActive
+                ? R.string.accessibility_card_summary_active
+                : R.string.accessibility_card_summary_inactive);
+        txtDeviceAdminSummary.setText(deviceAdminActive
+                ? R.string.device_admin_card_summary_active
+                : R.string.device_admin_card_summary);
     }
 
     private void showTrustedWifiState() {
@@ -568,16 +576,16 @@ public class MainActivity extends AppCompatActivity {
         appSwitch.setThumbTintList(ContextCompat.getColorStateList(this, R.color.switch_thumb_tint));
         appSwitch.setTrackTintList(ContextCompat.getColorStateList(this, R.color.switch_track_tint));
         appSwitch.setShowText(false);
-        boolean removalControlPackage = AuthStore.isRemovalControlPackage(app.packageName);
+        boolean removalOnlyPackage = AuthStore.isRemovalOnlyPackage(app.packageName);
         appSwitch.setChecked(AuthStore.isPackageProtected(this, app.packageName));
-        appSwitch.setEnabled(!removalControlPackage);
-        appSwitch.setAlpha(removalControlPackage ? 0.65f : 1f);
+        appSwitch.setEnabled(!removalOnlyPackage);
+        appSwitch.setAlpha(removalOnlyPackage ? 0.65f : 1f);
         appSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             AuthStore.setPackageProtected(this, app.packageName, isChecked);
             onSelectionChanged.run();
         });
         row.setOnClickListener(view -> {
-            if (!removalControlPackage) {
+            if (!removalOnlyPackage) {
                 appSwitch.setChecked(!appSwitch.isChecked());
             }
         });
@@ -593,10 +601,13 @@ public class MainActivity extends AppCompatActivity {
 
         List<ResolveInfo> resolveInfos = packageManager.queryIntentActivities(intent, 0);
         Map<String, AppEntry> appsByPackage = new HashMap<>();
+        Set<String> nonProtectablePackages = SystemPackages.getNonProtectablePackages(this);
 
         for (ResolveInfo resolveInfo : resolveInfos) {
             String packageName = resolveInfo.activityInfo.packageName;
-            if (getPackageName().equals(packageName) || appsByPackage.containsKey(packageName)) {
+            if (getPackageName().equals(packageName)
+                    || appsByPackage.containsKey(packageName)
+                    || shouldSkipFromProtectedList(nonProtectablePackages, packageName)) {
                 continue;
             }
 
@@ -616,7 +627,8 @@ public class MainActivity extends AppCompatActivity {
             ));
         }
 
-        addImportantInstalledApps(packageManager, appsByPackage);
+        addSettingsApp(packageManager, appsByPackage, nonProtectablePackages);
+        addImportantInstalledApps(packageManager, appsByPackage, nonProtectablePackages);
 
         List<AppEntry> apps = new ArrayList<>(appsByPackage.values());
         Collections.sort(apps, (first, second) ->
@@ -624,9 +636,12 @@ public class MainActivity extends AppCompatActivity {
         return apps;
     }
 
-    private void addImportantInstalledApps(PackageManager packageManager, Map<String, AppEntry> appsByPackage) {
+    private void addImportantInstalledApps(PackageManager packageManager, Map<String, AppEntry> appsByPackage,
+                                           Set<String> nonProtectablePackages) {
         for (String packageName : IMPORTANT_APP_PACKAGES) {
-            if (getPackageName().equals(packageName) || appsByPackage.containsKey(packageName)) {
+            if (getPackageName().equals(packageName)
+                    || appsByPackage.containsKey(packageName)
+                    || shouldSkipFromProtectedList(nonProtectablePackages, packageName)) {
                 continue;
             }
 
@@ -649,6 +664,37 @@ public class MainActivity extends AppCompatActivity {
                 // App is not installed or not visible on this device.
             }
         }
+    }
+
+    private void addSettingsApp(PackageManager packageManager, Map<String, AppEntry> appsByPackage,
+                                Set<String> nonProtectablePackages) {
+        Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+        ResolveInfo resolveInfo = packageManager.resolveActivity(settingsIntent, 0);
+        if (resolveInfo == null || resolveInfo.activityInfo == null) {
+            return;
+        }
+
+        String packageName = resolveInfo.activityInfo.packageName;
+        if (getPackageName().equals(packageName)
+                || appsByPackage.containsKey(packageName)
+                || AuthStore.isRemovalOnlyPackage(packageName)) {
+            return;
+        }
+
+        CharSequence label = resolveInfo.loadLabel(packageManager);
+        String appLabel = label == null ? packageName : label.toString();
+        Drawable icon = resolveInfo.loadIcon(packageManager);
+        appsByPackage.put(packageName, new AppEntry(
+                appLabel,
+                packageName,
+                icon,
+                RISK_HIGH
+        ));
+    }
+
+    private boolean shouldSkipFromProtectedList(Set<String> nonProtectablePackages, String packageName) {
+        return AuthStore.isRemovalOnlyPackage(packageName)
+                || (nonProtectablePackages.contains(packageName) && !SystemPackages.isSettingsPackage(packageName));
     }
 
     private int getRiskLevel(String packageName, String label) {

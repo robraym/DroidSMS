@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Protezione rimozione disattivata.</string>
     <string name="accessibility_card_title">Protezione app</string>
     <string name="accessibility_card_summary">Permette di rilevare quando viene aperta un’app protetta e richiedere impronta o password.</string>
-    <string name="accessibility_card_summary_active">La protezione app è attiva. Per disattivarla, apri le impostazioni di accessibilità.</string>
+    <string name="accessibility_card_summary_active">Attiva. Le app selezionate sono protette da impronta o password.</string>
+    <string name="accessibility_card_summary_inactive">Disattivata. Le app selezionate non vengono bloccate.</string>
     <string name="app_selection_title">App protette</string>
     <string name="app_selection_summary">Scegli quali app devono richiedere l’impronta all’apertura.</string>
     <string name="risk_high_title">Essenziali</string>

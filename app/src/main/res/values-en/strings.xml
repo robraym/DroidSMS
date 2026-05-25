@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Protect apps</string>
     <string name="accessibility_service_description">Used to detect when selected apps are opened and show the fingerprint or password lock.</string>
-    <string name="device_admin_description">Prevents App Lock from being uninstalled until protection is disabled.</string>
+    <string name="device_admin_description">Requests fingerprint before apps are uninstalled and prevents App Lock removal until protection is disabled.</string>
     <string name="device_admin_disable_warning">If you disable this protection, App Lock can be uninstalled.</string>
     <string name="auth_title">Protected app</string>
     <string name="auth_subtitle_create">Create a password to protect your apps.</string>
@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Removal protection turned off.</string>
     <string name="accessibility_card_title">App protection</string>
     <string name="accessibility_card_summary">Allows App Lock to detect when a protected app is opened and request fingerprint or password.</string>
-    <string name="accessibility_card_summary_active">App protection is active. To turn it off, open accessibility settings.</string>
+    <string name="accessibility_card_summary_active">On. Selected apps are protected by fingerprint or password.</string>
+    <string name="accessibility_card_summary_inactive">Off. Selected apps are not being locked.</string>
     <string name="app_selection_title">Protected apps</string>
     <string name="app_selection_summary">Choose which apps should require fingerprint when opened.</string>
     <string name="risk_high_title">Essentials</string>
@@ -36,9 +37,9 @@
     <string name="risk_moderate_summary">Social media, browsers, shopping, work, and apps with personal data.</string>
     <string name="risk_low_title">Other apps</string>
     <string name="risk_low_summary">Apps with lower exposure of sensitive data.</string>
-    <string name="device_admin_card_title">Removal protection</string>
-    <string name="device_admin_card_summary">Prevents App Lock from being removed while protection is active.</string>
-    <string name="device_admin_card_summary_active">Removal protection is active. Disable it here before uninstalling App Lock.</string>
+    <string name="device_admin_card_title">Uninstall protection</string>
+    <string name="device_admin_card_summary">Require fingerprint before apps are removed from the device.</string>
+    <string name="device_admin_card_summary_active">On. App uninstall requires fingerprint; to remove App Lock, turn this off first.</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm password</string>
     <string name="save_password">Save password</string>
@@ -52,7 +53,7 @@
     <string name="open_device_admin">Protect uninstall</string>
     <string name="disable_device_admin">Disable lock</string>
     <string name="disable_device_admin_confirm_title">Disable removal protection?</string>
-    <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove App Lock and open protected apps without going through it.</string>
+    <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove apps and uninstall App Lock without going through it.</string>
     <string name="disable_device_admin_confirm_action">Disable</string>
     <string name="accessibility_disclosure_title">Prominent disclosure</string>
     <string name="accessibility_disclosure_message">App Lock needs to use the AccessibilityService API to detect when a protected app is opened and automatically show the fingerprint or password lock screen. Without this service, protection for the apps you choose cannot work. To do this, App Lock accesses window-change events and names of opened apps, including when App Lock is not in the foreground. App Lock does not read messages, passwords, typed text, or screen content, and does not share this data.</string>

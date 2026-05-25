@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Protección contra eliminación desactivada.</string>
     <string name="accessibility_card_title">Protección de apps</string>
     <string name="accessibility_card_summary">Permite detectar cuando se abre una app protegida y pedir huella o contraseña.</string>
-    <string name="accessibility_card_summary_active">La protección de apps está activa. Para desactivarla, abre los ajustes de accesibilidad.</string>
+    <string name="accessibility_card_summary_active">Activada. Las apps seleccionadas están protegidas con huella o contraseña.</string>
+    <string name="accessibility_card_summary_inactive">Desactivada. Las apps seleccionadas no se están bloqueando.</string>
     <string name="app_selection_title">Apps protegidas</string>
     <string name="app_selection_summary">Elige qué apps deben pedir huella al abrirse.</string>
     <string name="risk_high_title">Esenciales</string>

@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteger apps</string>
     <string name="accessibility_service_description">Usado para detectar a abertura dos apps escolhidos e mostrar o bloqueio com digital ou senha.</string>
-    <string name="device_admin_description">Impede a desinstalação do App Lock sem desativar a proteção.</string>
+    <string name="device_admin_description">Pede digital antes de desinstalar apps e impede remover o App Lock sem desativar a proteção.</string>
     <string name="device_admin_disable_warning">Ao desativar esta proteção, o App Lock poderá ser desinstalado.</string>
     <string name="auth_title">Aplicativo protegido</string>
     <string name="auth_subtitle_create">Crie uma senha para proteger seus aplicativos.</string>
@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">Bloqueio de remoção desativado.</string>
     <string name="accessibility_card_title">Proteção dos apps</string>
     <string name="accessibility_card_summary">Permite detectar quando um app protegido for aberto e pedir digital ou senha.</string>
-    <string name="accessibility_card_summary_active">A proteção dos apps está ativa. Para desativar, abra as configurações de acessibilidade.</string>
+    <string name="accessibility_card_summary_active">Ativa. Os apps escolhidos estão protegidos por digital ou senha.</string>
+    <string name="accessibility_card_summary_inactive">Desativada. Os apps escolhidos não estão sendo bloqueados.</string>
     <string name="app_selection_title">Aplicativos protegidos</string>
     <string name="app_selection_summary">Escolha quais aplicativos devem pedir digital ao abrir.</string>
     <string name="risk_high_title">Essenciais</string>
@@ -36,9 +37,9 @@
     <string name="risk_moderate_summary">Redes sociais, navegadores, compras, trabalho e apps com dados pessoais.</string>
     <string name="risk_low_title">Outros apps</string>
     <string name="risk_low_summary">Apps com menor exposição de dados sensíveis.</string>
-    <string name="device_admin_card_title">Bloqueio de remoção</string>
-    <string name="device_admin_card_summary">Impede remover o App Lock enquanto a proteção estiver ativa.</string>
-    <string name="device_admin_card_summary_active">O bloqueio de remoção está ativo. Desative aqui antes de desinstalar o App Lock.</string>
+    <string name="device_admin_card_title">Bloqueio de desinstalação</string>
+    <string name="device_admin_card_summary">Peça digital antes de remover apps do aparelho.</string>
+    <string name="device_admin_card_summary_active">Ativo. A desinstalação de apps exige digital; para remover o App Lock, desative aqui primeiro.</string>
     <string name="password_hint">Senha</string>
     <string name="confirm_password_hint">Confirmar senha</string>
     <string name="save_password">Salvar senha</string>
@@ -52,7 +53,7 @@
     <string name="open_device_admin">Proteger desinstalação</string>
     <string name="disable_device_admin">Desativar bloqueio</string>
     <string name="disable_device_admin_confirm_title">Desativar bloqueio?</string>
-    <string name="disable_device_admin_confirm_message">Sem esse bloqueio, qualquer pessoa com acesso ao aparelho poderá remover o App Lock e abrir os apps protegidos sem passar por ele.</string>
+    <string name="disable_device_admin_confirm_message">Sem esse bloqueio, qualquer pessoa com acesso ao aparelho poderá remover apps e desinstalar o App Lock sem passar por ele.</string>
     <string name="disable_device_admin_confirm_action">Desativar</string>
     <string name="accessibility_disclosure_title">Declaração em destaque</string>
     <string name="accessibility_disclosure_message">O App Lock precisa usar a API AccessibilityService para detectar quando um aplicativo protegido é aberto e exibir automaticamente a tela de bloqueio com digital ou senha. Sem esse serviço, a proteção dos apps escolhidos não funciona. Para isso, o App Lock acessa eventos de troca de janela e nomes dos aplicativos abertos, inclusive quando o App Lock não está em primeiro plano. O App Lock não lê mensagens, senhas, textos digitados ou conteúdo da tela e não compartilha esses dados.</string>

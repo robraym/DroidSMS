@@ -12,6 +12,15 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
 
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+
+        <intent>
+            <action android:name="android.settings.SETTINGS" />
+        </intent>
+
         <package android:name="com.google.android.gm" />
         <package android:name="com.google.android.apps.photos" />
         <package android:name="com.google.android.apps.docs" />
@@ -41,6 +50,7 @@
         <package android:name="com.android.vending" />
         <package android:name="com.android.settings" />
         <package android:name="com.samsung.android.app.settings" />
+        <package android:name="com.samsung.android.settings" />
     </queries>
 
     <application

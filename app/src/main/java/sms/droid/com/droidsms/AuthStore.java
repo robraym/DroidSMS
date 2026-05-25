@@ -1,5 +1,7 @@
 package sms.droid.com.droidsms;
 
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -27,18 +29,37 @@ final class AuthStore {
             "com.android.messaging",
             "com.android.settings",
             "com.samsung.android.app.settings",
+            "com.samsung.android.settings",
             "com.google.android.gm",
             "com.samsung.android.email.provider",
             "com.android.email",
             "com.google.android.email"
     ));
-    private static final Set<String> REMOVAL_CONTROL_PACKAGES = new HashSet<>(Arrays.asList(
+    private static final Set<String> SETTINGS_PACKAGES = new HashSet<>(Arrays.asList(
             "com.android.settings",
             "com.samsung.android.app.settings",
+            "com.samsung.android.settings"
+    ));
+    private static final Set<String> REMOVAL_CONTROL_PACKAGES = new HashSet<>(Arrays.asList(
             "com.android.vending",
             "com.google.android.packageinstaller",
             "com.android.packageinstaller",
-            "com.samsung.android.packageinstaller"
+            "com.samsung.android.packageinstaller",
+            "com.miui.packageinstaller",
+            "com.coloros.packageinstaller",
+            "com.oplus.packageinstaller",
+            "com.huawei.android.packageinstaller",
+            "com.vivo.packageinstaller"
+    ));
+    private static final Set<String> REMOVAL_ONLY_PACKAGES = new HashSet<>(Arrays.asList(
+            "com.google.android.packageinstaller",
+            "com.android.packageinstaller",
+            "com.samsung.android.packageinstaller",
+            "com.miui.packageinstaller",
+            "com.coloros.packageinstaller",
+            "com.oplus.packageinstaller",
+            "com.huawei.android.packageinstaller",
+            "com.vivo.packageinstaller"
     ));
 
     private AuthStore() {
@@ -79,7 +100,15 @@ final class AuthStore {
         SharedPreferences preferences = prefs(context);
         String unlockedPackage = preferences.getString(KEY_UNLOCKED_PACKAGE, "");
         long unlockedUntil = preferences.getLong(KEY_UNLOCKED_UNTIL, 0);
-        return TextUtils.equals(unlockedPackage, packageName) && System.currentTimeMillis() < unlockedUntil;
+        if (System.currentTimeMillis() >= unlockedUntil) {
+            return false;
+        }
+
+        if (TextUtils.equals(unlockedPackage, packageName)) {
+            return true;
+        }
+
+        return isRemovalControlPackage(unlockedPackage) && isRemovalControlPackage(packageName);
     }
 
     static void clearUnlock(Context context) {
@@ -105,23 +134,46 @@ final class AuthStore {
         if (savedPackages == null) {
             return new HashSet<>(DEFAULT_PROTECTED_PACKAGES);
         }
-        Set<String> protectedPackages = new HashSet<>(savedPackages);
-        protectedPackages.addAll(REMOVAL_CONTROL_PACKAGES);
+        Set<String> protectedPackages = filterVisibleProtectedPackages(context, savedPackages);
+        if (isRemovalControlActive(context)) {
+            protectedPackages.addAll(REMOVAL_CONTROL_PACKAGES);
+        }
         return protectedPackages;
     }
 
     static boolean isPackageProtected(Context context, String packageName) {
+        if (SystemPackages.isSettingsPackage(packageName)) {
+            Set<String> protectedPackages = getProtectedPackages(context);
+            for (String settingsPackage : SETTINGS_PACKAGES) {
+                if (protectedPackages.contains(settingsPackage)) {
+                    return true;
+                }
+            }
+        }
+
         return !TextUtils.isEmpty(packageName)
-                && (isRemovalControlPackage(packageName) || getProtectedPackages(context).contains(packageName));
+                && ((isRemovalControlPackage(packageName) && isRemovalControlActive(context))
+                || getProtectedPackages(context).contains(packageName));
     }
 
     static boolean isRemovalControlPackage(String packageName) {
         return !TextUtils.isEmpty(packageName) && REMOVAL_CONTROL_PACKAGES.contains(packageName);
     }
 
+    static boolean isRemovalOnlyPackage(String packageName) {
+        return !TextUtils.isEmpty(packageName) && REMOVAL_ONLY_PACKAGES.contains(packageName);
+    }
+
+    static boolean isRemovalControlActive(Context context) {
+        DevicePolicyManager devicePolicyManager =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName componentName = new ComponentName(context, SmsLockDeviceAdminReceiver.class);
+        return devicePolicyManager != null && devicePolicyManager.isAdminActive(componentName);
+    }
+
     static void setProtectedPackages(Context context, Set<String> packageNames) {
         prefs(context).edit()
-                .putStringSet(KEY_PROTECTED_PACKAGES, new HashSet<>(packageNames))
+                .putStringSet(KEY_PROTECTED_PACKAGES, filterVisibleProtectedPackages(context, packageNames))
                 .apply();
     }
 
@@ -131,9 +183,17 @@ final class AuthStore {
         }
 
         Set<String> protectedPackages = getProtectedPackages(context);
-        if (protectedApp) {
+        if (SystemPackages.isSettingsPackage(packageName)) {
+            if (protectedApp) {
+                protectedPackages.addAll(SETTINGS_PACKAGES);
+            } else {
+                protectedPackages.removeAll(SETTINGS_PACKAGES);
+            }
+        } else if (isRemovalOnlyPackage(packageName) && !isRemovalControlActive(context)) {
+            protectedPackages.remove(packageName);
+        } else if (protectedApp) {
             protectedPackages.add(packageName);
-        } else if (isRemovalControlPackage(packageName)) {
+        } else if (isRemovalOnlyPackage(packageName) && isRemovalControlActive(context)) {
             protectedPackages.add(packageName);
         } else {
             protectedPackages.remove(packageName);
@@ -142,6 +202,17 @@ final class AuthStore {
         prefs(context).edit()
                 .putStringSet(KEY_PROTECTED_PACKAGES, protectedPackages)
                 .apply();
+    }
+
+    private static Set<String> filterVisibleProtectedPackages(Context context, Set<String> packageNames) {
+        Set<String> filteredPackages = new HashSet<>();
+        boolean removalControlActive = isRemovalControlActive(context);
+        for (String packageName : packageNames) {
+            if (!isRemovalOnlyPackage(packageName) || removalControlActive) {
+                filteredPackages.add(packageName);
+            }
+        }
+        return filteredPackages;
     }
 
     static String getTrustedWifiSsid(Context context) {

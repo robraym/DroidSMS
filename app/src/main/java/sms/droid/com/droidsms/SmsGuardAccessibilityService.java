@@ -2,13 +2,16 @@ package sms.droid.com.droidsms;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import androidx.biometric.BiometricManager;
 
 public class SmsGuardAccessibilityService extends AccessibilityService {
+    private static final String TAG = "AppLockGuard";
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private String lastPackageName = "";
@@ -18,6 +21,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        debug("service connected");
         Toast.makeText(this, R.string.app_protection_enabled_message, Toast.LENGTH_SHORT).show();
     }
 
@@ -33,7 +37,23 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         String packageName = packageNameValue.toString();
+        if (SystemPackages.isHomeOrLauncherSurface(this, packageName)) {
+            debug("event package=" + packageName + " decision=home_launcher clear_unlock");
+            AuthStore.clearUnlock(this);
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            lastPackageName = packageName;
+            return;
+        }
+
+        if (SystemPackages.shouldIgnoreAccessibilityEvent(this, packageName)) {
+            debug("event package=" + packageName + " decision=ignored_system");
+            lastPackageName = packageName;
+            return;
+        }
+
         if (!isBiometricReady()) {
+            debug("event package=" + packageName + " decision=biometric_not_ready");
             AuthStore.clearUnlock(this);
             lastPackageName = packageName;
             lastPromptPackageName = "";
@@ -42,6 +62,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         if (TrustedWifi.isCurrentWifiTrusted(this) && !AuthStore.isRemovalControlPackage(packageName)) {
+            debug("event package=" + packageName + " decision=trusted_wifi_skip");
             lastPackageName = packageName;
             lastPromptPackageName = "";
             lastPromptAt = 0;
@@ -51,7 +72,8 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         boolean protectedPackage = AuthStore.isPackageProtected(this, packageName);
 
         if (!protectedPackage) {
-            if (!isNeutralSystemPackage(packageName)) {
+            debug("event package=" + packageName + " decision=not_protected");
+            if (!SystemPackages.isNeutralSystemPackage(this, packageName)) {
                 AuthStore.clearUnlock(this);
                 lastPromptPackageName = "";
                 lastPromptAt = 0;
@@ -61,12 +83,14 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         if (AuthStore.isUnlocked(this, packageName)) {
+            debug("event package=" + packageName + " decision=already_unlocked");
             lastPackageName = packageName;
             return;
         }
 
         long now = System.currentTimeMillis();
         if (TextUtils.equals(lastPromptPackageName, packageName) && now - lastPromptAt < 2500) {
+            debug("event package=" + packageName + " decision=debounced");
             return;
         }
 
@@ -77,6 +101,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         Intent intent = new Intent(this, GuardActivity.class);
         intent.putExtra(GuardActivity.EXTRA_TARGET_PACKAGE, packageName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        debug("event package=" + packageName + " decision=start_guard");
         startActivity(intent);
     }
 
@@ -94,13 +119,10 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         return !TextUtils.isEmpty(packageName);
     }
 
-    private boolean isNeutralSystemPackage(String packageName) {
-        return TextUtils.equals(packageName, getPackageName())
-                || TextUtils.equals(packageName, "android")
-                || TextUtils.equals(packageName, "com.android.systemui")
-                || TextUtils.equals(packageName, "com.samsung.android.biometrics.app.setting")
-                || TextUtils.equals(packageName, "com.google.android.permissioncontroller")
-                || TextUtils.equals(packageName, "com.android.permissioncontroller");
+    private void debug(String message) {
+        if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            Log.d(TAG, message);
+        }
     }
 
     private boolean isBiometricReady() {

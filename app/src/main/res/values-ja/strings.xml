@@ -27,7 +27,8 @@
     <string name="removal_protection_disabled_message">削除保護をオフにしました。</string>
     <string name="accessibility_card_title">アプリ保護</string>
     <string name="accessibility_card_summary">保護されたアプリが開かれたときに検出し、指紋またはパスワードを要求します。</string>
-    <string name="accessibility_card_summary_active">アプリ保護は有効です。無効にするにはユーザー補助設定を開いてください。</string>
+    <string name="accessibility_card_summary_active">有効。選択したアプリは指紋またはパスワードで保護されています。</string>
+    <string name="accessibility_card_summary_inactive">無効。選択したアプリはロックされていません。</string>
     <string name="app_selection_title">保護されたアプリ</string>
     <string name="app_selection_summary">開くときに指紋を要求するアプリを選択します。</string>
     <string name="risk_high_title">重要</string>
