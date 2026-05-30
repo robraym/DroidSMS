@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">Nenhum Wi-Fi confiável configurado.</string>
     <string name="trusted_wifi_configured">Não pedir senha em: %1$s</string>
     <string name="trusted_wifi_use_current">Usar atual</string>
+    <string name="trusted_wifi_manage">Gerenciar</string>
+    <string name="trusted_wifi_manage_message">Adicione até 5 redes confiáveis. Em redes mesh, todos os pontos com o mesmo nome são reconhecidos automaticamente.</string>
+    <string name="trusted_wifi_add_current">Adicionar rede atual</string>
     <string name="trusted_wifi_remove">Remover</string>
     <string name="trusted_wifi_unavailable">Conecte-se a um Wi-Fi e permita a localização para usar esta função.</string>
     <string name="trusted_wifi_saved">Wi-Fi confiável salvo: %1$s</string>
+    <string name="trusted_wifi_removed">Wi-Fi confiável removido: %1$s</string>
+    <string name="trusted_wifi_already_saved">Esta rede já está na lista de Wi-Fi confiável.</string>
+    <string name="trusted_wifi_limit_reached">Você pode incluir até 5 redes Wi-Fi confiáveis.</string>
     <string name="app_protection_enabled_message">Proteção dos apps ativada.</string>
     <string name="app_protection_disabled_message">Proteção dos apps desativada.</string>
     <string name="removal_protection_enabled_message">Bloqueio de remoção ativado.</string>
@@ -61,6 +67,7 @@
     <string name="not_now">Não concordo</string>
     <string name="agree">Concordo e ativar</string>
     <string name="cancel">Cancelar</string>
+    <string name="close">Fechar</string>
     <string name="status_active">Ativo</string>
     <string name="status_inactive">Inativo</string>
     <string name="device_admin_active">Desinstalação protegida</string>

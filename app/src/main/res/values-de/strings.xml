@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">Kein vertrauenswürdiges WLAN konfiguriert.</string>
     <string name="trusted_wifi_configured">Kein Passwort erforderlich bei: %1$s</string>
     <string name="trusted_wifi_use_current">Aktuelles verwenden</string>
+    <string name="trusted_wifi_manage">Verwalten</string>
+    <string name="trusted_wifi_manage_message">Fügen Sie bis zu 5 vertrauenswürdige Netzwerke hinzu. In Mesh-Netzwerken werden alle Zugangspunkte mit demselben Namen automatisch erkannt.</string>
+    <string name="trusted_wifi_add_current">Aktuelles Netzwerk hinzufügen</string>
     <string name="trusted_wifi_remove">Entfernen</string>
     <string name="trusted_wifi_unavailable">Verbinden Sie sich mit WLAN und erlauben Sie den Standortzugriff, um diese Funktion zu nutzen.</string>
     <string name="trusted_wifi_saved">Vertrauenswürdiges WLAN gespeichert: %1$s</string>
+    <string name="trusted_wifi_removed">Vertrauenswürdiges WLAN entfernt: %1$s</string>
+    <string name="trusted_wifi_already_saved">Dieses Netzwerk ist bereits in der Liste der vertrauenswürdigen WLAN-Netzwerke enthalten.</string>
+    <string name="trusted_wifi_limit_reached">Sie können bis zu 5 vertrauenswürdige WLAN-Netzwerke hinzufügen.</string>
     <string name="app_protection_enabled_message">App-Schutz aktiviert.</string>
     <string name="app_protection_disabled_message">App-Schutz deaktiviert.</string>
     <string name="removal_protection_enabled_message">Schutz vor Entfernung aktiviert.</string>
@@ -61,6 +67,7 @@
     <string name="not_now">Ich stimme nicht zu</string>
     <string name="agree">Zustimmen und aktivieren</string>
     <string name="cancel">Abbrechen</string>
+    <string name="close">Schließen</string>
     <string name="status_active">Aktiv</string>
     <string name="status_inactive">Inaktiv</string>
     <string name="device_admin_active">Deinstallation geschützt</string>

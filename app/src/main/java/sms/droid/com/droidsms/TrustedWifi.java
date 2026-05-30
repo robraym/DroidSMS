@@ -44,11 +44,9 @@ final class TrustedWifi {
     }
 
     static boolean isCurrentWifiTrusted(Context context) {
-        String trustedSsid = AuthStore.getTrustedWifiSsid(context);
-        if (TextUtils.isEmpty(trustedSsid)) {
-            return false;
-        }
-        return TextUtils.equals(trustedSsid, getCurrentSsid(context));
+        String currentSsid = getCurrentSsid(context);
+        return !TextUtils.isEmpty(currentSsid)
+                && AuthStore.getTrustedWifiSsids(context).contains(currentSsid);
     }
 
     private static String normalizeSsid(String ssid) {

@@ -16,8 +16,10 @@ import java.security.NoSuchAlgorithmException;
 final class AuthStore {
     static final String PREFS_NAME = "droidsms_security";
     static final String KEY_PASSWORD_HASH = "password_hash";
+    static final int MAX_TRUSTED_WIFI_NETWORKS = 5;
     private static final String KEY_PROTECTED_PACKAGES = "protected_packages";
     private static final String KEY_TRUSTED_WIFI_SSID = "trusted_wifi_ssid";
+    private static final String KEY_TRUSTED_WIFI_SSIDS = "trusted_wifi_ssids";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
     private static final String KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED = "accessibility_disclosure_accepted";
@@ -215,19 +217,53 @@ final class AuthStore {
         return filteredPackages;
     }
 
-    static String getTrustedWifiSsid(Context context) {
-        return prefs(context).getString(KEY_TRUSTED_WIFI_SSID, "");
+    static Set<String> getTrustedWifiSsids(Context context) {
+        SharedPreferences preferences = prefs(context);
+        Set<String> trustedSsids = new HashSet<>(
+                preferences.getStringSet(KEY_TRUSTED_WIFI_SSIDS, new HashSet<>()));
+        String legacySsid = preferences.getString(KEY_TRUSTED_WIFI_SSID, "");
+        if (!TextUtils.isEmpty(legacySsid)) {
+            trustedSsids.add(legacySsid);
+            preferences.edit()
+                    .putStringSet(KEY_TRUSTED_WIFI_SSIDS, trustedSsids)
+                    .remove(KEY_TRUSTED_WIFI_SSID)
+                    .apply();
+        }
+        return trustedSsids;
     }
 
-    static void setTrustedWifiSsid(Context context, String ssid) {
+    static boolean addTrustedWifiSsid(Context context, String ssid) {
+        if (TextUtils.isEmpty(ssid)) {
+            return false;
+        }
+
+        Set<String> trustedSsids = getTrustedWifiSsids(context);
+        if (trustedSsids.contains(ssid)) {
+            return true;
+        }
+        if (trustedSsids.size() >= MAX_TRUSTED_WIFI_NETWORKS) {
+            return false;
+        }
+
+        trustedSsids.add(ssid);
         prefs(context).edit()
-                .putString(KEY_TRUSTED_WIFI_SSID, ssid)
+                .putStringSet(KEY_TRUSTED_WIFI_SSIDS, trustedSsids)
+                .apply();
+        return true;
+    }
+
+    static void removeTrustedWifiSsid(Context context, String ssid) {
+        Set<String> trustedSsids = getTrustedWifiSsids(context);
+        trustedSsids.remove(ssid);
+        prefs(context).edit()
+                .putStringSet(KEY_TRUSTED_WIFI_SSIDS, trustedSsids)
                 .apply();
     }
 
     static void clearTrustedWifi(Context context) {
         prefs(context).edit()
                 .remove(KEY_TRUSTED_WIFI_SSID)
+                .remove(KEY_TRUSTED_WIFI_SSIDS)
                 .apply();
     }
 

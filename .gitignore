@@ -15,3 +15,6 @@
 .cxx
 local.properties
 AGENTS.md
+app/release/*.apk
+app/release/baselineProfiles/
+app/release/output-metadata.json

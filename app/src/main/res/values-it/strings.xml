@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">Nessun Wi-Fi attendibile configurato.</string>
     <string name="trusted_wifi_configured">Non richiedere password su: %1$s</string>
     <string name="trusted_wifi_use_current">Usa attuale</string>
+    <string name="trusted_wifi_manage">Gestisci</string>
+    <string name="trusted_wifi_manage_message">Aggiungi fino a 5 reti attendibili. Nelle reti mesh, tutti i punti di accesso con lo stesso nome vengono riconosciuti automaticamente.</string>
+    <string name="trusted_wifi_add_current">Aggiungi rete attuale</string>
     <string name="trusted_wifi_remove">Rimuovi</string>
     <string name="trusted_wifi_unavailable">Connettiti al Wi-Fi e consenti la posizione per usare questa funzione.</string>
     <string name="trusted_wifi_saved">Wi-Fi attendibile salvato: %1$s</string>
+    <string name="trusted_wifi_removed">Wi-Fi attendibile rimosso: %1$s</string>
+    <string name="trusted_wifi_already_saved">Questa rete è già nell’elenco dei Wi-Fi attendibili.</string>
+    <string name="trusted_wifi_limit_reached">Puoi aggiungere fino a 5 reti Wi-Fi attendibili.</string>
     <string name="app_protection_enabled_message">Protezione app attivata.</string>
     <string name="app_protection_disabled_message">Protezione app disattivata.</string>
     <string name="removal_protection_enabled_message">Protezione rimozione attivata.</string>
@@ -61,6 +67,7 @@
     <string name="not_now">Non accetto</string>
     <string name="agree">Accetto e attiva</string>
     <string name="cancel">Annulla</string>
+    <string name="close">Chiudi</string>
     <string name="status_active">Attivo</string>
     <string name="status_inactive">Inattivo</string>
     <string name="device_admin_active">Disinstallazione protetta</string>

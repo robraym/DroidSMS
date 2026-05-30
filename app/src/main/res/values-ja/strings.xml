@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">信頼済み Wi-Fi は設定されていません。</string>
     <string name="trusted_wifi_configured">このネットワークではパスワードを要求しません: %1$s</string>
     <string name="trusted_wifi_use_current">現在を使用</string>
+    <string name="trusted_wifi_manage">管理</string>
+    <string name="trusted_wifi_manage_message">信頼済みネットワークを最大 5 件追加できます。メッシュネットワークでは、同じ名前のアクセスポイントが自動的に認識されます。</string>
+    <string name="trusted_wifi_add_current">現在のネットワークを追加</string>
     <string name="trusted_wifi_remove">削除</string>
     <string name="trusted_wifi_unavailable">この機能を使うには Wi-Fi に接続し、位置情報を許可してください。</string>
     <string name="trusted_wifi_saved">信頼済み Wi-Fi を保存しました: %1$s</string>
+    <string name="trusted_wifi_removed">信頼済み Wi-Fi を削除しました: %1$s</string>
+    <string name="trusted_wifi_already_saved">このネットワークはすでに信頼済み Wi-Fi リストにあります。</string>
+    <string name="trusted_wifi_limit_reached">信頼済み Wi-Fi ネットワークは最大 5 件まで追加できます。</string>
     <string name="app_protection_enabled_message">アプリ保護をオンにしました。</string>
     <string name="app_protection_disabled_message">アプリ保護をオフにしました。</string>
     <string name="removal_protection_enabled_message">削除保護をオンにしました。</string>
@@ -61,6 +67,7 @@
     <string name="not_now">同意しない</string>
     <string name="agree">同意して有効にする</string>
     <string name="cancel">キャンセル</string>
+    <string name="close">閉じる</string>
     <string name="status_active">有効</string>
     <string name="status_inactive">無効</string>
     <string name="device_admin_active">アンインストール保護中</string>

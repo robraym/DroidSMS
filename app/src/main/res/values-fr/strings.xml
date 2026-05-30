@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">Aucun Wi-Fi de confiance configuré.</string>
     <string name="trusted_wifi_configured">Ne pas demander de mot de passe sur : %1$s</string>
     <string name="trusted_wifi_use_current">Utiliser l’actuel</string>
+    <string name="trusted_wifi_manage">Gérer</string>
+    <string name="trusted_wifi_manage_message">Ajoutez jusqu’à 5 réseaux de confiance. Sur les réseaux mesh, tous les points d’accès portant le même nom sont reconnus automatiquement.</string>
+    <string name="trusted_wifi_add_current">Ajouter le réseau actuel</string>
     <string name="trusted_wifi_remove">Supprimer</string>
     <string name="trusted_wifi_unavailable">Connectez-vous au Wi-Fi et autorisez la localisation pour utiliser cette fonction.</string>
     <string name="trusted_wifi_saved">Wi-Fi de confiance enregistré : %1$s</string>
+    <string name="trusted_wifi_removed">Wi-Fi de confiance supprimé : %1$s</string>
+    <string name="trusted_wifi_already_saved">Ce réseau figure déjà dans la liste des Wi-Fi de confiance.</string>
+    <string name="trusted_wifi_limit_reached">Vous pouvez ajouter jusqu’à 5 réseaux Wi-Fi de confiance.</string>
     <string name="app_protection_enabled_message">Protection des apps activée.</string>
     <string name="app_protection_disabled_message">Protection des apps désactivée.</string>
     <string name="removal_protection_enabled_message">Protection contre la suppression activée.</string>
@@ -61,6 +67,7 @@
     <string name="not_now">Je n’accepte pas</string>
     <string name="agree">Accepter et activer</string>
     <string name="cancel">Annuler</string>
+    <string name="close">Fermer</string>
     <string name="status_active">Actif</string>
     <string name="status_inactive">Inactif</string>
     <string name="device_admin_active">Désinstallation protégée</string>

@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -234,20 +235,97 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTrustedWifiState() {
-        String trustedSsid = AuthStore.getTrustedWifiSsid(this);
-        if (!trustedSsid.isEmpty()) {
-            txtTrustedWifiSummary.setText(getString(R.string.trusted_wifi_configured, trustedSsid));
-            btnTrustedWifi.setText(R.string.trusted_wifi_remove);
-            btnTrustedWifi.setOnClickListener(view -> {
-                AuthStore.clearTrustedWifi(this);
-                showTrustedWifiState();
-            });
+        List<String> trustedSsids = getSortedTrustedWifiSsids();
+        if (!trustedSsids.isEmpty()) {
+            txtTrustedWifiSummary.setText(getString(
+                    R.string.trusted_wifi_configured,
+                    TextUtils.join(", ", trustedSsids)));
+            btnTrustedWifi.setText(R.string.trusted_wifi_manage);
+            btnTrustedWifi.setOnClickListener(view -> showTrustedWifiDialog());
             return;
         }
 
         txtTrustedWifiSummary.setText(R.string.trusted_wifi_not_configured);
         btnTrustedWifi.setText(R.string.trusted_wifi_use_current);
         btnTrustedWifi.setOnClickListener(view -> saveCurrentTrustedWifi());
+    }
+
+    private List<String> getSortedTrustedWifiSsids() {
+        List<String> trustedSsids = new ArrayList<>(AuthStore.getTrustedWifiSsids(this));
+        Collections.sort(trustedSsids, String.CASE_INSENSITIVE_ORDER);
+        return trustedSsids;
+    }
+
+    private void showTrustedWifiDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_trusted_wifi, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        dialogView.findViewById(R.id.btnCloseTrustedWifi)
+                .setOnClickListener(view -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnAddCurrentTrustedWifi)
+                .setOnClickListener(view -> {
+                    dialog.dismiss();
+                    saveCurrentTrustedWifi();
+                });
+
+        populateTrustedWifiDialog(dialogView);
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        dialog.show();
+    }
+
+    private void populateTrustedWifiDialog(View dialogView) {
+        LinearLayout listTrustedWifi = dialogView.findViewById(R.id.listTrustedWifi);
+        TextView btnAddCurrent = dialogView.findViewById(R.id.btnAddCurrentTrustedWifi);
+        listTrustedWifi.removeAllViews();
+
+        List<String> trustedSsids = getSortedTrustedWifiSsids();
+        for (String ssid : trustedSsids) {
+            listTrustedWifi.addView(createTrustedWifiRow(dialogView, ssid));
+        }
+
+        boolean canAddNetwork = trustedSsids.size() < AuthStore.MAX_TRUSTED_WIFI_NETWORKS;
+        btnAddCurrent.setEnabled(canAddNetwork);
+        btnAddCurrent.setAlpha(canAddNetwork ? 1f : 0.45f);
+    }
+
+    private View createTrustedWifiRow(View dialogView, String ssid) {
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setMinimumHeight(dp(44));
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        TextView networkName = new TextView(this);
+        networkName.setText(ssid);
+        networkName.setTextColor(getColor(R.color.textPrimary));
+        networkName.setTextSize(15);
+        row.addView(networkName, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        TextView btnRemove = new TextView(this);
+        btnRemove.setBackgroundResource(R.drawable.settings_text_action_ripple);
+        btnRemove.setClickable(true);
+        btnRemove.setFocusable(true);
+        btnRemove.setGravity(android.view.Gravity.CENTER);
+        btnRemove.setMinWidth(dp(72));
+        btnRemove.setMinimumHeight(dp(32));
+        btnRemove.setText(R.string.trusted_wifi_remove);
+        btnRemove.setTextColor(getColor(R.color.settingsButton));
+        btnRemove.setTextSize(13);
+        btnRemove.setTypeface(null, Typeface.BOLD);
+        btnRemove.setOnClickListener(view -> {
+            AuthStore.removeTrustedWifiSsid(this, ssid);
+            Toast.makeText(this, getString(R.string.trusted_wifi_removed, ssid), Toast.LENGTH_SHORT).show();
+            showTrustedWifiState();
+            populateTrustedWifiDialog(dialogView);
+        });
+        row.addView(btnRemove, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(32)));
+        return row;
     }
 
     private void saveCurrentTrustedWifi() {
@@ -263,7 +341,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        AuthStore.setTrustedWifiSsid(this, ssid);
+        Set<String> trustedSsids = AuthStore.getTrustedWifiSsids(this);
+        if (trustedSsids.contains(ssid)) {
+            Toast.makeText(this, R.string.trusted_wifi_already_saved, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!AuthStore.addTrustedWifiSsid(this, ssid)) {
+            Toast.makeText(this, R.string.trusted_wifi_limit_reached, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Toast.makeText(this, getString(R.string.trusted_wifi_saved, ssid), Toast.LENGTH_SHORT).show();
         showTrustedWifiState();
     }

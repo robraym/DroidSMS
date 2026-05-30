@@ -18,9 +18,15 @@
     <string name="trusted_wifi_not_configured">설정된 신뢰할 수 있는 Wi-Fi가 없습니다.</string>
     <string name="trusted_wifi_configured">이 네트워크에서는 비밀번호를 요구하지 않음: %1$s</string>
     <string name="trusted_wifi_use_current">현재 사용</string>
+    <string name="trusted_wifi_manage">관리</string>
+    <string name="trusted_wifi_manage_message">신뢰할 수 있는 네트워크를 최대 5개까지 추가하세요. 메시 네트워크에서는 이름이 같은 모든 액세스 포인트가 자동으로 인식됩니다.</string>
+    <string name="trusted_wifi_add_current">현재 네트워크 추가</string>
     <string name="trusted_wifi_remove">제거</string>
     <string name="trusted_wifi_unavailable">이 기능을 사용하려면 Wi-Fi에 연결하고 위치 권한을 허용하세요.</string>
     <string name="trusted_wifi_saved">신뢰할 수 있는 Wi-Fi 저장됨: %1$s</string>
+    <string name="trusted_wifi_removed">신뢰할 수 있는 Wi-Fi 제거됨: %1$s</string>
+    <string name="trusted_wifi_already_saved">이 네트워크는 이미 신뢰할 수 있는 Wi-Fi 목록에 있습니다.</string>
+    <string name="trusted_wifi_limit_reached">신뢰할 수 있는 Wi-Fi 네트워크는 최대 5개까지 추가할 수 있습니다.</string>
     <string name="app_protection_enabled_message">앱 보호가 켜졌습니다.</string>
     <string name="app_protection_disabled_message">앱 보호가 꺼졌습니다.</string>
     <string name="removal_protection_enabled_message">제거 보호가 켜졌습니다.</string>
@@ -61,6 +67,7 @@
     <string name="not_now">동의하지 않음</string>
     <string name="agree">동의하고 켜기</string>
     <string name="cancel">취소</string>
+    <string name="close">닫기</string>
     <string name="status_active">켜짐</string>
     <string name="status_inactive">꺼짐</string>
     <string name="device_admin_active">제거 보호됨</string>
