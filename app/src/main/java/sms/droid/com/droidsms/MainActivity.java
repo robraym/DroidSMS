@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (settingsUnlocked && txtTitle != null) {
+            AuthStore.clearSettingsNavigationAllowance(this);
             showSettingsState();
         }
     }
@@ -374,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openAccessibilitySettingsWithDisclosure() {
         if (AuthStore.hasAcceptedAccessibilityDisclosure(this)) {
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            openAccessibilitySettings();
             return;
         }
 
@@ -403,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
             }
             AuthStore.acceptAccessibilityDisclosure(this);
             dialog.dismiss();
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            openAccessibilitySettings();
         });
 
         dialog.setOnShowListener(dialogInterface -> {
@@ -413,6 +414,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    private void openAccessibilitySettings() {
+        AuthStore.allowSettingsNavigation(this);
+        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
     }
 
     private void confirmDisableDeviceAdmin() {

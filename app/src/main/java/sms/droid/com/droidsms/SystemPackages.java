@@ -67,9 +67,8 @@ final class SystemPackages {
         addKnownLauncherPackages(packageNames);
         addKnownLauncherSearchPackages(packageNames);
         addKnownAssistantPackages(packageNames);
-        addKnownInputMethodPackages(packageNames);
+        packageNames.addAll(getInputMethodPackages(context));
         addHomePackages(context, packageNames);
-        addEnabledInputMethodPackages(context, packageNames);
         addSecureSettingPackage(context, packageNames, "assistant");
         addSecureSettingPackage(context, packageNames, "voice_interaction_service");
         return packageNames;
@@ -109,31 +108,24 @@ final class SystemPackages {
                 || TextUtils.equals(packageName, getPackageFromSecureSetting(context, "voice_interaction_service"));
     }
 
-    private static boolean isInputMethodPackage(Context context, String packageName) {
-        if (isKnownInputMethodPackage(packageName)) {
-            return true;
-        }
-
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
-            return false;
-        }
-
-        List<InputMethodInfo> inputMethods = inputMethodManager.getEnabledInputMethodList();
-        for (InputMethodInfo inputMethodInfo : inputMethods) {
-            if (TextUtils.equals(packageName, inputMethodInfo.getPackageName())) {
-                return true;
-            }
-        }
-
-        return false;
+    static boolean isInputMethodPackage(Context context, String packageName) {
+        return getInputMethodPackages(context).contains(packageName);
     }
 
-    private static boolean isKnownInputMethodPackage(String packageName) {
-        return TextUtils.equals(packageName, "com.samsung.android.honeyboard")
-                || TextUtils.equals(packageName, "com.google.android.inputmethod.latin")
-                || TextUtils.equals(packageName, "com.touchtype.swiftkey")
-                || TextUtils.equals(packageName, "com.microsoft.swiftkey");
+    static Set<String> getInputMethodPackages(Context context) {
+        Set<String> packageNames = new HashSet<>();
+        addKnownInputMethodPackages(packageNames);
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return packageNames;
+        }
+
+        List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
+        for (InputMethodInfo inputMethodInfo : inputMethods) {
+            packageNames.add(inputMethodInfo.getPackageName());
+        }
+
+        return packageNames;
     }
 
     private static void addKnownLauncherPackages(Set<String> packageNames) {
@@ -168,18 +160,6 @@ final class SystemPackages {
         packageNames.add("com.google.android.inputmethod.latin");
         packageNames.add("com.touchtype.swiftkey");
         packageNames.add("com.microsoft.swiftkey");
-    }
-
-    private static void addEnabledInputMethodPackages(Context context, Set<String> packageNames) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
-            return;
-        }
-
-        List<InputMethodInfo> inputMethods = inputMethodManager.getEnabledInputMethodList();
-        for (InputMethodInfo inputMethodInfo : inputMethods) {
-            packageNames.add(inputMethodInfo.getPackageName());
-        }
     }
 
     private static void addSecureSettingPackage(Context context, Set<String> packageNames, String key) {

@@ -40,8 +40,16 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         if (SystemPackages.isHomeOrLauncherSurface(this, packageName)) {
             debug("event package=" + packageName + " decision=home_launcher clear_unlock");
             AuthStore.clearUnlock(this);
+            AuthStore.clearSettingsNavigationAllowance(this);
             lastPromptPackageName = "";
             lastPromptAt = 0;
+            lastPackageName = packageName;
+            return;
+        }
+
+        if (SystemPackages.isSettingsPackage(packageName)
+                && AuthStore.isSettingsNavigationAllowed(this)) {
+            debug("event package=" + packageName + " decision=settings_navigation_allowed");
             lastPackageName = packageName;
             return;
         }

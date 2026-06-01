@@ -22,8 +22,10 @@ final class AuthStore {
     private static final String KEY_TRUSTED_WIFI_SSIDS = "trusted_wifi_ssids";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
+    private static final String KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL = "settings_navigation_allowed_until";
     private static final String KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED = "accessibility_disclosure_accepted";
     private static final long UNLOCK_WINDOW_MS = 30 * 60 * 1000;
+    private static final long SETTINGS_NAVIGATION_WINDOW_MS = 2 * 60 * 1000;
     private static final Set<String> DEFAULT_PROTECTED_PACKAGES = new HashSet<>(Arrays.asList(
             "com.google.android.apps.messaging",
             "com.samsung.android.messaging",
@@ -120,6 +122,24 @@ final class AuthStore {
                 .apply();
     }
 
+    static void allowSettingsNavigation(Context context) {
+        prefs(context).edit()
+                .putLong(KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL,
+                        System.currentTimeMillis() + SETTINGS_NAVIGATION_WINDOW_MS)
+                .apply();
+    }
+
+    static boolean isSettingsNavigationAllowed(Context context) {
+        return System.currentTimeMillis()
+                < prefs(context).getLong(KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL, 0);
+    }
+
+    static void clearSettingsNavigationAllowance(Context context) {
+        prefs(context).edit()
+                .remove(KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL)
+                .apply();
+    }
+
     static boolean hasAcceptedAccessibilityDisclosure(Context context) {
         return prefs(context).getBoolean(KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED, false);
     }
@@ -144,6 +164,10 @@ final class AuthStore {
     }
 
     static boolean isPackageProtected(Context context, String packageName) {
+        if (SystemPackages.isInputMethodPackage(context, packageName)) {
+            return false;
+        }
+
         if (SystemPackages.isSettingsPackage(packageName)) {
             Set<String> protectedPackages = getProtectedPackages(context);
             for (String settingsPackage : SETTINGS_PACKAGES) {
@@ -185,7 +209,9 @@ final class AuthStore {
         }
 
         Set<String> protectedPackages = getProtectedPackages(context);
-        if (SystemPackages.isSettingsPackage(packageName)) {
+        if (SystemPackages.isInputMethodPackage(context, packageName)) {
+            protectedPackages.remove(packageName);
+        } else if (SystemPackages.isSettingsPackage(packageName)) {
             if (protectedApp) {
                 protectedPackages.addAll(SETTINGS_PACKAGES);
             } else {
@@ -209,8 +235,10 @@ final class AuthStore {
     private static Set<String> filterVisibleProtectedPackages(Context context, Set<String> packageNames) {
         Set<String> filteredPackages = new HashSet<>();
         boolean removalControlActive = isRemovalControlActive(context);
+        Set<String> inputMethodPackages = SystemPackages.getInputMethodPackages(context);
         for (String packageName : packageNames) {
-            if (!isRemovalOnlyPackage(packageName) || removalControlActive) {
+            if (!inputMethodPackages.contains(packageName)
+                    && (!isRemovalOnlyPackage(packageName) || removalControlActive)) {
                 filteredPackages.add(packageName);
             }
         }
