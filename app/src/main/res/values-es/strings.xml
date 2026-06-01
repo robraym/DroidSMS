@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteger apps</string>
     <string name="accessibility_service_description">Bloquea las apps seleccionadas con huella digital o contraseña del dispositivo.</string>
-    <string name="device_admin_description">Solicita la huella antes de desinstalar apps e impide eliminar App Lock sin desactivar la protección.</string>
-    <string name="device_admin_disable_warning">Si desactivas esta protección, App Lock podrá desinstalarse.</string>
+    <string name="device_admin_description">Impide eliminar App Lock mientras la protección contra desinstalación esté activa.</string>
+    <string name="device_admin_disable_warning">App Lock está protegiendo la desinstalación. Para eliminarlo, abre App Lock y desactiva primero la protección contra desinstalación.</string>
     <string name="auth_title">App protegida</string>
     <string name="auth_subtitle_create">Crea una contraseña para proteger tus apps.</string>
     <string name="auth_subtitle_unlock">Confirma tu huella digital para abrir esta app.</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">Otras apps</string>
     <string name="risk_low_summary">Apps con menor exposición de datos sensibles.</string>
     <string name="device_admin_card_title">Protección contra eliminación</string>
-    <string name="device_admin_card_summary">Solicita la huella antes de eliminar apps del dispositivo.</string>
-    <string name="device_admin_card_summary_active">Activa. La desinstalación de apps requiere huella; para eliminar App Lock, desactívala primero aquí.</string>
+    <string name="device_admin_card_summary">Impide que otra persona desinstale App Lock.</string>
+    <string name="device_admin_card_summary_active">Activa. Para eliminar App Lock, desactiva primero esta protección.</string>
     <string name="required_device_admin_title">Protege la desinstalación</string>
-    <string name="required_device_admin_message">Para usar App Lock, activa primero la protección contra desinstalación. Así, otra persona no podrá eliminar aplicaciones sin confirmación.</string>
+    <string name="required_device_admin_message">Para usar App Lock, activa la protección contra desinstalación. Así, otra persona no podrá eliminar App Lock sin desactivar esta protección.</string>
     <string name="required_accessibility_title">Activa la protección de apps</string>
     <string name="required_accessibility_message">Para terminar, permite que App Lock detecte cuándo se abre una app protegida y solicite huella o contraseña.</string>
-    <string name="accessibility_manual_steps_message">En la siguiente pantalla, toca Aplicaciones instaladas. Después selecciona App Lock - Proteger apps y activa el permiso.</string>
+    <string name="accessibility_manual_steps_message">En la pantalla de Accesibilidad, si es necesario, toca Aplicaciones instaladas. Después selecciona App Lock - Proteger apps y activa el permiso.</string>
     <string name="continue_action">Continuar</string>
     <string name="close_app">Cerrar aplicación</string>
     <string name="password_hint">Contraseña</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">Cancelar</string>
     <string name="biometric_unavailable">La huella digital no está disponible en este dispositivo.</string>
     <string name="biometric_success">Huella confirmada.</string>
-    <string name="uninstall_authorization_title">Autorizar desinstalación</string>
-    <string name="uninstall_authorization_subtitle">Confirma tu huella o contraseña para permitir que se elimine la aplicación.</string>
-    <string name="uninstall_authorization_confirmed">Huella confirmada. Toca Desinstalar de nuevo para continuar.</string>
 </resources>

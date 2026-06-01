@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Protect apps</string>
     <string name="accessibility_service_description">Used to detect when selected apps are opened and show the fingerprint or password lock.</string>
-    <string name="device_admin_description">Requests fingerprint before apps are uninstalled and prevents App Lock removal until protection is disabled.</string>
-    <string name="device_admin_disable_warning">If you disable this protection, App Lock can be uninstalled.</string>
+    <string name="device_admin_description">Prevents App Lock removal while uninstall protection is on.</string>
+    <string name="device_admin_disable_warning">App Lock is protecting uninstall. To remove it, open App Lock and turn off uninstall protection first.</string>
     <string name="auth_title">Protected app</string>
     <string name="auth_subtitle_create">Create a password to protect your apps.</string>
     <string name="auth_subtitle_unlock">Confirm your fingerprint to open this app.</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">Other apps</string>
     <string name="risk_low_summary">Apps with lower exposure of sensitive data.</string>
     <string name="device_admin_card_title">Uninstall protection</string>
-    <string name="device_admin_card_summary">Require fingerprint before apps are removed from the device.</string>
-    <string name="device_admin_card_summary_active">On. App uninstall requires fingerprint; to remove App Lock, turn this off first.</string>
+    <string name="device_admin_card_summary">Prevent someone else from uninstalling App Lock.</string>
+    <string name="device_admin_card_summary_active">On. To remove App Lock, turn off this protection first.</string>
     <string name="required_device_admin_title">Protect app uninstall</string>
-    <string name="required_device_admin_message">To use App Lock, first enable uninstall protection. This prevents someone else from removing apps without confirmation.</string>
+    <string name="required_device_admin_message">To use App Lock, enable uninstall protection. This prevents someone else from removing App Lock without turning off this protection.</string>
     <string name="required_accessibility_title">Enable app protection</string>
     <string name="required_accessibility_message">To finish, allow App Lock to detect when a protected app is opened and request fingerprint or password.</string>
-    <string name="accessibility_manual_steps_message">On the next screen, tap Installed apps. Then select App Lock - Protect apps and turn on permission.</string>
+    <string name="accessibility_manual_steps_message">On the Accessibility screen, if needed, tap Installed apps. Then select App Lock - Protect apps and turn on permission.</string>
     <string name="continue_action">Continue</string>
     <string name="close_app">Close app</string>
     <string name="password_hint">Password</string>
@@ -66,7 +66,7 @@
     <string name="open_device_admin">Protect uninstall</string>
     <string name="disable_device_admin">Disable lock</string>
     <string name="disable_device_admin_confirm_title">Disable removal protection?</string>
-    <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove apps and uninstall App Lock without going through it.</string>
+    <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can uninstall App Lock and open protected apps without going through it.</string>
     <string name="disable_device_admin_confirm_action">Disable</string>
     <string name="accessibility_disclosure_title">Accessibility use</string>
     <string name="accessibility_disclosure_message">App Lock uses accessibility to identify which app is open and show the lock screen for selected apps. To do this, it accesses window-change events and app names, even in the background. It does not read messages, passwords, typed text, or screen content, and does not share this data.</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">Cancel</string>
     <string name="biometric_unavailable">Fingerprint is unavailable on this device.</string>
     <string name="biometric_success">Fingerprint confirmed.</string>
-    <string name="uninstall_authorization_title">Authorize uninstall</string>
-    <string name="uninstall_authorization_subtitle">Confirm your fingerprint or password to allow the app to be removed.</string>
-    <string name="uninstall_authorization_confirmed">Fingerprint confirmed. Tap Uninstall again to continue.</string>
 </resources>

@@ -26,6 +26,15 @@
         android:textColor="@color/textSecondary"
         android:textSize="15sp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="2dp"
+        android:text="@string/accessibility_manual_steps_message"
+        android:textColor="@color/textPrimary"
+        android:textSize="14sp" />
+
     <CheckBox
         android:id="@+id/chkAccessibilityConsent"
         android:layout_width="match_parent"

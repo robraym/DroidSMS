@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - アプリを保護</string>
     <string name="accessibility_service_description">選択したアプリを指紋または端末のパスワードでロックします。</string>
-    <string name="device_admin_description">アプリをアンインストールする前に指紋を要求し、保護を無効にするまで App Lock の削除を防ぎます。</string>
-    <string name="device_admin_disable_warning">この保護を無効にすると、App Lock をアンインストールできます。</string>
+    <string name="device_admin_description">アンインストール保護が有効な間、App Lock の削除を防ぎます。</string>
+    <string name="device_admin_disable_warning">App Lock はアンインストールを保護しています。削除するには、App Lock を開いてアンインストール保護を先に無効にしてください。</string>
     <string name="auth_title">保護されたアプリ</string>
     <string name="auth_subtitle_create">アプリを保護するためのパスワードを作成します。</string>
     <string name="auth_subtitle_unlock">このアプリを開くには指紋を確認してください。</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">その他のアプリ</string>
     <string name="risk_low_summary">機密データの露出が少ないアプリ。</string>
     <string name="device_admin_card_title">削除保護</string>
-    <string name="device_admin_card_summary">端末からアプリを削除する前に指紋を要求します。</string>
-    <string name="device_admin_card_summary_active">有効。アプリのアンインストールには指紋が必要です。App Lock を削除するには、最初にここで無効にしてください。</string>
+    <string name="device_admin_card_summary">他の人が App Lock をアンインストールできないようにします。</string>
+    <string name="device_admin_card_summary_active">有効。App Lock を削除するには、最初にこの保護を無効にしてください。</string>
     <string name="required_device_admin_title">アンインストールを保護</string>
-    <string name="required_device_admin_message">App Lock を使用するには、最初にアンインストール保護を有効にしてください。これにより、他の人が確認なしでアプリを削除できなくなります。</string>
+    <string name="required_device_admin_message">App Lock を使用するには、アンインストール保護を有効にしてください。これにより、他の人はこの保護を無効にせずに App Lock を削除できなくなります。</string>
     <string name="required_accessibility_title">アプリ保護を有効化</string>
     <string name="required_accessibility_message">最後に、保護されたアプリが開かれたことを App Lock が検出し、指紋またはパスワードを要求することを許可してください。</string>
-    <string name="accessibility_manual_steps_message">次の画面で、インストール済みアプリをタップします。次に App Lock - アプリを保護を選択し、権限を有効にしてください。</string>
+    <string name="accessibility_manual_steps_message">ユーザー補助画面で、必要に応じてインストール済みアプリをタップします。次に App Lock - アプリを保護を選択し、権限を有効にしてください。</string>
     <string name="continue_action">続行</string>
     <string name="close_app">アプリを閉じる</string>
     <string name="password_hint">パスワード</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">キャンセル</string>
     <string name="biometric_unavailable">この端末では指紋を利用できません。</string>
     <string name="biometric_success">指紋を確認しました。</string>
-    <string name="uninstall_authorization_title">アンインストールを許可</string>
-    <string name="uninstall_authorization_subtitle">アプリの削除を許可するには、指紋またはパスワードで確認してください。</string>
-    <string name="uninstall_authorization_confirmed">指紋を確認しました。続行するには、もう一度アンインストールをタップしてください。</string>
 </resources>

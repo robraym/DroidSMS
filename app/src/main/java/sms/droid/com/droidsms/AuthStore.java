@@ -44,18 +44,7 @@ final class AuthStore {
             "com.samsung.android.app.settings",
             "com.samsung.android.settings"
     ));
-    private static final Set<String> REMOVAL_CONTROL_PACKAGES = new HashSet<>(Arrays.asList(
-            "com.android.vending",
-            "com.google.android.packageinstaller",
-            "com.android.packageinstaller",
-            "com.samsung.android.packageinstaller",
-            "com.miui.packageinstaller",
-            "com.coloros.packageinstaller",
-            "com.oplus.packageinstaller",
-            "com.huawei.android.packageinstaller",
-            "com.vivo.packageinstaller"
-    ));
-    private static final Set<String> REMOVAL_ONLY_PACKAGES = new HashSet<>(Arrays.asList(
+    private static final Set<String> PACKAGE_INSTALLER_PACKAGES = new HashSet<>(Arrays.asList(
             "com.google.android.packageinstaller",
             "com.android.packageinstaller",
             "com.samsung.android.packageinstaller",
@@ -112,7 +101,7 @@ final class AuthStore {
             return true;
         }
 
-        return isRemovalControlPackage(unlockedPackage) && isRemovalControlPackage(packageName);
+        return false;
     }
 
     static void clearUnlock(Context context) {
@@ -156,11 +145,7 @@ final class AuthStore {
         if (savedPackages == null) {
             return new HashSet<>(DEFAULT_PROTECTED_PACKAGES);
         }
-        Set<String> protectedPackages = filterVisibleProtectedPackages(context, savedPackages);
-        if (isRemovalControlActive(context)) {
-            protectedPackages.addAll(REMOVAL_CONTROL_PACKAGES);
-        }
-        return protectedPackages;
+        return filterVisibleProtectedPackages(context, savedPackages);
     }
 
     static boolean isPackageProtected(Context context, String packageName) {
@@ -178,16 +163,11 @@ final class AuthStore {
         }
 
         return !TextUtils.isEmpty(packageName)
-                && ((isRemovalControlPackage(packageName) && isRemovalControlActive(context))
-                || getProtectedPackages(context).contains(packageName));
+                && getProtectedPackages(context).contains(packageName);
     }
 
-    static boolean isRemovalControlPackage(String packageName) {
-        return !TextUtils.isEmpty(packageName) && REMOVAL_CONTROL_PACKAGES.contains(packageName);
-    }
-
-    static boolean isRemovalOnlyPackage(String packageName) {
-        return !TextUtils.isEmpty(packageName) && REMOVAL_ONLY_PACKAGES.contains(packageName);
+    static boolean isPackageInstallerPackage(String packageName) {
+        return !TextUtils.isEmpty(packageName) && PACKAGE_INSTALLER_PACKAGES.contains(packageName);
     }
 
     static boolean isRemovalControlActive(Context context) {
@@ -228,11 +208,9 @@ final class AuthStore {
             } else {
                 protectedPackages.removeAll(SETTINGS_PACKAGES);
             }
-        } else if (isRemovalOnlyPackage(packageName) && !isRemovalControlActive(context)) {
+        } else if (isPackageInstallerPackage(packageName)) {
             protectedPackages.remove(packageName);
         } else if (protectedApp) {
-            protectedPackages.add(packageName);
-        } else if (isRemovalOnlyPackage(packageName) && isRemovalControlActive(context)) {
             protectedPackages.add(packageName);
         } else {
             protectedPackages.remove(packageName);
@@ -245,11 +223,10 @@ final class AuthStore {
 
     private static Set<String> filterVisibleProtectedPackages(Context context, Set<String> packageNames) {
         Set<String> filteredPackages = new HashSet<>();
-        boolean removalControlActive = isRemovalControlActive(context);
         Set<String> inputMethodPackages = SystemPackages.getInputMethodPackages(context);
         for (String packageName : packageNames) {
             if (!inputMethodPackages.contains(packageName)
-                    && (!isRemovalOnlyPackage(packageName) || removalControlActive)) {
+                    && !isPackageInstallerPackage(packageName)) {
                 filteredPackages.add(packageName);
             }
         }

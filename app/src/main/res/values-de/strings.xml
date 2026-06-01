@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Apps schützen</string>
     <string name="accessibility_service_description">Sperrt ausgewählte Apps mit Fingerabdruck oder Gerätepasswort.</string>
-    <string name="device_admin_description">Fordert vor der Deinstallation von Apps einen Fingerabdruck an und verhindert das Entfernen von App Lock, bis der Schutz deaktiviert wird.</string>
-    <string name="device_admin_disable_warning">Wenn Sie diesen Schutz deaktivieren, kann App Lock deinstalliert werden.</string>
+    <string name="device_admin_description">Verhindert das Entfernen von App Lock, solange der Deinstallationsschutz aktiv ist.</string>
+    <string name="device_admin_disable_warning">App Lock schützt die Deinstallation. Um App Lock zu entfernen, öffnen Sie die App und deaktivieren Sie zuerst den Deinstallationsschutz.</string>
     <string name="auth_title">Geschützte App</string>
     <string name="auth_subtitle_create">Erstellen Sie ein Passwort, um Ihre Apps zu schützen.</string>
     <string name="auth_subtitle_unlock">Bestätigen Sie Ihren Fingerabdruck, um diese App zu öffnen.</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">Andere Apps</string>
     <string name="risk_low_summary">Apps mit geringerer Offenlegung sensibler Daten.</string>
     <string name="device_admin_card_title">Schutz vor Entfernung</string>
-    <string name="device_admin_card_summary">Fordert einen Fingerabdruck an, bevor Apps vom Gerät entfernt werden.</string>
-    <string name="device_admin_card_summary_active">Aktiv. Die Deinstallation von Apps erfordert einen Fingerabdruck; deaktivieren Sie den Schutz zuerst hier, um App Lock zu entfernen.</string>
+    <string name="device_admin_card_summary">Verhindert, dass andere Personen App Lock deinstallieren.</string>
+    <string name="device_admin_card_summary_active">Aktiv. Um App Lock zu entfernen, deaktivieren Sie zuerst diesen Schutz.</string>
     <string name="required_device_admin_title">Deinstallation schützen</string>
-    <string name="required_device_admin_message">Aktivieren Sie zuerst den Deinstallationsschutz, um App Lock zu verwenden. So können andere Personen Apps nicht ohne Bestätigung entfernen.</string>
+    <string name="required_device_admin_message">Aktivieren Sie den Deinstallationsschutz, um App Lock zu verwenden. So können andere Personen App Lock nicht entfernen, ohne diesen Schutz zu deaktivieren.</string>
     <string name="required_accessibility_title">App-Schutz aktivieren</string>
     <string name="required_accessibility_message">Erlauben Sie App Lock abschließend, das Öffnen geschützter Apps zu erkennen und Fingerabdruck oder Passwort anzufordern.</string>
-    <string name="accessibility_manual_steps_message">Tippen Sie auf dem nächsten Bildschirm auf Installierte Apps. Wählen Sie dann App Lock - Apps schützen und aktivieren Sie die Berechtigung.</string>
+    <string name="accessibility_manual_steps_message">Tippen Sie auf dem Bildschirm Bedienungshilfen bei Bedarf auf Installierte Apps. Wählen Sie dann App Lock - Apps schützen und aktivieren Sie die Berechtigung.</string>
     <string name="continue_action">Weiter</string>
     <string name="close_app">App schließen</string>
     <string name="password_hint">Passwort</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">Abbrechen</string>
     <string name="biometric_unavailable">Fingerabdruck ist auf diesem Gerät nicht verfügbar.</string>
     <string name="biometric_success">Fingerabdruck bestätigt.</string>
-    <string name="uninstall_authorization_title">Deinstallation autorisieren</string>
-    <string name="uninstall_authorization_subtitle">Bestätigen Sie Ihren Fingerabdruck oder Ihr Passwort, um das Entfernen der App zu erlauben.</string>
-    <string name="uninstall_authorization_confirmed">Fingerabdruck bestätigt. Tippen Sie erneut auf Deinstallieren, um fortzufahren.</string>
 </resources>

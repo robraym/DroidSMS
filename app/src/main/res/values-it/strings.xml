@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteggi app</string>
     <string name="accessibility_service_description">Blocca le app selezionate con impronta digitale o password del dispositivo.</string>
-    <string name="device_admin_description">Richiede l’impronta prima di disinstallare le app e impedisce la rimozione di App Lock finché la protezione non viene disattivata.</string>
-    <string name="device_admin_disable_warning">Se disattivi questa protezione, App Lock potrà essere disinstallata.</string>
+    <string name="device_admin_description">Impedisce la rimozione di App Lock finché la protezione dalla disinstallazione è attiva.</string>
+    <string name="device_admin_disable_warning">App Lock protegge la disinstallazione. Per rimuoverla, apri App Lock e disattiva prima la protezione dalla disinstallazione.</string>
     <string name="auth_title">App protetta</string>
     <string name="auth_subtitle_create">Crea una password per proteggere le tue app.</string>
     <string name="auth_subtitle_unlock">Conferma la tua impronta digitale per aprire questa app.</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">Altre app</string>
     <string name="risk_low_summary">App con minore esposizione di dati sensibili.</string>
     <string name="device_admin_card_title">Protezione rimozione</string>
-    <string name="device_admin_card_summary">Richiede l’impronta prima di rimuovere le app dal dispositivo.</string>
-    <string name="device_admin_card_summary_active">Attiva. La disinstallazione delle app richiede l’impronta; per rimuovere App Lock, disattivala prima qui.</string>
+    <string name="device_admin_card_summary">Impedisce ad altre persone di disinstallare App Lock.</string>
+    <string name="device_admin_card_summary_active">Attiva. Per rimuovere App Lock, disattiva prima questa protezione.</string>
     <string name="required_device_admin_title">Proteggi la disinstallazione</string>
-    <string name="required_device_admin_message">Per usare App Lock, attiva prima la protezione dalla disinstallazione. In questo modo, nessun altro potrà rimuovere app senza conferma.</string>
+    <string name="required_device_admin_message">Per usare App Lock, attiva la protezione dalla disinstallazione. In questo modo, nessun altro potrà rimuovere App Lock senza disattivare questa protezione.</string>
     <string name="required_accessibility_title">Attiva la protezione delle app</string>
     <string name="required_accessibility_message">Per completare, consenti ad App Lock di rilevare quando viene aperta un’app protetta e richiedere impronta o password.</string>
-    <string name="accessibility_manual_steps_message">Nella schermata successiva, tocca App installate. Quindi seleziona App Lock - Proteggi app e attiva l’autorizzazione.</string>
+    <string name="accessibility_manual_steps_message">Nella schermata Accessibilità, se necessario, tocca App installate. Quindi seleziona App Lock - Proteggi app e attiva l’autorizzazione.</string>
     <string name="continue_action">Continua</string>
     <string name="close_app">Chiudi app</string>
     <string name="password_hint">Password</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">Annulla</string>
     <string name="biometric_unavailable">Impronta digitale non disponibile su questo dispositivo.</string>
     <string name="biometric_success">Impronta confermata.</string>
-    <string name="uninstall_authorization_title">Autorizza disinstallazione</string>
-    <string name="uninstall_authorization_subtitle">Conferma l’impronta o la password per consentire la rimozione dell’app.</string>
-    <string name="uninstall_authorization_confirmed">Impronta confermata. Tocca di nuovo Disinstalla per continuare.</string>
 </resources>

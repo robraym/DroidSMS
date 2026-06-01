@@ -2,8 +2,8 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteger apps</string>
     <string name="accessibility_service_description">Usado para detectar a abertura dos apps escolhidos e mostrar o bloqueio com digital ou senha.</string>
-    <string name="device_admin_description">Pede digital antes de desinstalar apps e impede remover o App Lock sem desativar a proteção.</string>
-    <string name="device_admin_disable_warning">Ao desativar esta proteção, o App Lock poderá ser desinstalado.</string>
+    <string name="device_admin_description">Impede remover o App Lock enquanto o bloqueio de desinstalação estiver ativo.</string>
+    <string name="device_admin_disable_warning">O App Lock está protegendo a desinstalação. Para removê-lo, abra o App Lock e desative primeiro o bloqueio de desinstalação.</string>
     <string name="auth_title">Aplicativo protegido</string>
     <string name="auth_subtitle_create">Crie uma senha para proteger seus aplicativos.</string>
     <string name="auth_subtitle_unlock">Confirme sua digital para abrir este aplicativo.</string>
@@ -44,13 +44,13 @@
     <string name="risk_low_title">Outros apps</string>
     <string name="risk_low_summary">Apps com menor exposição de dados sensíveis.</string>
     <string name="device_admin_card_title">Bloqueio de desinstalação</string>
-    <string name="device_admin_card_summary">Peça digital antes de remover apps do aparelho.</string>
-    <string name="device_admin_card_summary_active">Ativo. A desinstalação de apps exige digital; para remover o App Lock, desative aqui primeiro.</string>
+    <string name="device_admin_card_summary">Impeça que outra pessoa desinstale o App Lock.</string>
+    <string name="device_admin_card_summary_active">Ativo. Para remover o App Lock, desative este bloqueio primeiro.</string>
     <string name="required_device_admin_title">Proteja a desinstalação</string>
-    <string name="required_device_admin_message">Para usar o App Lock, ative primeiro o bloqueio de desinstalação. Assim, outra pessoa não poderá remover aplicativos sem confirmação.</string>
+    <string name="required_device_admin_message">Para usar o App Lock, ative o bloqueio de desinstalação. Assim, outra pessoa não poderá remover o App Lock sem desativar esta proteção.</string>
     <string name="required_accessibility_title">Ative a proteção dos apps</string>
     <string name="required_accessibility_message">Para concluir, permita que o App Lock detecte quando um aplicativo protegido for aberto e solicite digital ou senha.</string>
-    <string name="accessibility_manual_steps_message">Na próxima tela, toque em Aplicativos instalados. Depois selecione App Lock - Proteger apps e ative a permissão.</string>
+    <string name="accessibility_manual_steps_message">Na tela de Acessibilidade, se necessário, toque em Aplicativos instalados. Depois selecione App Lock - Proteger apps e ative a permissão.</string>
     <string name="continue_action">Continuar</string>
     <string name="close_app">Fechar aplicativo</string>
     <string name="password_hint">Senha</string>
@@ -66,7 +66,7 @@
     <string name="open_device_admin">Proteger desinstalação</string>
     <string name="disable_device_admin">Desativar bloqueio</string>
     <string name="disable_device_admin_confirm_title">Desativar bloqueio?</string>
-    <string name="disable_device_admin_confirm_message">Sem esse bloqueio, qualquer pessoa com acesso ao aparelho poderá remover apps e desinstalar o App Lock sem passar por ele.</string>
+    <string name="disable_device_admin_confirm_message">Sem esse bloqueio, qualquer pessoa com acesso ao aparelho poderá desinstalar o App Lock e abrir os aplicativos protegidos sem passar por ele.</string>
     <string name="disable_device_admin_confirm_action">Desativar</string>
     <string name="accessibility_disclosure_title">Uso da acessibilidade</string>
     <string name="accessibility_disclosure_message">O App Lock usa a acessibilidade para identificar qual app está aberto e mostrar o bloqueio nos apps escolhidos. Para isso, acessa eventos de troca de janela e nomes dos apps, mesmo em segundo plano. Não lê mensagens, senhas, textos digitados ou conteúdo da tela, nem compartilha esses dados.</string>
@@ -92,7 +92,4 @@
     <string name="biometric_negative">Cancelar</string>
     <string name="biometric_unavailable">Digital indisponível neste aparelho.</string>
     <string name="biometric_success">Digital confirmada.</string>
-    <string name="uninstall_authorization_title">Autorizar desinstalação</string>
-    <string name="uninstall_authorization_subtitle">Confirme sua digital ou senha para permitir a remoção do aplicativo.</string>
-    <string name="uninstall_authorization_confirmed">Digital confirmada. Toque novamente em Desinstalar para continuar.</string>
 </resources>

@@ -403,10 +403,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isAccessibilityServiceActive()) {
             requiredSetupStep = REQUIRED_SETUP_ACCESSIBILITY;
+            if (!AuthStore.hasAcceptedAccessibilityDisclosure(this)) {
+                dismissRequiredSetupDialog();
+                openAccessibilitySettingsWithDisclosure(true);
+                return;
+            }
             showRequiredSetupDialog(
                     R.string.required_accessibility_title,
                     R.string.accessibility_manual_steps_message,
-                    () -> openAccessibilitySettingsWithDisclosure(true)
+                    () -> openAccessibilitySettings(true)
             );
             return;
         }
@@ -843,16 +848,16 @@ public class MainActivity extends AppCompatActivity {
         appSwitch.setThumbTintList(ContextCompat.getColorStateList(this, R.color.switch_thumb_tint));
         appSwitch.setTrackTintList(ContextCompat.getColorStateList(this, R.color.switch_track_tint));
         appSwitch.setShowText(false);
-        boolean removalOnlyPackage = AuthStore.isRemovalOnlyPackage(app.packageName);
+        boolean packageInstallerPackage = AuthStore.isPackageInstallerPackage(app.packageName);
         appSwitch.setChecked(AuthStore.isPackageProtected(this, app.packageName));
-        appSwitch.setEnabled(!removalOnlyPackage);
-        appSwitch.setAlpha(removalOnlyPackage ? 0.65f : 1f);
+        appSwitch.setEnabled(!packageInstallerPackage);
+        appSwitch.setAlpha(packageInstallerPackage ? 0.65f : 1f);
         appSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             AuthStore.setPackageProtected(this, app.packageName, isChecked);
             onSelectionChanged.run();
         });
         row.setOnClickListener(view -> {
-            if (!removalOnlyPackage) {
+            if (!packageInstallerPackage) {
                 appSwitch.setChecked(!appSwitch.isChecked());
             }
         });
@@ -944,7 +949,7 @@ public class MainActivity extends AppCompatActivity {
         String packageName = resolveInfo.activityInfo.packageName;
         if (getPackageName().equals(packageName)
                 || appsByPackage.containsKey(packageName)
-                || AuthStore.isRemovalOnlyPackage(packageName)) {
+                || AuthStore.isPackageInstallerPackage(packageName)) {
             return;
         }
 
@@ -960,7 +965,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean shouldSkipFromProtectedList(Set<String> nonProtectablePackages, String packageName) {
-        return AuthStore.isRemovalOnlyPackage(packageName)
+        return AuthStore.isPackageInstallerPackage(packageName)
                 || (nonProtectablePackages.contains(packageName) && !SystemPackages.isSettingsPackage(packageName));
     }
 
