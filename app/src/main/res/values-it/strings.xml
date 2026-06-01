@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Proteggi app</string>
     <string name="accessibility_service_description">Blocca le app selezionate con impronta digitale o password del dispositivo.</string>
-    <string name="device_admin_description">Impedisce la disinstallazione di App Lock finché la protezione non viene disattivata.</string>
+    <string name="device_admin_description">Richiede l’impronta prima di disinstallare le app e impedisce la rimozione di App Lock finché la protezione non viene disattivata.</string>
     <string name="device_admin_disable_warning">Se disattivi questa protezione, App Lock potrà essere disinstallata.</string>
     <string name="auth_title">App protetta</string>
     <string name="auth_subtitle_create">Crea una password per proteggere le tue app.</string>
@@ -44,8 +44,15 @@
     <string name="risk_low_title">Altre app</string>
     <string name="risk_low_summary">App con minore esposizione di dati sensibili.</string>
     <string name="device_admin_card_title">Protezione rimozione</string>
-    <string name="device_admin_card_summary">Impedisce la rimozione di App Lock mentre la protezione è attiva.</string>
-    <string name="device_admin_card_summary_active">La protezione rimozione è attiva. Disattivala qui prima di disinstallare App Lock.</string>
+    <string name="device_admin_card_summary">Richiede l’impronta prima di rimuovere le app dal dispositivo.</string>
+    <string name="device_admin_card_summary_active">Attiva. La disinstallazione delle app richiede l’impronta; per rimuovere App Lock, disattivala prima qui.</string>
+    <string name="required_device_admin_title">Proteggi la disinstallazione</string>
+    <string name="required_device_admin_message">Per usare App Lock, attiva prima la protezione dalla disinstallazione. In questo modo, nessun altro potrà rimuovere app senza conferma.</string>
+    <string name="required_accessibility_title">Attiva la protezione delle app</string>
+    <string name="required_accessibility_message">Per completare, consenti ad App Lock di rilevare quando viene aperta un’app protetta e richiedere impronta o password.</string>
+    <string name="accessibility_manual_steps_message">Nella schermata successiva, tocca App installate. Quindi seleziona App Lock - Proteggi app e attiva l’autorizzazione.</string>
+    <string name="continue_action">Continua</string>
+    <string name="close_app">Chiudi app</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Conferma password</string>
     <string name="save_password">Salva password</string>
@@ -62,10 +69,10 @@
     <string name="disable_device_admin_confirm_message">Senza questo blocco, chiunque abbia accesso al dispositivo potrà rimuovere App Lock e aprire le app protette senza passare da esso.</string>
     <string name="disable_device_admin_confirm_action">Disattiva</string>
     <string name="accessibility_disclosure_title">Uso dell’accessibilità</string>
-    <string name="accessibility_disclosure_message">App Lock usa l’API di accessibilità per identificare quale app è aperta e mostrare la schermata di blocco per le app che scegli. App Lock accede agli eventi di cambio finestra e ai nomi delle app per questa protezione, anche quando App Lock non è aperta. App Lock non legge messaggi, password o testo digitato e non condivide questi dati.</string>
+    <string name="accessibility_disclosure_message">App Lock usa l’accessibilità per identificare l’app aperta e mostrare il blocco per le app selezionate. Per farlo, accede agli eventi di cambio finestra e ai nomi delle app, anche in background. Non legge messaggi, password, testo digitato o contenuti dello schermo e non condivide questi dati.</string>
     <string name="accessibility_disclosure_checkbox">Ho letto e accetto di attivare la protezione delle app.</string>
     <string name="not_now">Non accetto</string>
-    <string name="agree">Accetto e attiva</string>
+    <string name="agree">Accetta e attiva</string>
     <string name="cancel">Annulla</string>
     <string name="close">Chiudi</string>
     <string name="status_active">Attivo</string>
@@ -85,4 +92,7 @@
     <string name="biometric_negative">Annulla</string>
     <string name="biometric_unavailable">Impronta digitale non disponibile su questo dispositivo.</string>
     <string name="biometric_success">Impronta confermata.</string>
+    <string name="uninstall_authorization_title">Autorizza disinstallazione</string>
+    <string name="uninstall_authorization_subtitle">Conferma l’impronta o la password per consentire la rimozione dell’app.</string>
+    <string name="uninstall_authorization_confirmed">Impronta confermata. Tocca di nuovo Disinstalla per continuare.</string>
 </resources>

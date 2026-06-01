@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - Protéger les apps</string>
     <string name="accessibility_service_description">Verrouille les apps sélectionnées avec l’empreinte digitale ou le mot de passe de l’appareil.</string>
-    <string name="device_admin_description">Empêche la désinstallation de App Lock tant que la protection n’est pas désactivée.</string>
+    <string name="device_admin_description">Demande une empreinte avant de désinstaller des apps et empêche la suppression d’App Lock sans désactiver la protection.</string>
     <string name="device_admin_disable_warning">Si vous désactivez cette protection, App Lock pourra être désinstallé.</string>
     <string name="auth_title">App protégée</string>
     <string name="auth_subtitle_create">Créez un mot de passe pour protéger vos apps.</string>
@@ -44,8 +44,15 @@
     <string name="risk_low_title">Autres apps</string>
     <string name="risk_low_summary">Apps avec une exposition plus faible aux données sensibles.</string>
     <string name="device_admin_card_title">Protection contre la suppression</string>
-    <string name="device_admin_card_summary">Empêche la suppression de App Lock tant que la protection est active.</string>
-    <string name="device_admin_card_summary_active">La protection contre la suppression est active. Désactivez-la ici avant de désinstaller App Lock.</string>
+    <string name="device_admin_card_summary">Demande une empreinte avant de supprimer des apps de l’appareil.</string>
+    <string name="device_admin_card_summary_active">Activée. La désinstallation d’apps exige une empreinte ; pour supprimer App Lock, désactivez-la d’abord ici.</string>
+    <string name="required_device_admin_title">Protégez la désinstallation</string>
+    <string name="required_device_admin_message">Pour utiliser App Lock, activez d’abord la protection contre la désinstallation. Ainsi, personne ne pourra supprimer des applications sans confirmation.</string>
+    <string name="required_accessibility_title">Activez la protection des apps</string>
+    <string name="required_accessibility_message">Pour terminer, autorisez App Lock à détecter l’ouverture d’une app protégée et à demander une empreinte ou un mot de passe.</string>
+    <string name="accessibility_manual_steps_message">Sur l’écran suivant, appuyez sur Applications installées. Sélectionnez ensuite App Lock - Protéger les apps et activez l’autorisation.</string>
+    <string name="continue_action">Continuer</string>
+    <string name="close_app">Fermer l’application</string>
     <string name="password_hint">Mot de passe</string>
     <string name="confirm_password_hint">Confirmer le mot de passe</string>
     <string name="save_password">Enregistrer le mot de passe</string>
@@ -62,7 +69,7 @@
     <string name="disable_device_admin_confirm_message">Sans ce verrouillage, toute personne ayant accès à l’appareil pourra supprimer App Lock et ouvrir les apps protégées sans passer par lui.</string>
     <string name="disable_device_admin_confirm_action">Désactiver</string>
     <string name="accessibility_disclosure_title">Utilisation de l’accessibilité</string>
-    <string name="accessibility_disclosure_message">App Lock utilise l’API d’accessibilité pour identifier l’application ouverte et afficher l’écran de verrouillage pour les apps que vous choisissez. App Lock accède aux événements de changement de fenêtre et aux noms des applications pour cette protection, y compris lorsque App Lock n’est pas ouvert. App Lock ne lit pas les messages, mots de passe ni texte saisi, et ne partage pas ces données.</string>
+    <string name="accessibility_disclosure_message">App Lock utilise l’accessibilité pour identifier l’app ouverte et afficher le verrouillage pour les apps choisies. Pour cela, il accède aux événements de changement de fenêtre et aux noms des apps, même en arrière-plan. Il ne lit pas les messages, mots de passe, textes saisis ou contenus à l’écran, et ne partage pas ces données.</string>
     <string name="accessibility_disclosure_checkbox">J’ai lu ceci et j’accepte d’activer la protection des apps.</string>
     <string name="not_now">Je n’accepte pas</string>
     <string name="agree">Accepter et activer</string>
@@ -85,4 +92,7 @@
     <string name="biometric_negative">Annuler</string>
     <string name="biometric_unavailable">L’empreinte digitale n’est pas disponible sur cet appareil.</string>
     <string name="biometric_success">Empreinte confirmée.</string>
+    <string name="uninstall_authorization_title">Autoriser la désinstallation</string>
+    <string name="uninstall_authorization_subtitle">Confirmez votre empreinte ou votre mot de passe pour autoriser la suppression de l’application.</string>
+    <string name="uninstall_authorization_confirmed">Empreinte confirmée. Appuyez à nouveau sur Désinstaller pour continuer.</string>
 </resources>

@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - 앱 보호</string>
     <string name="accessibility_service_description">선택한 앱을 지문 또는 기기 비밀번호로 잠급니다.</string>
-    <string name="device_admin_description">보호를 해제하기 전까지 App Lock 제거를 방지합니다.</string>
+    <string name="device_admin_description">앱을 제거하기 전에 지문을 요청하고 보호를 해제하기 전까지 App Lock 제거를 방지합니다.</string>
     <string name="device_admin_disable_warning">이 보호를 해제하면 App Lock을 제거할 수 있습니다.</string>
     <string name="auth_title">보호된 앱</string>
     <string name="auth_subtitle_create">앱을 보호할 비밀번호를 만드세요.</string>
@@ -44,8 +44,15 @@
     <string name="risk_low_title">기타 앱</string>
     <string name="risk_low_summary">민감한 데이터 노출이 적은 앱.</string>
     <string name="device_admin_card_title">제거 보호</string>
-    <string name="device_admin_card_summary">보호가 켜져 있는 동안 App Lock 제거를 방지합니다.</string>
-    <string name="device_admin_card_summary_active">제거 보호가 켜져 있습니다. App Lock을 제거하기 전에 여기서 해제하세요.</string>
+    <string name="device_admin_card_summary">기기에서 앱을 제거하기 전에 지문을 요청합니다.</string>
+    <string name="device_admin_card_summary_active">켜짐. 앱을 제거하려면 지문이 필요합니다. App Lock을 제거하려면 먼저 여기서 보호를 해제하세요.</string>
+    <string name="required_device_admin_title">제거 보호 설정</string>
+    <string name="required_device_admin_message">App Lock을 사용하려면 먼저 제거 보호를 켜세요. 다른 사람이 확인 없이 앱을 제거하지 못하도록 합니다.</string>
+    <string name="required_accessibility_title">앱 보호 켜기</string>
+    <string name="required_accessibility_message">마지막으로 App Lock이 보호된 앱이 열릴 때 감지하고 지문 또는 비밀번호를 요청하도록 허용하세요.</string>
+    <string name="accessibility_manual_steps_message">다음 화면에서 설치된 앱을 누르세요. 그런 다음 App Lock - 앱 보호를 선택하고 권한을 켜세요.</string>
+    <string name="continue_action">계속</string>
+    <string name="close_app">앱 닫기</string>
     <string name="password_hint">비밀번호</string>
     <string name="confirm_password_hint">비밀번호 확인</string>
     <string name="save_password">비밀번호 저장</string>
@@ -62,7 +69,7 @@
     <string name="disable_device_admin_confirm_message">이 잠금이 없으면 기기에 접근할 수 있는 사람이 App Lock을 제거하고 보호된 앱을 App Lock 없이 열 수 있습니다.</string>
     <string name="disable_device_admin_confirm_action">해제</string>
     <string name="accessibility_disclosure_title">접근성 사용</string>
-    <string name="accessibility_disclosure_message">App Lock은 접근성 API를 사용하여 어떤 앱이 열려 있는지 확인하고 사용자가 선택한 앱에 잠금 화면을 표시합니다. 이 보호 기능을 위해 App Lock이 열려 있지 않을 때도 창 변경 이벤트와 앱 이름에 접근합니다. App Lock은 메시지, 비밀번호 또는 입력한 텍스트를 읽지 않으며 이 데이터를 공유하지 않습니다.</string>
+    <string name="accessibility_disclosure_message">App Lock은 접근성 기능을 사용하여 열린 앱을 식별하고 선택한 앱을 잠급니다. 이를 위해 백그라운드에서도 창 변경 이벤트와 앱 이름에 접근합니다. 메시지, 비밀번호, 입력한 텍스트 또는 화면 내용을 읽지 않으며 이 데이터를 공유하지 않습니다.</string>
     <string name="accessibility_disclosure_checkbox">이 내용을 읽었으며 앱 보호를 켜는 데 동의합니다.</string>
     <string name="not_now">동의하지 않음</string>
     <string name="agree">동의하고 켜기</string>
@@ -85,4 +92,7 @@
     <string name="biometric_negative">취소</string>
     <string name="biometric_unavailable">이 기기에서는 지문을 사용할 수 없습니다.</string>
     <string name="biometric_success">지문이 확인되었습니다.</string>
+    <string name="uninstall_authorization_title">제거 승인</string>
+    <string name="uninstall_authorization_subtitle">앱 제거를 허용하려면 지문 또는 비밀번호를 확인하세요.</string>
+    <string name="uninstall_authorization_confirmed">지문이 확인되었습니다. 계속하려면 제거를 다시 누르세요.</string>
 </resources>

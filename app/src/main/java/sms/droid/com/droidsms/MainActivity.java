@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,12 +44,17 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String SETTINGS_FRAGMENT_ARGS_KEY = ":settings:fragment_args_key";
+    private static final String ACCESSIBILITY_INSTALLED_SERVICES_KEY = "accessibility_installed_services";
     private static final int REQUEST_LOCATION_PERMISSION = 1001;
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private static final int RISK_HIGH = 3;
     private static final int RISK_MODERATE = 2;
     private static final int RISK_LOW = 1;
+    private static final int REQUIRED_SETUP_NONE = 0;
+    private static final int REQUIRED_SETUP_DEVICE_ADMIN = 1;
+    private static final int REQUIRED_SETUP_ACCESSIBILITY = 2;
     private static final String[] IMPORTANT_APP_PACKAGES = {
             "com.google.android.gm",
             "com.google.android.apps.photos",
@@ -104,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasObservedProtectionState;
     private boolean lastAccessibilityActive;
     private boolean lastDeviceAdminActive;
+    private boolean waitingForRequiredSetupResult;
+    private int requiredSetupStep = REQUIRED_SETUP_NONE;
+    private AlertDialog requiredSetupDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         if (settingsUnlocked && txtTitle != null) {
             AuthStore.clearSettingsNavigationAllowance(this);
             showSettingsState();
+            continueRequiredSetupFlow();
         }
     }
 
@@ -370,12 +380,97 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminComponent);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.device_admin_description));
+        AuthStore.allowSettingsNavigation(this);
         startActivity(intent);
     }
 
+    private void continueRequiredSetupFlow() {
+        if (!isBiometricReady()) {
+            dismissRequiredSetupDialog();
+            return;
+        }
+
+        if (waitingForRequiredSetupResult) {
+            boolean completedCurrentStep = requiredSetupStep == REQUIRED_SETUP_DEVICE_ADMIN
+                    ? isDeviceAdminActive()
+                    : isAccessibilityServiceActive();
+            waitingForRequiredSetupResult = false;
+            if (!completedCurrentStep) {
+                finish();
+                return;
+            }
+        }
+
+        if (!isAccessibilityServiceActive()) {
+            requiredSetupStep = REQUIRED_SETUP_ACCESSIBILITY;
+            showRequiredSetupDialog(
+                    R.string.required_accessibility_title,
+                    R.string.accessibility_manual_steps_message,
+                    () -> openAccessibilitySettingsWithDisclosure(true)
+            );
+            return;
+        }
+
+        if (!isDeviceAdminActive()) {
+            requiredSetupStep = REQUIRED_SETUP_DEVICE_ADMIN;
+            showRequiredSetupDialog(
+                    R.string.required_device_admin_title,
+                    R.string.required_device_admin_message,
+                    () -> {
+                        waitingForRequiredSetupResult = true;
+                        requestDeviceAdmin();
+                    }
+            );
+            return;
+        }
+
+        requiredSetupStep = REQUIRED_SETUP_NONE;
+        dismissRequiredSetupDialog();
+    }
+
+    private void showRequiredSetupDialog(int titleRes, int messageRes, Runnable onContinue) {
+        dismissRequiredSetupDialog();
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_required_setup, null);
+        requiredSetupDialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        requiredSetupDialog.setCancelable(false);
+        requiredSetupDialog.setCanceledOnTouchOutside(false);
+
+        ((TextView) dialogView.findViewById(R.id.txtRequiredSetupTitle)).setText(titleRes);
+        ((TextView) dialogView.findViewById(R.id.txtRequiredSetupMessage)).setText(messageRes);
+        dialogView.findViewById(R.id.btnCloseRequiredSetup)
+                .setOnClickListener(view -> finish());
+        dialogView.findViewById(R.id.btnContinueRequiredSetup)
+                .setOnClickListener(view -> {
+                    dismissRequiredSetupDialog();
+                    onContinue.run();
+                });
+
+        requiredSetupDialog.setOnShowListener(dialogInterface -> {
+            Window window = requiredSetupDialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        requiredSetupDialog.show();
+    }
+
+    private void dismissRequiredSetupDialog() {
+        if (requiredSetupDialog != null) {
+            requiredSetupDialog.dismiss();
+            requiredSetupDialog = null;
+        }
+    }
+
     private void openAccessibilitySettingsWithDisclosure() {
+        openAccessibilitySettingsWithDisclosure(false);
+    }
+
+    private void openAccessibilitySettingsWithDisclosure(boolean requiredSetup) {
         if (AuthStore.hasAcceptedAccessibilityDisclosure(this)) {
-            openAccessibilitySettings();
+            openAccessibilitySettings(requiredSetup);
             return;
         }
 
@@ -397,14 +492,19 @@ public class MainActivity extends AppCompatActivity {
             btnAgree.setAlpha(checked ? 1f : 0.45f);
         });
 
-        btnNotNow.setOnClickListener(view -> dialog.dismiss());
+        btnNotNow.setOnClickListener(view -> {
+            dialog.dismiss();
+            if (requiredSetup) {
+                finish();
+            }
+        });
         btnAgree.setOnClickListener(view -> {
             if (!consentCheckBox.isChecked()) {
                 return;
             }
             AuthStore.acceptAccessibilityDisclosure(this);
             dialog.dismiss();
-            openAccessibilitySettings();
+            openAccessibilitySettings(requiredSetup);
         });
 
         dialog.setOnShowListener(dialogInterface -> {
@@ -416,9 +516,77 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void openAccessibilitySettings() {
+    private void openAccessibilitySettings(boolean requiredSetup) {
+        if (requiredSetup) {
+            waitingForRequiredSetupResult = true;
+        }
         AuthStore.allowSettingsNavigation(this);
-        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        ComponentName service = new ComponentName(this, SmsGuardAccessibilityService.class);
+        Intent serviceDetails = new Intent("android.settings.ACCESSIBILITY_DETAILS_SETTINGS");
+        serviceDetails.putExtra(Intent.EXTRA_COMPONENT_NAME, service.flattenToShortString());
+
+        try {
+            ResolveInfo resolveInfo = getPackageManager().resolveActivity(serviceDetails, 0);
+            String requiredPermission = resolveInfo != null && resolveInfo.activityInfo != null
+                    ? resolveInfo.activityInfo.permission
+                    : null;
+            boolean canOpenDetails = resolveInfo != null
+                    && (TextUtils.isEmpty(requiredPermission)
+                    || getPackageManager().checkPermission(requiredPermission, getPackageName())
+                    == PackageManager.PERMISSION_GRANTED);
+            if (canOpenDetails) {
+                startActivity(serviceDetails);
+                return;
+            }
+        } catch (RuntimeException ignored) {
+            // Some Android variants expose the action but reject direct navigation.
+        }
+
+        if (requiredSetup) {
+            startActivity(createAccessibilitySettingsIntent());
+            return;
+        }
+
+        showAccessibilityFallbackInstructions();
+    }
+
+    private Intent createAccessibilitySettingsIntent() {
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        intent.putExtra(SETTINGS_FRAGMENT_ARGS_KEY, ACCESSIBILITY_INSTALLED_SERVICES_KEY);
+        return intent;
+    }
+
+    private void showAccessibilityFallbackInstructions() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_required_setup, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
+        ((TextView) dialogView.findViewById(R.id.txtRequiredSetupTitle))
+                .setText(R.string.required_accessibility_title);
+        ((TextView) dialogView.findViewById(R.id.txtRequiredSetupMessage))
+                .setText(R.string.accessibility_manual_steps_message);
+
+        TextView btnClose = dialogView.findViewById(R.id.btnCloseRequiredSetup);
+        btnClose.setText(R.string.cancel);
+        btnClose.setOnClickListener(view -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.btnContinueRequiredSetup)
+                .setOnClickListener(view -> {
+            dialog.dismiss();
+            AuthStore.allowSettingsNavigation(this);
+            startActivity(createAccessibilitySettingsIntent());
+        });
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        dialog.show();
     }
 
     private void confirmDisableDeviceAdmin() {
@@ -534,6 +702,12 @@ public class MainActivity extends AppCompatActivity {
                 lowRiskApps.add(app);
             }
         }
+
+        Set<String> defaultProtectedPackages = new HashSet<>();
+        for (AppEntry app : highRiskApps) {
+            defaultProtectedPackages.add(app.packageName);
+        }
+        AuthStore.initializeProtectedPackagesIfNeeded(this, defaultProtectedPackages);
 
         addRiskSection(R.string.risk_high_title, R.string.risk_high_summary, highRiskApps, false);
         addRiskSection(R.string.risk_moderate_title, R.string.risk_moderate_summary, moderateRiskApps, !highRiskApps.isEmpty());

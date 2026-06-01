@@ -46,6 +46,13 @@
     <string name="device_admin_card_title">Uninstall protection</string>
     <string name="device_admin_card_summary">Require fingerprint before apps are removed from the device.</string>
     <string name="device_admin_card_summary_active">On. App uninstall requires fingerprint; to remove App Lock, turn this off first.</string>
+    <string name="required_device_admin_title">Protect app uninstall</string>
+    <string name="required_device_admin_message">To use App Lock, first enable uninstall protection. This prevents someone else from removing apps without confirmation.</string>
+    <string name="required_accessibility_title">Enable app protection</string>
+    <string name="required_accessibility_message">To finish, allow App Lock to detect when a protected app is opened and request fingerprint or password.</string>
+    <string name="accessibility_manual_steps_message">On the next screen, tap Installed apps. Then select App Lock - Protect apps and turn on permission.</string>
+    <string name="continue_action">Continue</string>
+    <string name="close_app">Close app</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm password</string>
     <string name="save_password">Save password</string>
@@ -61,8 +68,8 @@
     <string name="disable_device_admin_confirm_title">Disable removal protection?</string>
     <string name="disable_device_admin_confirm_message">Without this lock, anyone with access to the device can remove apps and uninstall App Lock without going through it.</string>
     <string name="disable_device_admin_confirm_action">Disable</string>
-    <string name="accessibility_disclosure_title">Prominent disclosure</string>
-    <string name="accessibility_disclosure_message">App Lock needs to use the AccessibilityService API to detect when a protected app is opened and automatically show the fingerprint or password lock screen. Without this service, protection for the apps you choose cannot work. To do this, App Lock accesses window-change events and names of opened apps, including when App Lock is not in the foreground. App Lock does not read messages, passwords, typed text, or screen content, and does not share this data.</string>
+    <string name="accessibility_disclosure_title">Accessibility use</string>
+    <string name="accessibility_disclosure_message">App Lock uses accessibility to identify which app is open and show the lock screen for selected apps. To do this, it accesses window-change events and app names, even in the background. It does not read messages, passwords, typed text, or screen content, and does not share this data.</string>
     <string name="accessibility_disclosure_checkbox">I have read this and agree to enable app protection.</string>
     <string name="not_now">I do not agree</string>
     <string name="agree">Agree and enable</string>
@@ -85,4 +92,7 @@
     <string name="biometric_negative">Cancel</string>
     <string name="biometric_unavailable">Fingerprint is unavailable on this device.</string>
     <string name="biometric_success">Fingerprint confirmed.</string>
+    <string name="uninstall_authorization_title">Authorize uninstall</string>
+    <string name="uninstall_authorization_subtitle">Confirm your fingerprint or password to allow the app to be removed.</string>
+    <string name="uninstall_authorization_confirmed">Fingerprint confirmed. Tap Uninstall again to continue.</string>
 </resources>

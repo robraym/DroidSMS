@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ public class GuardActivity extends AppCompatActivity {
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
     private String targetPackage;
+    private boolean removalAuthorization;
     private boolean promptShown;
     private boolean retriedAfterSystemCancel;
 
@@ -38,6 +40,7 @@ public class GuardActivity extends AppCompatActivity {
             return;
         }
         debug("guard created target=" + targetPackage);
+        removalAuthorization = AuthStore.isRemovalControlPackage(targetPackage);
         protectBackground();
         setContentView(R.layout.activity_guard);
     }
@@ -65,6 +68,13 @@ public class GuardActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 debug("guard auth_success target=" + targetPackage);
                 AuthStore.markUnlocked(GuardActivity.this, targetPackage);
+                if (removalAuthorization) {
+                    Toast.makeText(
+                            GuardActivity.this,
+                            R.string.uninstall_authorization_confirmed,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
                 finish();
             }
 
@@ -87,7 +97,12 @@ public class GuardActivity extends AppCompatActivity {
         });
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle(getString(R.string.biometric_title))
+                .setTitle(getString(removalAuthorization
+                        ? R.string.uninstall_authorization_title
+                        : R.string.biometric_title))
+                .setSubtitle(removalAuthorization
+                        ? getString(R.string.uninstall_authorization_subtitle)
+                        : getString(R.string.biometric_subtitle))
                 .setAllowedAuthenticators(AUTHENTICATORS)
                 .build();
 

@@ -203,6 +203,17 @@ final class AuthStore {
                 .apply();
     }
 
+    static void initializeProtectedPackagesIfNeeded(Context context, Set<String> packageNames) {
+        SharedPreferences preferences = prefs(context);
+        if (preferences.contains(KEY_PROTECTED_PACKAGES)) {
+            return;
+        }
+
+        preferences.edit()
+                .putStringSet(KEY_PROTECTED_PACKAGES, filterVisibleProtectedPackages(context, packageNames))
+                .apply();
+    }
+
     static void setPackageProtected(Context context, String packageName, boolean protectedApp) {
         if (TextUtils.isEmpty(packageName)) {
             return;

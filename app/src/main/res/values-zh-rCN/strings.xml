@@ -2,7 +2,7 @@
     <string name="app_name">App Lock</string>
     <string name="accessibility_service_label">App Lock - 保护应用</string>
     <string name="accessibility_service_description">使用指纹或设备密码锁定所选应用。</string>
-    <string name="device_admin_description">在关闭保护之前，防止卸载 App Lock。</string>
+    <string name="device_admin_description">卸载应用前要求指纹确认，并在关闭保护之前防止移除 App Lock。</string>
     <string name="device_admin_disable_warning">如果关闭此保护，App Lock 将可以被卸载。</string>
     <string name="auth_title">受保护的应用</string>
     <string name="auth_subtitle_create">创建密码以保护你的应用。</string>
@@ -44,8 +44,15 @@
     <string name="risk_low_title">其他应用</string>
     <string name="risk_low_summary">敏感数据暴露较少的应用。</string>
     <string name="device_admin_card_title">卸载保护</string>
-    <string name="device_admin_card_summary">在保护启用时防止移除 App Lock。</string>
-    <string name="device_admin_card_summary_active">卸载保护已启用。卸载 App Lock 前请在此关闭。</string>
+    <string name="device_admin_card_summary">从设备移除应用前要求指纹确认。</string>
+    <string name="device_admin_card_summary_active">已启用。卸载应用需要指纹确认；如需移除 App Lock，请先在此关闭保护。</string>
+    <string name="required_device_admin_title">保护应用卸载</string>
+    <string name="required_device_admin_message">要使用 App Lock，请先启用卸载保护。这样其他人无法在未经确认的情况下移除应用。</string>
+    <string name="required_accessibility_title">启用应用保护</string>
+    <string name="required_accessibility_message">最后，请允许 App Lock 检测受保护应用何时打开，并要求指纹或密码。</string>
+    <string name="accessibility_manual_steps_message">在下一个屏幕中，点按已安装的应用。然后选择 App Lock - 保护应用并启用权限。</string>
+    <string name="continue_action">继续</string>
+    <string name="close_app">关闭应用</string>
     <string name="password_hint">密码</string>
     <string name="confirm_password_hint">确认密码</string>
     <string name="save_password">保存密码</string>
@@ -62,7 +69,7 @@
     <string name="disable_device_admin_confirm_message">没有此锁定，任何能使用此设备的人都可以移除 App Lock，并绕过它打开受保护的应用。</string>
     <string name="disable_device_admin_confirm_action">关闭</string>
     <string name="accessibility_disclosure_title">无障碍使用说明</string>
-    <string name="accessibility_disclosure_message">App Lock 使用无障碍 API 来识别当前打开的应用，并为你选择的应用显示锁定界面。为了提供此保护，App Lock 会访问窗口切换事件和应用名称，包括 App Lock 未打开时。App Lock 不会读取消息、密码或输入的文字，也不会共享这些数据。</string>
+    <string name="accessibility_disclosure_message">App Lock 使用无障碍功能来识别当前打开的应用，并锁定你选择的应用。为此，即使在后台运行，它也会访问窗口切换事件和应用名称。它不会读取消息、密码、输入的文字或屏幕内容，也不会共享这些数据。</string>
     <string name="accessibility_disclosure_checkbox">我已阅读并同意启用应用保护。</string>
     <string name="not_now">不同意</string>
     <string name="agree">同意并启用</string>
@@ -85,4 +92,7 @@
     <string name="biometric_negative">取消</string>
     <string name="biometric_unavailable">此设备无法使用指纹。</string>
     <string name="biometric_success">指纹已确认。</string>
+    <string name="uninstall_authorization_title">授权卸载</string>
+    <string name="uninstall_authorization_subtitle">请确认指纹或密码，以允许移除应用。</string>
+    <string name="uninstall_authorization_confirmed">指纹已确认。请再次点按“卸载”以继续。</string>
 </resources>
