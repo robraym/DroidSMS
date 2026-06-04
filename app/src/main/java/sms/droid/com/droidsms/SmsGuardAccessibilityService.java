@@ -16,6 +16,8 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private String lastPackageName = "";
     private String lastPromptPackageName = "";
+    private String lastProtectedPackageName = "";
+    private String pendingClosedPackageName = "";
     private long lastPromptAt = 0;
 
     @Override
@@ -47,6 +49,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         if (SystemPackages.isHomeOrLauncherSurface(this, packageName)) {
             debug("event package=" + packageName + " decision=home_launcher clear_unlock");
+            rememberPendingClosedPackage();
             AuthStore.clearUnlock(this);
             AuthStore.clearSettingsNavigationAllowance(this);
             lastPromptPackageName = "";
@@ -66,6 +69,17 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             debug("event package=" + packageName + " decision=ignored_system");
             lastPackageName = packageName;
             return;
+        }
+
+        if (TextUtils.equals(packageName, pendingClosedPackageName)) {
+            debug("event package=" + packageName + " decision=closing_echo_skip");
+            pendingClosedPackageName = "";
+            lastPackageName = packageName;
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            return;
+        } else if (!SystemPackages.isNeutralSystemPackage(this, packageName)) {
+            pendingClosedPackageName = "";
         }
 
         if (!isBiometricReady()) {
@@ -100,6 +114,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         if (AuthStore.isUnlocked(this, packageName)) {
             debug("event package=" + packageName + " decision=already_unlocked");
+            lastProtectedPackageName = packageName;
             lastPackageName = packageName;
             return;
         }
@@ -111,6 +126,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         lastPackageName = packageName;
+        lastProtectedPackageName = packageName;
         lastPromptPackageName = packageName;
         lastPromptAt = now;
 
@@ -144,5 +160,14 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
         return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private void rememberPendingClosedPackage() {
+        if (TextUtils.isEmpty(lastProtectedPackageName)
+                || SystemPackages.isNeutralSystemPackage(this, lastProtectedPackageName)) {
+            return;
+        }
+
+        pendingClosedPackageName = lastProtectedPackageName;
     }
 }
