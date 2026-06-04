@@ -67,6 +67,7 @@ final class SystemPackages {
                 || isInputMethodPackage(context, packageName)
                 || isAssistantOrSearchPackage(context, packageName)
                 || TextUtils.equals(packageName, "com.samsung.android.biometrics.app.setting")
+                || TextUtils.equals(packageName, "com.samsung.android.spay")
                 || TextUtils.equals(packageName, "com.google.android.permissioncontroller")
                 || TextUtils.equals(packageName, "com.android.permissioncontroller");
     }
@@ -77,6 +78,7 @@ final class SystemPackages {
         packageNames.add("android");
         packageNames.add("com.android.systemui");
         packageNames.add("com.samsung.android.biometrics.app.setting");
+        packageNames.add("com.samsung.android.spay");
         packageNames.add("com.google.android.permissioncontroller");
         packageNames.add("com.android.permissioncontroller");
         packageNames.add("com.samsung.knox.securefolder");

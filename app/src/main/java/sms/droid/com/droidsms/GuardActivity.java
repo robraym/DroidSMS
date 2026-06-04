@@ -25,7 +25,6 @@ public class GuardActivity extends AppCompatActivity {
 
     private String targetPackage;
     private boolean promptShown;
-    private boolean retriedAfterSystemCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,16 +71,6 @@ public class GuardActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 debug("guard auth_error target=" + targetPackage + " code=" + errorCode + " message=" + errString);
-                if (errorCode == BiometricPrompt.ERROR_CANCELED && !retriedAfterSystemCancel) {
-                    retriedAfterSystemCancel = true;
-                    promptShown = false;
-                    getWindow().getDecorView().postDelayed(() -> {
-                        if (!isFinishing()) {
-                            showBiometricPrompt();
-                        }
-                    }, 250);
-                    return;
-                }
                 closeToHome();
             }
         });

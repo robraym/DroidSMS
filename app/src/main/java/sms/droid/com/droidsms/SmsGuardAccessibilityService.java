@@ -43,6 +43,25 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         if (SystemPackages.isSettingsPackage(packageName)
                 && SystemPackages.isSettingsCredentialComponent(className)) {
             debug("event package=" + packageName + " class=" + className + " decision=settings_credential_allowed");
+            pendingClosedPackageName = "";
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            lastPackageName = packageName;
+            return;
+        }
+
+        if (SystemPackages.isSecureFolderPackage(packageName)) {
+            if (hasUnlockedProtectedSession()) {
+                debug("event package=" + packageName + " decision=secure_folder_boundary keep_closing_session");
+                rememberPendingClosedPackage();
+            } else {
+                debug("event package=" + packageName + " decision=secure_folder_boundary clear_unlock");
+                pendingClosedPackageName = "";
+                AuthStore.clearUnlock(this);
+            }
+            AuthStore.clearSettingsNavigationAllowance(this);
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
             lastPackageName = packageName;
             return;
         }
@@ -160,6 +179,11 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
         return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private boolean hasUnlockedProtectedSession() {
+        return !TextUtils.isEmpty(lastProtectedPackageName)
+                && AuthStore.isUnlocked(this, lastProtectedPackageName);
     }
 
     private void rememberPendingClosedPackage() {
