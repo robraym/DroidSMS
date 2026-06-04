@@ -37,6 +37,14 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         }
 
         String packageName = packageNameValue.toString();
+        CharSequence className = event.getClassName();
+        if (SystemPackages.isSettingsPackage(packageName)
+                && SystemPackages.isSettingsCredentialComponent(className)) {
+            debug("event package=" + packageName + " class=" + className + " decision=settings_credential_allowed");
+            lastPackageName = packageName;
+            return;
+        }
+
         if (SystemPackages.isHomeOrLauncherSurface(this, packageName)) {
             debug("event package=" + packageName + " decision=home_launcher clear_unlock");
             AuthStore.clearUnlock(this);

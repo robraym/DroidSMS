@@ -39,6 +39,21 @@ final class SystemPackages {
                 || TextUtils.equals(packageName, "com.samsung.android.settings");
     }
 
+    static boolean isSecureFolderPackage(String packageName) {
+        return TextUtils.equals(packageName, "com.samsung.knox.securefolder")
+                || TextUtils.equals(packageName, "com.samsung.android.knox.containercore")
+                || TextUtils.equals(packageName, "com.samsung.android.container");
+    }
+
+    static boolean isSettingsCredentialComponent(CharSequence className) {
+        if (className == null) {
+            return false;
+        }
+
+        String normalizedClassName = className.toString().toLowerCase(java.util.Locale.ROOT);
+        return normalizedClassName.contains("confirmdevicecredentialactivity");
+    }
+
     static boolean shouldIgnoreAccessibilityEvent(Context context, String packageName) {
         if (isSettingsPackage(packageName)) {
             return false;
@@ -47,6 +62,7 @@ final class SystemPackages {
         return TextUtils.equals(packageName, context.getPackageName())
                 || TextUtils.equals(packageName, "android")
                 || TextUtils.equals(packageName, "com.android.systemui")
+                || isSecureFolderPackage(packageName)
                 || isHomeOrLauncherSurface(context, packageName)
                 || isInputMethodPackage(context, packageName)
                 || isAssistantOrSearchPackage(context, packageName)
@@ -63,6 +79,9 @@ final class SystemPackages {
         packageNames.add("com.samsung.android.biometrics.app.setting");
         packageNames.add("com.google.android.permissioncontroller");
         packageNames.add("com.android.permissioncontroller");
+        packageNames.add("com.samsung.knox.securefolder");
+        packageNames.add("com.samsung.android.knox.containercore");
+        packageNames.add("com.samsung.android.container");
 
         addKnownLauncherPackages(packageNames);
         addKnownLauncherSearchPackages(packageNames);

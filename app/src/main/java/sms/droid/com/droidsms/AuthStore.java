@@ -153,6 +153,10 @@ final class AuthStore {
             return false;
         }
 
+        if (SystemPackages.isSecureFolderPackage(packageName)) {
+            return false;
+        }
+
         if (SystemPackages.isSettingsPackage(packageName)) {
             Set<String> protectedPackages = getProtectedPackages(context);
             for (String settingsPackage : SETTINGS_PACKAGES) {
@@ -202,6 +206,8 @@ final class AuthStore {
         Set<String> protectedPackages = getProtectedPackages(context);
         if (SystemPackages.isInputMethodPackage(context, packageName)) {
             protectedPackages.remove(packageName);
+        } else if (SystemPackages.isSecureFolderPackage(packageName)) {
+            protectedPackages.remove(packageName);
         } else if (SystemPackages.isSettingsPackage(packageName)) {
             if (protectedApp) {
                 protectedPackages.addAll(SETTINGS_PACKAGES);
@@ -226,6 +232,7 @@ final class AuthStore {
         Set<String> inputMethodPackages = SystemPackages.getInputMethodPackages(context);
         for (String packageName : packageNames) {
             if (!inputMethodPackages.contains(packageName)
+                    && !SystemPackages.isSecureFolderPackage(packageName)
                     && !isPackageInstallerPackage(packageName)) {
                 filteredPackages.add(packageName);
             }
