@@ -54,6 +54,16 @@ final class SystemPackages {
         return normalizedClassName.contains("confirmdevicecredentialactivity");
     }
 
+    static boolean isSettingsAddNetworkComponent(CharSequence className) {
+        if (className == null) {
+            return false;
+        }
+
+        String normalizedClassName = className.toString().toLowerCase(java.util.Locale.ROOT);
+        return normalizedClassName.contains("wifi.addappnetworks")
+                || normalizedClassName.contains("addappnetworksactivity");
+    }
+
     static boolean shouldIgnoreAccessibilityEvent(Context context, String packageName) {
         if (isSettingsPackage(packageName)) {
             return false;

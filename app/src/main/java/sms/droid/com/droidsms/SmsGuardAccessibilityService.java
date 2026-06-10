@@ -19,6 +19,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private String lastProtectedPackageName = "";
     private String pendingClosedPackageName = "";
     private long lastPromptAt = 0;
+    private boolean settingsAddNetworkFlowActive;
 
     @Override
     protected void onServiceConnected() {
@@ -40,8 +41,19 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         String packageName = packageNameValue.toString();
         CharSequence className = event.getClassName();
-        if (SystemPackages.isSettingsPackage(packageName)
-                && SystemPackages.isSettingsCredentialComponent(className)) {
+        boolean settingsPackage = SystemPackages.isSettingsPackage(packageName);
+        boolean settingsCredentialComponent = settingsPackage
+                && SystemPackages.isSettingsCredentialComponent(className);
+        boolean settingsAddNetworkComponent = settingsPackage
+                && SystemPackages.isSettingsAddNetworkComponent(className);
+
+        if (settingsAddNetworkComponent) {
+            settingsAddNetworkFlowActive = true;
+        } else if (settingsPackage && !settingsCredentialComponent) {
+            settingsAddNetworkFlowActive = false;
+        }
+
+        if (settingsCredentialComponent) {
             debug("event package=" + packageName + " class=" + className + " decision=settings_credential_allowed");
             pendingClosedPackageName = "";
             lastPromptPackageName = "";
@@ -63,6 +75,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             lastPromptPackageName = "";
             lastPromptAt = 0;
             lastPackageName = packageName;
+            settingsAddNetworkFlowActive = false;
             return;
         }
 
@@ -74,11 +87,11 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             lastPromptPackageName = "";
             lastPromptAt = 0;
             lastPackageName = packageName;
+            settingsAddNetworkFlowActive = false;
             return;
         }
 
-        if (SystemPackages.isSettingsPackage(packageName)
-                && AuthStore.isSettingsNavigationAllowed(this)) {
+        if (settingsPackage && AuthStore.isSettingsNavigationAllowed(this)) {
             debug("event package=" + packageName + " decision=settings_navigation_allowed");
             lastPackageName = packageName;
             return;
@@ -121,6 +134,12 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         boolean protectedPackage = AuthStore.isPackageProtected(this, packageName);
 
         if (!protectedPackage) {
+            if (settingsAddNetworkFlowActive && hasUnlockedSettingsSession()) {
+                debug("event package=" + packageName + " decision=settings_add_network_caller_skip");
+                lastPackageName = packageName;
+                return;
+            }
+
             debug("event package=" + packageName + " decision=not_protected");
             if (!SystemPackages.isNeutralSystemPackage(this, packageName)) {
                 AuthStore.clearUnlock(this);
@@ -183,6 +202,11 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
     private boolean hasUnlockedProtectedSession() {
         return !TextUtils.isEmpty(lastProtectedPackageName)
+                && AuthStore.isUnlocked(this, lastProtectedPackageName);
+    }
+
+    private boolean hasUnlockedSettingsSession() {
+        return SystemPackages.isSettingsPackage(lastProtectedPackageName)
                 && AuthStore.isUnlocked(this, lastProtectedPackageName);
     }
 

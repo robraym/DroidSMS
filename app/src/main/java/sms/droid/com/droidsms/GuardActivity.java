@@ -78,6 +78,7 @@ public class GuardActivity extends AppCompatActivity {
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.biometric_title))
                 .setSubtitle(getString(R.string.biometric_subtitle))
+                .setConfirmationRequired(false)
                 .setAllowedAuthenticators(AUTHENTICATORS)
                 .build();
 

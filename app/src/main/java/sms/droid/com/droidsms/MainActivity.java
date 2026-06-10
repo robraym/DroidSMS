@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -46,6 +47,11 @@ import java.util.concurrent.Executor;
 public class MainActivity extends AppCompatActivity {
     private static final String SETTINGS_FRAGMENT_ARGS_KEY = ":settings:fragment_args_key";
     private static final String ACCESSIBILITY_INSTALLED_SERVICES_KEY = "accessibility_installed_services";
+    private static final String ACTION_FACE_SETTINGS = "android.settings.FACE_SETTINGS";
+    private static final String ACTION_FACE_ENROLL = "android.settings.FACE_ENROLL";
+    private static final String ACTION_COMBINED_BIOMETRICS_SETTINGS =
+            "android.settings.COMBINED_BIOMETRICS_SETTINGS";
+    private static final String ACTION_MOTOROLA_FACE_ENROLL = "com.motorola.intent.action.FACE_ENROLL";
     private static final int REQUEST_LOCATION_PERMISSION = 1001;
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
@@ -94,10 +100,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtTitle;
     private TextView txtSubtitle;
     private LinearLayout cardDeviceLockWarning;
+    private LinearLayout cardNativeBiometric;
     private LinearLayout listApps;
     private TextView btnDeviceLockSettings;
     private TextView txtAccessibilitySummary;
     private TextView txtDeviceAdminSummary;
+    private TextView txtNativeBiometricSummary;
+    private TextView btnNativeBiometricSettings;
     private TextView txtTrustedWifiSummary;
     private TextView btnTrustedWifi;
     private SwitchCompat switchAccessibility;
@@ -176,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.biometric_title))
+                .setConfirmationRequired(false)
                 .setAllowedAuthenticators(AUTHENTICATORS)
                 .build();
 
@@ -186,10 +196,13 @@ public class MainActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtSubtitle = findViewById(R.id.txtSubtitle);
         cardDeviceLockWarning = findViewById(R.id.cardDeviceLockWarning);
+        cardNativeBiometric = findViewById(R.id.cardNativeBiometric);
         listApps = findViewById(R.id.listApps);
         btnDeviceLockSettings = findViewById(R.id.btnDeviceLockSettings);
         txtAccessibilitySummary = findViewById(R.id.txtAccessibilitySummary);
         txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
+        txtNativeBiometricSummary = findViewById(R.id.txtNativeBiometricSummary);
+        btnNativeBiometricSettings = findViewById(R.id.btnNativeBiometricSettings);
         txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
         btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
         switchAccessibility = findViewById(R.id.switchAccessibility);
@@ -208,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         btnDeviceLockSettings.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS)));
 
         showTrustedWifiState();
+        showNativeBiometricState();
         showSecuritySummaries(accessibilityActive, deviceAdminActive);
 
         configureSwitch(switchAccessibility, accessibilityActive, deviceLockReady || accessibilityActive);
@@ -243,6 +257,14 @@ public class MainActivity extends AppCompatActivity {
         txtDeviceAdminSummary.setText(deviceAdminActive
                 ? R.string.device_admin_card_summary_active
                 : R.string.device_admin_card_summary);
+    }
+
+    private void showNativeBiometricState() {
+        txtNativeBiometricSummary.setText(isNativeBiometricReady()
+                ? R.string.biometric_card_summary_ready
+                : R.string.biometric_card_summary_setup);
+        cardNativeBiometric.setOnClickListener(view -> openNativeBiometricSettings());
+        btnNativeBiometricSettings.setOnClickListener(view -> openNativeBiometricSettings());
     }
 
     private void showTrustedWifiState() {
@@ -382,6 +404,50 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.device_admin_description));
         AuthStore.allowSettingsNavigation(this);
         startActivity(intent);
+    }
+
+    private void openNativeBiometricSettings() {
+        AuthStore.allowSettingsNavigation(this);
+        if (openFirstAvailableSettingsAction(
+                ACTION_FACE_SETTINGS,
+                ACTION_FACE_ENROLL,
+                ACTION_MOTOROLA_FACE_ENROLL,
+                ACTION_COMBINED_BIOMETRICS_SETTINGS)) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent biometricEnroll = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
+            biometricEnroll.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, AUTHENTICATORS);
+            if (canOpen(biometricEnroll)) {
+                startActivity(biometricEnroll);
+                return;
+            }
+        }
+
+        Intent securitySettings = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+        if (canOpen(securitySettings)) {
+            startActivity(securitySettings);
+            return;
+        }
+
+        startActivity(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    private boolean openFirstAvailableSettingsAction(String... actions) {
+        for (String action : actions) {
+            Intent intent = new Intent(action);
+            if (canOpen(intent)) {
+                startActivity(intent);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean canOpen(Intent intent) {
+        return intent.resolveActivity(getPackageManager()) != null;
     }
 
     private void continueRequiredSetupFlow() {
@@ -1052,6 +1118,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
         return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private boolean isNativeBiometricReady() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+                == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
     private static class AppEntry {
