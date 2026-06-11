@@ -1,7 +1,10 @@
 package sms.droid.com.droidsms;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,13 +21,25 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private String lastPromptPackageName = "";
     private String lastProtectedPackageName = "";
     private String pendingClosedPackageName = "";
+    private boolean screenReceiverRegistered;
     private long lastPromptAt = 0;
     private boolean settingsAddNetworkFlowActive;
+    private String activeGuardPackageName = "";
+    private boolean guardWindowVisible;
+    private final BroadcastReceiver screenLockReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                clearSessionState("screen_off");
+            }
+        }
+    };
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         debug("service connected");
+        registerScreenLockReceiver();
         Toast.makeText(this, R.string.app_protection_enabled_message, Toast.LENGTH_SHORT).show();
     }
 
@@ -41,13 +56,22 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         String packageName = packageNameValue.toString();
         CharSequence className = event.getClassName();
+        boolean appLockPackage = TextUtils.equals(packageName, getPackageName());
+        if (appLockPackage && !TextUtils.isEmpty(activeGuardPackageName)) {
+            guardWindowVisible = true;
+        } else if (!appLockPackage && !TextUtils.isEmpty(activeGuardPackageName)) {
+            guardWindowVisible = false;
+        }
+
         boolean settingsPackage = SystemPackages.isSettingsPackage(packageName);
         boolean settingsCredentialComponent = settingsPackage
                 && SystemPackages.isSettingsCredentialComponent(className);
         boolean settingsAddNetworkComponent = settingsPackage
                 && SystemPackages.isSettingsAddNetworkComponent(className);
+        boolean settingsPanelComponent = settingsPackage
+                && SystemPackages.isSettingsPanelComponent(className);
 
-        if (settingsAddNetworkComponent) {
+        if (settingsAddNetworkComponent || settingsPanelComponent) {
             settingsAddNetworkFlowActive = true;
         } else if (settingsPackage && !settingsCredentialComponent) {
             settingsAddNetworkFlowActive = false;
@@ -76,18 +100,26 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             lastPromptAt = 0;
             lastPackageName = packageName;
             settingsAddNetworkFlowActive = false;
+            clearActiveGuard();
             return;
         }
 
         if (SystemPackages.isHomeOrLauncherSurface(this, packageName)) {
-            debug("event package=" + packageName + " decision=home_launcher clear_unlock");
-            rememberPendingClosedPackage();
-            AuthStore.clearUnlock(this);
+            boolean keepUnlocked = AuthStore.isKeepUnlockedOnMinimizeEnabled(this);
+            debug("event package=" + packageName + " decision=home_launcher "
+                    + (keepUnlocked ? "keep_unlock" : "clear_unlock"));
+            if (keepUnlocked) {
+                pendingClosedPackageName = "";
+            } else {
+                rememberPendingClosedPackage();
+                AuthStore.clearUnlock(this);
+            }
             AuthStore.clearSettingsNavigationAllowance(this);
             lastPromptPackageName = "";
             lastPromptAt = 0;
             lastPackageName = packageName;
             settingsAddNetworkFlowActive = false;
+            clearActiveGuard();
             return;
         }
 
@@ -152,6 +184,9 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         if (AuthStore.isUnlocked(this, packageName)) {
             debug("event package=" + packageName + " decision=already_unlocked");
+            if (TextUtils.equals(activeGuardPackageName, packageName)) {
+                clearActiveGuard();
+            }
             lastProtectedPackageName = packageName;
             lastPackageName = packageName;
             return;
@@ -159,20 +194,38 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         long now = System.currentTimeMillis();
         if (TextUtils.equals(lastPromptPackageName, packageName) && now - lastPromptAt < 2500) {
-            debug("event package=" + packageName + " decision=debounced");
-            return;
+            if (TextUtils.equals(activeGuardPackageName, packageName) && !guardWindowVisible) {
+                debug("event package=" + packageName + " decision=guard_interrupted_restart");
+            } else {
+                debug("event package=" + packageName + " decision=debounced");
+                return;
+            }
         }
 
+        startGuard(packageName, now);
+    }
+
+    private void startGuard(String packageName, long now) {
         lastPackageName = packageName;
         lastProtectedPackageName = packageName;
         lastPromptPackageName = packageName;
         lastPromptAt = now;
+        activeGuardPackageName = packageName;
+        guardWindowVisible = false;
 
         Intent intent = new Intent(this, GuardActivity.class);
         intent.putExtra(GuardActivity.EXTRA_TARGET_PACKAGE, packageName);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         debug("event package=" + packageName + " decision=start_guard");
         startActivity(intent);
+    }
+
+    private void clearActiveGuard() {
+        activeGuardPackageName = "";
+        guardWindowVisible = false;
     }
 
     @Override
@@ -181,8 +234,15 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
     @Override
     public boolean onUnbind(Intent intent) {
+        unregisterScreenLockReceiver();
         Toast.makeText(this, R.string.app_protection_disabled_message, Toast.LENGTH_SHORT).show();
         return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterScreenLockReceiver();
+        super.onDestroy();
     }
 
     static boolean isProtectedPackage(String packageName) {
@@ -208,6 +268,36 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private boolean hasUnlockedSettingsSession() {
         return SystemPackages.isSettingsPackage(lastProtectedPackageName)
                 && AuthStore.isUnlocked(this, lastProtectedPackageName);
+    }
+
+    private void clearSessionState(String reason) {
+        debug("session decision=clear reason=" + reason);
+        AuthStore.clearUnlock(this);
+        AuthStore.clearSettingsNavigationAllowance(this);
+        lastPromptPackageName = "";
+        lastProtectedPackageName = "";
+        pendingClosedPackageName = "";
+        lastPromptAt = 0;
+        settingsAddNetworkFlowActive = false;
+        clearActiveGuard();
+    }
+
+    private void registerScreenLockReceiver() {
+        if (screenReceiverRegistered) {
+            return;
+        }
+
+        registerReceiver(screenLockReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        screenReceiverRegistered = true;
+    }
+
+    private void unregisterScreenLockReceiver() {
+        if (!screenReceiverRegistered) {
+            return;
+        }
+
+        unregisterReceiver(screenLockReceiver);
+        screenReceiverRegistered = false;
     }
 
     private void rememberPendingClosedPackage() {

@@ -39,6 +39,9 @@
     <string name="accessibility_card_summary">Permette di rilevare quando viene aperta un’app protetta e richiedere biometria o password.</string>
     <string name="accessibility_card_summary_active">Attiva. Le app selezionate sono protette da biometria o password.</string>
     <string name="accessibility_card_summary_inactive">Disattivata. Le app selezionate non vengono bloccate.</string>
+    <string name="minimize_unlock_card_title">Quando esci dall’app</string>
+    <string name="minimize_unlock_card_summary_active">Le app autenticate restano sbloccate finché lo schermo non viene bloccato.</string>
+    <string name="minimize_unlock_card_summary_inactive">Predefinito. Quando esci e torni a un’app protetta, verrà richiesta di nuovo la biometria.</string>
     <string name="app_selection_title">App protette</string>
     <string name="app_selection_summary">Scegli quali app devono richiedere biometria all’apertura.</string>
     <string name="risk_high_title">Essenziali</string>

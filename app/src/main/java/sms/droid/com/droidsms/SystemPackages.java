@@ -64,6 +64,15 @@ final class SystemPackages {
                 || normalizedClassName.contains("addappnetworksactivity");
     }
 
+    static boolean isSettingsPanelComponent(CharSequence className) {
+        if (className == null) {
+            return false;
+        }
+
+        String normalizedClassName = className.toString().toLowerCase(java.util.Locale.ROOT);
+        return normalizedClassName.contains("panel.settingspanelactivity");
+    }
+
     static boolean shouldIgnoreAccessibilityEvent(Context context, String packageName) {
         if (isSettingsPackage(packageName)) {
             return false;

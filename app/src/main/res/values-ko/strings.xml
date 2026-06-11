@@ -39,6 +39,9 @@
     <string name="accessibility_card_summary">보호된 앱이 열릴 때 감지하고 생체 인증 또는 비밀번호를 요청합니다.</string>
     <string name="accessibility_card_summary_active">켜짐. 선택한 앱은 생체 인증 또는 비밀번호로 보호됩니다.</string>
     <string name="accessibility_card_summary_inactive">꺼짐. 선택한 앱은 잠기지 않습니다.</string>
+    <string name="minimize_unlock_card_title">앱을 나갈 때</string>
+    <string name="minimize_unlock_card_summary_active">인증된 앱은 화면이 잠길 때까지 잠금 해제 상태를 유지합니다.</string>
+    <string name="minimize_unlock_card_summary_inactive">기본값. 보호된 앱을 나갔다가 돌아오면 생체 인증을 다시 요청합니다.</string>
     <string name="app_selection_title">보호된 앱</string>
     <string name="app_selection_summary">열 때 생체 인증을 요구할 앱을 선택하세요.</string>
     <string name="risk_high_title">필수</string>

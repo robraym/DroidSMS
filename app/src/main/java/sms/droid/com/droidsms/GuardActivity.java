@@ -25,6 +25,7 @@ public class GuardActivity extends AppCompatActivity {
 
     private String targetPackage;
     private boolean promptShown;
+    private boolean authenticated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,20 @@ public class GuardActivity extends AppCompatActivity {
         debug("guard created target=" + targetPackage);
         protectBackground();
         setContentView(R.layout.activity_guard);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String newTargetPackage = intent.getStringExtra(EXTRA_TARGET_PACKAGE);
+        if (!TextUtils.equals(targetPackage, newTargetPackage)) {
+            targetPackage = newTargetPackage;
+        }
+        if (!AuthStore.isUnlocked(this, targetPackage)) {
+            promptShown = false;
+            authenticated = false;
+        }
     }
 
     @Override
@@ -63,6 +78,7 @@ public class GuardActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 debug("guard auth_success target=" + targetPackage);
+                authenticated = true;
                 AuthStore.markUnlocked(GuardActivity.this, targetPackage);
                 finish();
             }
@@ -71,6 +87,10 @@ public class GuardActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 debug("guard auth_error target=" + targetPackage + " code=" + errorCode + " message=" + errString);
+                if (errorCode == BiometricPrompt.ERROR_CANCELED && !authenticated) {
+                    promptShown = false;
+                    return;
+                }
                 closeToHome();
             }
         });

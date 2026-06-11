@@ -105,12 +105,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView btnDeviceLockSettings;
     private TextView txtAccessibilitySummary;
     private TextView txtDeviceAdminSummary;
+    private TextView txtMinimizeUnlockSummary;
     private TextView txtNativeBiometricSummary;
     private TextView btnNativeBiometricSettings;
     private TextView txtTrustedWifiSummary;
     private TextView btnTrustedWifi;
     private SwitchCompat switchAccessibility;
     private SwitchCompat switchDeviceAdmin;
+    private SwitchCompat switchKeepUnlockedOnMinimize;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName deviceAdminComponent;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -201,12 +203,14 @@ public class MainActivity extends AppCompatActivity {
         btnDeviceLockSettings = findViewById(R.id.btnDeviceLockSettings);
         txtAccessibilitySummary = findViewById(R.id.txtAccessibilitySummary);
         txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
+        txtMinimizeUnlockSummary = findViewById(R.id.txtMinimizeUnlockSummary);
         txtNativeBiometricSummary = findViewById(R.id.txtNativeBiometricSummary);
         btnNativeBiometricSettings = findViewById(R.id.btnNativeBiometricSettings);
         txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
         btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
         switchAccessibility = findViewById(R.id.switchAccessibility);
         switchDeviceAdmin = findViewById(R.id.switchDeviceAdmin);
+        switchKeepUnlockedOnMinimize = findViewById(R.id.switchKeepUnlockedOnMinimize);
     }
 
     private void showSettingsState() {
@@ -223,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         showTrustedWifiState();
         showNativeBiometricState();
         showSecuritySummaries(accessibilityActive, deviceAdminActive);
+        showMinimizeUnlockState();
 
         configureSwitch(switchAccessibility, accessibilityActive, deviceLockReady || accessibilityActive);
         switchAccessibility.setOnClickListener(view -> {
@@ -248,6 +253,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         notifyProtectionStateChanges(accessibilityActive, deviceAdminActive);
+    }
+
+    private void showMinimizeUnlockState() {
+        boolean keepUnlocked = AuthStore.isKeepUnlockedOnMinimizeEnabled(this);
+        txtMinimizeUnlockSummary.setText(keepUnlocked
+                ? R.string.minimize_unlock_card_summary_active
+                : R.string.minimize_unlock_card_summary_inactive);
+        configureSwitch(switchKeepUnlockedOnMinimize, keepUnlocked, true);
+        switchKeepUnlockedOnMinimize.setOnClickListener(view -> {
+            boolean enabled = switchKeepUnlockedOnMinimize.isChecked();
+            AuthStore.setKeepUnlockedOnMinimizeEnabled(this, enabled);
+            txtMinimizeUnlockSummary.setText(enabled
+                    ? R.string.minimize_unlock_card_summary_active
+                    : R.string.minimize_unlock_card_summary_inactive);
+        });
     }
 
     private void showSecuritySummaries(boolean accessibilityActive, boolean deviceAdminActive) {

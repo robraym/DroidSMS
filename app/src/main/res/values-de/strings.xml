@@ -39,6 +39,9 @@
     <string name="accessibility_card_summary">Erkennt, wenn eine geschützte App geöffnet wird, und fordert Biometrie oder Passwort an.</string>
     <string name="accessibility_card_summary_active">Aktiv. Ausgewählte Apps sind per Biometrie oder Passwort geschützt.</string>
     <string name="accessibility_card_summary_inactive">Deaktiviert. Ausgewählte Apps werden nicht gesperrt.</string>
+    <string name="minimize_unlock_card_title">Beim Verlassen der App</string>
+    <string name="minimize_unlock_card_summary_active">Authentifizierte Apps bleiben entsperrt, bis der Bildschirm gesperrt wird.</string>
+    <string name="minimize_unlock_card_summary_inactive">Standard. Wenn Sie eine geschützte App verlassen und zurückkehren, wird Biometrie erneut angefordert.</string>
     <string name="app_selection_title">Geschützte Apps</string>
     <string name="app_selection_summary">Wählen Sie aus, welche Apps beim Öffnen Biometrie verlangen.</string>
     <string name="risk_high_title">Wichtig</string>

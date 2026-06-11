@@ -21,7 +21,9 @@ final class AuthStore {
     private static final String KEY_TRUSTED_WIFI_SSID = "trusted_wifi_ssid";
     private static final String KEY_TRUSTED_WIFI_SSIDS = "trusted_wifi_ssids";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
+    private static final String KEY_UNLOCKED_PACKAGES = "unlocked_packages";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
+    private static final String KEY_KEEP_UNLOCKED_ON_MINIMIZE = "keep_unlocked_on_minimize";
     private static final String KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL = "settings_navigation_allowed_until";
     private static final String KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED = "accessibility_disclosure_accepted";
     private static final long UNLOCK_WINDOW_MS = 30 * 60 * 1000;
@@ -70,6 +72,7 @@ final class AuthStore {
         prefs(context).edit()
                 .remove(KEY_PASSWORD_HASH)
                 .remove(KEY_UNLOCKED_PACKAGE)
+                .remove(KEY_UNLOCKED_PACKAGES)
                 .remove(KEY_UNLOCKED_UNTIL)
                 .apply();
     }
@@ -83,32 +86,44 @@ final class AuthStore {
             return;
         }
 
+        Set<String> unlockedPackages = getUnlockedPackages(context);
+        unlockedPackages.add(packageName);
+
         prefs(context).edit()
-                .putString(KEY_UNLOCKED_PACKAGE, packageName)
+                .putStringSet(KEY_UNLOCKED_PACKAGES, unlockedPackages)
+                .remove(KEY_UNLOCKED_PACKAGE)
                 .putLong(KEY_UNLOCKED_UNTIL, System.currentTimeMillis() + UNLOCK_WINDOW_MS)
                 .apply();
     }
 
     static boolean isUnlocked(Context context, String packageName) {
         SharedPreferences preferences = prefs(context);
-        String unlockedPackage = preferences.getString(KEY_UNLOCKED_PACKAGE, "");
         long unlockedUntil = preferences.getLong(KEY_UNLOCKED_UNTIL, 0);
         if (System.currentTimeMillis() >= unlockedUntil) {
+            clearUnlock(context);
             return false;
         }
 
-        if (TextUtils.equals(unlockedPackage, packageName)) {
-            return true;
-        }
-
-        return false;
+        return getUnlockedPackages(context).contains(packageName);
     }
 
     static void clearUnlock(Context context) {
         prefs(context).edit()
                 .remove(KEY_UNLOCKED_PACKAGE)
+                .remove(KEY_UNLOCKED_PACKAGES)
                 .remove(KEY_UNLOCKED_UNTIL)
                 .apply();
+    }
+
+    private static Set<String> getUnlockedPackages(Context context) {
+        SharedPreferences preferences = prefs(context);
+        Set<String> unlockedPackages = new HashSet<>(
+                preferences.getStringSet(KEY_UNLOCKED_PACKAGES, new HashSet<>()));
+        String legacyPackage = preferences.getString(KEY_UNLOCKED_PACKAGE, "");
+        if (!TextUtils.isEmpty(legacyPackage)) {
+            unlockedPackages.add(legacyPackage);
+        }
+        return unlockedPackages;
     }
 
     static void allowSettingsNavigation(Context context) {
@@ -126,6 +141,16 @@ final class AuthStore {
     static void clearSettingsNavigationAllowance(Context context) {
         prefs(context).edit()
                 .remove(KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL)
+                .apply();
+    }
+
+    static boolean isKeepUnlockedOnMinimizeEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_KEEP_UNLOCKED_ON_MINIMIZE, false);
+    }
+
+    static void setKeepUnlockedOnMinimizeEnabled(Context context, boolean enabled) {
+        prefs(context).edit()
+                .putBoolean(KEY_KEEP_UNLOCKED_ON_MINIMIZE, enabled)
                 .apply();
     }
 

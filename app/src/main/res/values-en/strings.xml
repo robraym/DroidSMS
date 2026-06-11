@@ -39,6 +39,9 @@
     <string name="accessibility_card_summary">Allows App Lock to detect when a protected app is opened and request biometrics or password.</string>
     <string name="accessibility_card_summary_active">On. Selected apps are protected by biometrics or password.</string>
     <string name="accessibility_card_summary_inactive">Off. Selected apps are not being locked.</string>
+    <string name="minimize_unlock_card_title">When leaving the app</string>
+    <string name="minimize_unlock_card_summary_active">Authenticated apps stay unlocked until the screen is locked.</string>
+    <string name="minimize_unlock_card_summary_inactive">Default. When you leave and return to a protected app, biometrics will be requested again.</string>
     <string name="app_selection_title">Protected apps</string>
     <string name="app_selection_summary">Choose which apps should require biometrics when opened.</string>
     <string name="risk_high_title">Essentials</string>
