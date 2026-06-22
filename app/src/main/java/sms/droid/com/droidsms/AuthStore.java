@@ -20,6 +20,11 @@ final class AuthStore {
     private static final String KEY_PROTECTED_PACKAGES = "protected_packages";
     private static final String KEY_TRUSTED_WIFI_SSID = "trusted_wifi_ssid";
     private static final String KEY_TRUSTED_WIFI_SSIDS = "trusted_wifi_ssids";
+    private static final String KEY_TRUSTED_WIFI_SESSION_HANDLE = "trusted_wifi_session_handle";
+    private static final String KEY_TRUSTED_WIFI_SESSION_SSID = "trusted_wifi_session_ssid";
+    private static final String KEY_TRUSTED_WIFI_SESSION_BOOT_COUNT = "trusted_wifi_session_boot_count";
+    private static final String KEY_TRUSTED_BLUETOOTH_ADDRESSES = "trusted_bluetooth_addresses";
+    private static final String KEY_TRUSTED_BLUETOOTH_NAME_PREFIX = "trusted_bluetooth_name_";
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_PACKAGES = "unlocked_packages";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
@@ -306,12 +311,83 @@ final class AuthStore {
         prefs(context).edit()
                 .putStringSet(KEY_TRUSTED_WIFI_SSIDS, trustedSsids)
                 .apply();
+        if (TextUtils.equals(ssid, getTrustedWifiSessionSsid(context))) {
+            clearTrustedWifiSession(context);
+        }
     }
 
     static void clearTrustedWifi(Context context) {
         prefs(context).edit()
                 .remove(KEY_TRUSTED_WIFI_SSID)
                 .remove(KEY_TRUSTED_WIFI_SSIDS)
+                .remove(KEY_TRUSTED_WIFI_SESSION_HANDLE)
+                .remove(KEY_TRUSTED_WIFI_SESSION_SSID)
+                .remove(KEY_TRUSTED_WIFI_SESSION_BOOT_COUNT)
+                .apply();
+    }
+
+    static void saveTrustedWifiSession(Context context, long networkHandle, String ssid, int bootCount) {
+        prefs(context).edit()
+                .putLong(KEY_TRUSTED_WIFI_SESSION_HANDLE, networkHandle)
+                .putString(KEY_TRUSTED_WIFI_SESSION_SSID, ssid)
+                .putInt(KEY_TRUSTED_WIFI_SESSION_BOOT_COUNT, bootCount)
+                .apply();
+    }
+
+    static long getTrustedWifiSessionHandle(Context context) {
+        return prefs(context).getLong(KEY_TRUSTED_WIFI_SESSION_HANDLE, 0L);
+    }
+
+    static String getTrustedWifiSessionSsid(Context context) {
+        return prefs(context).getString(KEY_TRUSTED_WIFI_SESSION_SSID, "");
+    }
+
+    static int getTrustedWifiSessionBootCount(Context context) {
+        return prefs(context).getInt(KEY_TRUSTED_WIFI_SESSION_BOOT_COUNT, -1);
+    }
+
+    static void clearTrustedWifiSession(Context context) {
+        prefs(context).edit()
+                .remove(KEY_TRUSTED_WIFI_SESSION_HANDLE)
+                .remove(KEY_TRUSTED_WIFI_SESSION_SSID)
+                .remove(KEY_TRUSTED_WIFI_SESSION_BOOT_COUNT)
+                .apply();
+    }
+
+    static Set<String> getTrustedBluetoothAddresses(Context context) {
+        return new HashSet<>(prefs(context).getStringSet(
+                KEY_TRUSTED_BLUETOOTH_ADDRESSES,
+                new HashSet<>()));
+    }
+
+    static String getTrustedBluetoothName(Context context, String address) {
+        if (TextUtils.isEmpty(address)) {
+            return "";
+        }
+        return prefs(context).getString(KEY_TRUSTED_BLUETOOTH_NAME_PREFIX + address, address);
+    }
+
+    static void addTrustedBluetoothDevice(Context context, String address, String name) {
+        if (TextUtils.isEmpty(address)) {
+            return;
+        }
+
+        Set<String> trustedAddresses = getTrustedBluetoothAddresses(context);
+        trustedAddresses.add(address);
+        SharedPreferences.Editor editor = prefs(context).edit()
+                .putStringSet(KEY_TRUSTED_BLUETOOTH_ADDRESSES, trustedAddresses);
+        if (!TextUtils.isEmpty(name)) {
+            editor.putString(KEY_TRUSTED_BLUETOOTH_NAME_PREFIX + address, name);
+        }
+        editor.apply();
+    }
+
+    static void removeTrustedBluetoothDevice(Context context, String address) {
+        Set<String> trustedAddresses = getTrustedBluetoothAddresses(context);
+        trustedAddresses.remove(address);
+        prefs(context).edit()
+                .putStringSet(KEY_TRUSTED_BLUETOOTH_ADDRESSES, trustedAddresses)
+                .remove(KEY_TRUSTED_BLUETOOTH_NAME_PREFIX + address)
                 .apply();
     }
 

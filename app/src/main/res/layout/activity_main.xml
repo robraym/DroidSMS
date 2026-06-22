@@ -330,6 +330,57 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/cardTrustedBluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/settings_card_background"
+            android:gravity="center_vertical"
+            android:minHeight="64dp"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trusted_bluetooth_title"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtTrustedBluetoothSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/trusted_bluetooth_not_configured"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnTrustedBluetooth"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/settings_text_action_ripple"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:text="@string/trusted_bluetooth_add"
+                android:textColor="@color/settingsButton"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

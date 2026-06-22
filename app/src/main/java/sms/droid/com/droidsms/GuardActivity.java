@@ -2,12 +2,16 @@ package sms.droid.com.droidsms;
 
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,19 +23,26 @@ import java.util.concurrent.Executor;
 
 public class GuardActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_PACKAGE = "sms.droid.com.droidsms.extra.TARGET_PACKAGE";
+    public static final String EXTRA_WIFI_CONFIRMATION_REQUIRED =
+            "sms.droid.com.droidsms.extra.WIFI_CONFIRMATION_REQUIRED";
     private static final String TAG = "AppLockGuard";
+    private static final int REQUEST_TRUSTED_WIFI_PERMISSION = 3001;
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
     private String targetPackage;
     private boolean promptShown;
     private boolean authenticated;
+    private boolean wifiConfirmationRequired;
+    private boolean waitingForWifiPermission;
+    private View panelTrustedWifiCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
         targetPackage = getIntent().getStringExtra(EXTRA_TARGET_PACKAGE);
+        wifiConfirmationRequired = getIntent().getBooleanExtra(EXTRA_WIFI_CONFIRMATION_REQUIRED, false);
         if (TextUtils.isEmpty(targetPackage) || SystemPackages.shouldIgnoreAccessibilityEvent(this, targetPackage)) {
             debug("guard finish invalid_target=" + targetPackage);
             finish();
@@ -40,6 +51,7 @@ public class GuardActivity extends AppCompatActivity {
         debug("guard created target=" + targetPackage);
         protectBackground();
         setContentView(R.layout.activity_guard);
+        bindTrustedWifiPanel();
     }
 
     @Override
@@ -50,6 +62,9 @@ public class GuardActivity extends AppCompatActivity {
         if (!TextUtils.equals(targetPackage, newTargetPackage)) {
             targetPackage = newTargetPackage;
         }
+        wifiConfirmationRequired = intent.getBooleanExtra(EXTRA_WIFI_CONFIRMATION_REQUIRED, false);
+        waitingForWifiPermission = false;
+        hideTrustedWifiPanel();
         if (!AuthStore.isUnlocked(this, targetPackage)) {
             promptShown = false;
             authenticated = false;
@@ -59,13 +74,66 @@ public class GuardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (wifiConfirmationRequired && !authenticated) {
+            handleTrustedWifiConfirmation();
+            return;
+        }
+
         if (!promptShown) {
             promptShown = true;
             showBiometricPrompt();
         }
     }
 
+    private void handleTrustedWifiConfirmation() {
+        TrustedWifi.TrustState trustState = TrustedWifi.getTrustState(this);
+        if (trustState == TrustedWifi.TrustState.TRUSTED) {
+            debug("guard trusted_wifi_confirmed target=" + targetPackage);
+            authenticated = true;
+            AuthStore.markUnlocked(this, targetPackage);
+            finish();
+            return;
+        }
+
+        if (trustState == TrustedWifi.TrustState.CONFIRMATION_REQUIRED) {
+            if (!TrustedWifi.hasRequiredPermission(this)) {
+                requestTrustedWifiPermission();
+                return;
+            }
+
+            if (!TrustedWifi.isLocationEnabled(this)) {
+                showTrustedWifiPanel();
+                return;
+            }
+        }
+
+        debug("guard trusted_wifi_unconfirmed_fallback target=" + targetPackage);
+        wifiConfirmationRequired = false;
+        showBiometricFallback();
+    }
+
+    private void requestTrustedWifiPermission() {
+        if (waitingForWifiPermission) {
+            return;
+        }
+
+        waitingForWifiPermission = true;
+        requestPermissions(
+                new String[]{TrustedWifi.getRequiredPermission()},
+                REQUEST_TRUSTED_WIFI_PERMISSION);
+    }
+
+    private void showBiometricFallback() {
+        if (promptShown) {
+            return;
+        }
+        promptShown = true;
+        hideTrustedWifiPanel();
+        showBiometricPrompt();
+    }
+
     private void showBiometricPrompt() {
+        hideTrustedWifiPanel();
         if (!isBiometricReady()) {
             debug("guard biometric_not_ready target=" + targetPackage);
             closeToHome();
@@ -103,6 +171,59 @@ public class GuardActivity extends AppCompatActivity {
                 .build();
 
         biometricPrompt.authenticate(promptInfo);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != REQUEST_TRUSTED_WIFI_PERMISSION) {
+            return;
+        }
+
+        waitingForWifiPermission = false;
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            handleTrustedWifiConfirmation();
+            return;
+        }
+
+        debug("guard trusted_wifi_permission_denied target=" + targetPackage);
+        wifiConfirmationRequired = false;
+        showBiometricFallback();
+    }
+
+    private void bindTrustedWifiPanel() {
+        panelTrustedWifiCheck = findViewById(R.id.panelTrustedWifiCheck);
+        TextView btnOpenLocationSettings = findViewById(R.id.btnOpenLocationSettings);
+        TextView btnUseBiometricNow = findViewById(R.id.btnUseBiometricNow);
+        btnOpenLocationSettings.setOnClickListener(view -> openLocationSettingsForWifi());
+        btnUseBiometricNow.setOnClickListener(view -> {
+            debug("guard trusted_wifi_manual_biometric target=" + targetPackage);
+            wifiConfirmationRequired = false;
+            showBiometricFallback();
+        });
+    }
+
+    private void showTrustedWifiPanel() {
+        if (panelTrustedWifiCheck != null) {
+            panelTrustedWifiCheck.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideTrustedWifiPanel() {
+        if (panelTrustedWifiCheck != null) {
+            panelTrustedWifiCheck.setVisibility(View.GONE);
+        }
+    }
+
+    private void openLocationSettingsForWifi() {
+        debug("guard trusted_wifi_open_location_settings target=" + targetPackage);
+        AuthStore.allowSettingsNavigation(this);
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     private boolean isBiometricReady() {

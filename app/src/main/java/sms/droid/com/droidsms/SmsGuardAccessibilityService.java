@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -26,6 +30,9 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     private boolean settingsAddNetworkFlowActive;
     private String activeGuardPackageName = "";
     private boolean guardWindowVisible;
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback trustedWifiNetworkCallback;
+    private boolean networkCallbackRegistered;
     private final BroadcastReceiver screenLockReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -40,6 +47,8 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
         super.onServiceConnected();
         debug("service connected");
         registerScreenLockReceiver();
+        registerNetworkCallback();
+        TrustedBluetooth.warmUp(this);
         Toast.makeText(this, R.string.app_protection_enabled_message, Toast.LENGTH_SHORT).show();
     }
 
@@ -155,8 +164,17 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             return;
         }
 
-        if (TrustedWifi.isCurrentWifiTrusted(this)) {
+        TrustedWifi.TrustState wifiTrustState = TrustedWifi.getTrustState(this);
+        if (wifiTrustState == TrustedWifi.TrustState.TRUSTED) {
             debug("event package=" + packageName + " decision=trusted_wifi_skip");
+            lastPackageName = packageName;
+            lastPromptPackageName = "";
+            lastPromptAt = 0;
+            return;
+        }
+
+        if (TrustedBluetooth.isAnyTrustedDeviceConnected(this)) {
+            debug("event package=" + packageName + " decision=trusted_bluetooth_skip");
             lastPackageName = packageName;
             lastPromptPackageName = "";
             lastPromptAt = 0;
@@ -202,10 +220,10 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
             }
         }
 
-        startGuard(packageName, now);
+        startGuard(packageName, now, wifiTrustState == TrustedWifi.TrustState.CONFIRMATION_REQUIRED);
     }
 
-    private void startGuard(String packageName, long now) {
+    private void startGuard(String packageName, long now, boolean wifiConfirmationRequired) {
         lastPackageName = packageName;
         lastProtectedPackageName = packageName;
         lastPromptPackageName = packageName;
@@ -215,11 +233,13 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         Intent intent = new Intent(this, GuardActivity.class);
         intent.putExtra(GuardActivity.EXTRA_TARGET_PACKAGE, packageName);
+        intent.putExtra(GuardActivity.EXTRA_WIFI_CONFIRMATION_REQUIRED, wifiConfirmationRequired);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP
                 | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        debug("event package=" + packageName + " decision=start_guard");
+        debug("event package=" + packageName + " decision=start_guard wifi_confirmation="
+                + wifiConfirmationRequired);
         startActivity(intent);
     }
 
@@ -235,6 +255,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     @Override
     public boolean onUnbind(Intent intent) {
         unregisterScreenLockReceiver();
+        unregisterNetworkCallback();
         Toast.makeText(this, R.string.app_protection_disabled_message, Toast.LENGTH_SHORT).show();
         return super.onUnbind(intent);
     }
@@ -242,6 +263,7 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
     @Override
     public void onDestroy() {
         unregisterScreenLockReceiver();
+        unregisterNetworkCallback();
         super.onDestroy();
     }
 
@@ -298,6 +320,53 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
         unregisterReceiver(screenLockReceiver);
         screenReceiverRegistered = false;
+    }
+
+    private void registerNetworkCallback() {
+        if (networkCallbackRegistered) {
+            return;
+        }
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return;
+        }
+
+        trustedWifiNetworkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                TrustedWifi.refreshTrustedSessionState(SmsGuardAccessibilityService.this);
+            }
+
+            @Override
+            public void onLost(Network network) {
+                TrustedWifi.onWifiNetworkLost(SmsGuardAccessibilityService.this, network);
+            }
+        };
+
+        try {
+            NetworkRequest request = new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .build();
+            connectivityManager.registerNetworkCallback(request, trustedWifiNetworkCallback);
+            networkCallbackRegistered = true;
+        } catch (RuntimeException exception) {
+            trustedWifiNetworkCallback = null;
+        }
+    }
+
+    private void unregisterNetworkCallback() {
+        if (!networkCallbackRegistered || connectivityManager == null || trustedWifiNetworkCallback == null) {
+            return;
+        }
+
+        try {
+            connectivityManager.unregisterNetworkCallback(trustedWifiNetworkCallback);
+        } catch (RuntimeException exception) {
+            // Already unregistered by the system.
+        }
+        networkCallbackRegistered = false;
+        trustedWifiNetworkCallback = null;
     }
 
     private void rememberPendingClosedPackage() {

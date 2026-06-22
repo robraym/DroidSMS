@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String ACTION_COMBINED_BIOMETRICS_SETTINGS =
             "android.settings.COMBINED_BIOMETRICS_SETTINGS";
     private static final String ACTION_MOTOROLA_FACE_ENROLL = "com.motorola.intent.action.FACE_ENROLL";
-    private static final int REQUEST_LOCATION_PERMISSION = 1001;
+    private static final int REQUEST_TRUSTED_WIFI_PERMISSION = 1001;
+    private static final int REQUEST_TRUSTED_BLUETOOTH_PERMISSION = 1002;
     private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private static final int RISK_HIGH = 3;
@@ -110,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView btnNativeBiometricSettings;
     private TextView txtTrustedWifiSummary;
     private TextView btnTrustedWifi;
+    private TextView txtTrustedBluetoothSummary;
+    private TextView btnTrustedBluetooth;
     private SwitchCompat switchAccessibility;
     private SwitchCompat switchDeviceAdmin;
     private SwitchCompat switchKeepUnlockedOnMinimize;
@@ -122,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean lastAccessibilityActive;
     private boolean lastDeviceAdminActive;
     private boolean waitingForRequiredSetupResult;
+    private boolean pendingTrustedWifiSave;
+    private boolean pendingBluetoothPicker;
     private int requiredSetupStep = REQUIRED_SETUP_NONE;
     private AlertDialog requiredSetupDialog;
 
@@ -147,6 +152,14 @@ public class MainActivity extends AppCompatActivity {
             AuthStore.clearSettingsNavigationAllowance(this);
             showSettingsState();
             continueRequiredSetupFlow();
+            if (pendingTrustedWifiSave
+                    && TrustedWifi.hasRequiredPermission(this)
+                    && TrustedWifi.isLocationEnabled(this)) {
+                saveCurrentTrustedWifi();
+            } else if (pendingTrustedWifiSave
+                    && TrustedWifi.hasRequiredPermission(this)) {
+                pendingTrustedWifiSave = false;
+            }
         }
     }
 
@@ -208,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
         btnNativeBiometricSettings = findViewById(R.id.btnNativeBiometricSettings);
         txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
         btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
+        txtTrustedBluetoothSummary = findViewById(R.id.txtTrustedBluetoothSummary);
+        btnTrustedBluetooth = findViewById(R.id.btnTrustedBluetooth);
         switchAccessibility = findViewById(R.id.switchAccessibility);
         switchDeviceAdmin = findViewById(R.id.switchDeviceAdmin);
         switchKeepUnlockedOnMinimize = findViewById(R.id.switchKeepUnlockedOnMinimize);
@@ -222,9 +237,11 @@ public class MainActivity extends AppCompatActivity {
         txtSubtitle.setText(R.string.settings_subtitle);
 
         cardDeviceLockWarning.setVisibility(deviceLockReady ? View.GONE : View.VISIBLE);
-        btnDeviceLockSettings.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS)));
+        btnDeviceLockSettings.setOnClickListener(view -> openAllowedSettings(Settings.ACTION_SECURITY_SETTINGS));
 
+        TrustedBluetooth.warmUp(this);
         showTrustedWifiState();
+        showTrustedBluetoothState();
         showNativeBiometricState();
         showSecuritySummaries(accessibilityActive, deviceAdminActive);
         showMinimizeUnlockState();
@@ -291,7 +308,9 @@ public class MainActivity extends AppCompatActivity {
         List<String> trustedSsids = getSortedTrustedWifiSsids();
         if (!trustedSsids.isEmpty()) {
             txtTrustedWifiSummary.setText(getString(
-                    R.string.trusted_wifi_configured,
+                    TrustedWifi.isTrustedSessionActive(this)
+                            ? R.string.trusted_wifi_configured_active
+                            : R.string.trusted_wifi_configured,
                     TextUtils.join(", ", trustedSsids)));
             btnTrustedWifi.setText(R.string.trusted_wifi_manage);
             btnTrustedWifi.setOnClickListener(view -> showTrustedWifiDialog());
@@ -303,10 +322,49 @@ public class MainActivity extends AppCompatActivity {
         btnTrustedWifi.setOnClickListener(view -> saveCurrentTrustedWifi());
     }
 
+    private void showTrustedBluetoothState() {
+        List<TrustedBluetooth.Device> trustedDevices = getSortedTrustedBluetoothDevices();
+        if (!trustedDevices.isEmpty()) {
+            txtTrustedBluetoothSummary.setText(getString(
+                    TrustedBluetooth.isAnyTrustedDeviceConnected(this)
+                            ? R.string.trusted_bluetooth_configured_active
+                            : R.string.trusted_bluetooth_configured,
+                    TextUtils.join(", ", getBluetoothDeviceLabels(trustedDevices))));
+            btnTrustedBluetooth.setText(R.string.trusted_bluetooth_manage);
+            btnTrustedBluetooth.setOnClickListener(view -> showTrustedBluetoothDialog());
+            return;
+        }
+
+        txtTrustedBluetoothSummary.setText(R.string.trusted_bluetooth_not_configured);
+        btnTrustedBluetooth.setText(R.string.trusted_bluetooth_add);
+        btnTrustedBluetooth.setOnClickListener(view -> showBluetoothDevicePicker());
+    }
+
     private List<String> getSortedTrustedWifiSsids() {
         List<String> trustedSsids = new ArrayList<>(AuthStore.getTrustedWifiSsids(this));
         Collections.sort(trustedSsids, String.CASE_INSENSITIVE_ORDER);
         return trustedSsids;
+    }
+
+    private List<TrustedBluetooth.Device> getSortedTrustedBluetoothDevices() {
+        List<TrustedBluetooth.Device> trustedDevices = new ArrayList<>();
+        for (String address : AuthStore.getTrustedBluetoothAddresses(this)) {
+            trustedDevices.add(new TrustedBluetooth.Device(
+                    AuthStore.getTrustedBluetoothName(this, address),
+                    address));
+        }
+        Collections.sort(trustedDevices, (first, second) ->
+                first.getLabel().toLowerCase(Locale.getDefault())
+                        .compareTo(second.getLabel().toLowerCase(Locale.getDefault())));
+        return trustedDevices;
+    }
+
+    private List<String> getBluetoothDeviceLabels(List<TrustedBluetooth.Device> trustedDevices) {
+        List<String> labels = new ArrayList<>();
+        for (TrustedBluetooth.Device device : trustedDevices) {
+            labels.add(device.getLabel());
+        }
+        return labels;
     }
 
     private void showTrustedWifiDialog() {
@@ -373,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
         btnRemove.setTypeface(null, Typeface.BOLD);
         btnRemove.setOnClickListener(view -> {
             AuthStore.removeTrustedWifiSsid(this, ssid);
+            TrustedWifi.clearTrustedSession(this);
             Toast.makeText(this, getString(R.string.trusted_wifi_removed, ssid), Toast.LENGTH_SHORT).show();
             showTrustedWifiState();
             populateTrustedWifiDialog(dialogView);
@@ -382,21 +441,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveCurrentTrustedWifi() {
-        if (!TrustedWifi.hasLocationPermission(this)) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        if (!TrustedWifi.hasRequiredPermission(this)) {
+            pendingTrustedWifiSave = true;
+            requestPermissions(new String[]{TrustedWifi.getRequiredPermission()}, REQUEST_TRUSTED_WIFI_PERMISSION);
+            return;
+        }
+        pendingTrustedWifiSave = false;
+
+        if (!TrustedWifi.isLocationEnabled(this)) {
+            Toast.makeText(this, R.string.trusted_wifi_location_disabled, Toast.LENGTH_LONG).show();
+            openAllowedSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             return;
         }
 
         String ssid = TrustedWifi.getCurrentSsid(this);
         if (ssid.isEmpty()) {
             Toast.makeText(this, R.string.trusted_wifi_unavailable, Toast.LENGTH_LONG).show();
-            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            openAllowedSettings(Settings.ACTION_WIFI_SETTINGS);
             return;
         }
 
         Set<String> trustedSsids = AuthStore.getTrustedWifiSsids(this);
         if (trustedSsids.contains(ssid)) {
+            TrustedWifi.markCurrentWifiSessionTrusted(this, ssid);
             Toast.makeText(this, R.string.trusted_wifi_already_saved, Toast.LENGTH_SHORT).show();
+            showTrustedWifiState();
             return;
         }
         if (!AuthStore.addTrustedWifiSsid(this, ssid)) {
@@ -404,17 +473,193 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        TrustedWifi.markCurrentWifiSessionTrusted(this, ssid);
         Toast.makeText(this, getString(R.string.trusted_wifi_saved, ssid), Toast.LENGTH_SHORT).show();
         showTrustedWifiState();
+    }
+
+    private void showTrustedBluetoothDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_trusted_bluetooth, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        dialogView.findViewById(R.id.btnCloseTrustedBluetooth)
+                .setOnClickListener(view -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnAddTrustedBluetooth)
+                .setOnClickListener(view -> {
+                    dialog.dismiss();
+                    showBluetoothDevicePicker();
+                });
+
+        populateTrustedBluetoothDialog(dialogView);
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        dialog.show();
+    }
+
+    private void populateTrustedBluetoothDialog(View dialogView) {
+        LinearLayout listTrustedBluetooth = dialogView.findViewById(R.id.listTrustedBluetooth);
+        listTrustedBluetooth.removeAllViews();
+
+        List<TrustedBluetooth.Device> trustedDevices = getSortedTrustedBluetoothDevices();
+        if (trustedDevices.isEmpty()) {
+            TextView empty = new TextView(this);
+            empty.setText(R.string.trusted_bluetooth_empty);
+            empty.setTextColor(getColor(R.color.textSecondary));
+            empty.setTextSize(14);
+            listTrustedBluetooth.addView(empty);
+            return;
+        }
+
+        for (TrustedBluetooth.Device device : trustedDevices) {
+            listTrustedBluetooth.addView(createTrustedBluetoothRow(dialogView, device));
+        }
+    }
+
+    private View createTrustedBluetoothRow(View dialogView, TrustedBluetooth.Device device) {
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setMinimumHeight(dp(44));
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout textColumn = new LinearLayout(this);
+        textColumn.setOrientation(LinearLayout.VERTICAL);
+
+        TextView deviceName = new TextView(this);
+        deviceName.setText(device.getLabel());
+        deviceName.setTextColor(getColor(R.color.textPrimary));
+        deviceName.setTextSize(15);
+        textColumn.addView(deviceName);
+
+        TextView deviceAddress = new TextView(this);
+        deviceAddress.setText(device.address);
+        deviceAddress.setTextColor(getColor(R.color.textSecondary));
+        deviceAddress.setTextSize(12);
+        textColumn.addView(deviceAddress);
+        row.addView(textColumn, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        TextView btnRemove = new TextView(this);
+        btnRemove.setBackgroundResource(R.drawable.settings_text_action_ripple);
+        btnRemove.setClickable(true);
+        btnRemove.setFocusable(true);
+        btnRemove.setGravity(android.view.Gravity.CENTER);
+        btnRemove.setMinWidth(dp(72));
+        btnRemove.setMinimumHeight(dp(32));
+        btnRemove.setText(R.string.trusted_bluetooth_remove);
+        btnRemove.setTextColor(getColor(R.color.settingsButton));
+        btnRemove.setTextSize(13);
+        btnRemove.setTypeface(null, Typeface.BOLD);
+        btnRemove.setOnClickListener(view -> {
+            AuthStore.removeTrustedBluetoothDevice(this, device.address);
+            Toast.makeText(
+                    this,
+                    getString(R.string.trusted_bluetooth_removed, device.getLabel()),
+                    Toast.LENGTH_SHORT).show();
+            showTrustedBluetoothState();
+            populateTrustedBluetoothDialog(dialogView);
+        });
+        row.addView(btnRemove, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(32)));
+        return row;
+    }
+
+    private void showBluetoothDevicePicker() {
+        if (!TrustedBluetooth.hasRequiredPermission(this)) {
+            pendingBluetoothPicker = true;
+            requestPermissions(
+                    new String[]{TrustedBluetooth.getRequiredPermission()},
+                    REQUEST_TRUSTED_BLUETOOTH_PERMISSION);
+            return;
+        }
+        pendingBluetoothPicker = false;
+
+        List<TrustedBluetooth.Device> devices = TrustedBluetooth.getBondedDevices(this);
+        if (devices.isEmpty()) {
+            Toast.makeText(this, R.string.trusted_bluetooth_unavailable, Toast.LENGTH_LONG).show();
+            openAllowedSettings(Settings.ACTION_BLUETOOTH_SETTINGS);
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_trusted_bluetooth_picker, null);
+        LinearLayout listBluetoothDevices = dialogView.findViewById(R.id.listBluetoothDevices);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        for (TrustedBluetooth.Device device : devices) {
+            listBluetoothDevices.addView(createBluetoothPickerRow(dialog, device));
+        }
+
+        dialogView.findViewById(R.id.btnCloseBluetoothPicker)
+                .setOnClickListener(view -> dialog.dismiss());
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+        });
+        dialog.show();
+    }
+
+    private View createBluetoothPickerRow(AlertDialog dialog, TrustedBluetooth.Device device) {
+        LinearLayout row = new LinearLayout(this);
+        row.setBackgroundResource(R.drawable.settings_text_action_ripple);
+        row.setClickable(true);
+        row.setFocusable(true);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setMinimumHeight(dp(48));
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(0, dp(8), 0, dp(8));
+
+        TextView deviceName = new TextView(this);
+        deviceName.setText(device.getLabel());
+        deviceName.setTextColor(getColor(R.color.textPrimary));
+        deviceName.setTextSize(15);
+        deviceName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        row.addView(deviceName);
+
+        TextView deviceAddress = new TextView(this);
+        deviceAddress.setText(device.address);
+        deviceAddress.setTextColor(getColor(R.color.textSecondary));
+        deviceAddress.setTextSize(12);
+        row.addView(deviceAddress);
+
+        row.setOnClickListener(view -> {
+            AuthStore.addTrustedBluetoothDevice(this, device.address, device.getLabel());
+            TrustedBluetooth.warmUp(this);
+            Toast.makeText(
+                    this,
+                    getString(R.string.trusted_bluetooth_saved, device.getLabel()),
+                    Toast.LENGTH_SHORT).show();
+            showTrustedBluetoothState();
+            dialog.dismiss();
+        });
+        return row;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_LOCATION_PERMISSION
+        if (requestCode == REQUEST_TRUSTED_WIFI_PERMISSION
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            saveCurrentTrustedWifi();
+            if (pendingTrustedWifiSave) {
+                saveCurrentTrustedWifi();
+            }
+        } else if (requestCode == REQUEST_TRUSTED_WIFI_PERMISSION) {
+            pendingTrustedWifiSave = false;
+        } else if (requestCode == REQUEST_TRUSTED_BLUETOOTH_PERMISSION
+                && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (pendingBluetoothPicker) {
+                showBluetoothDevicePicker();
+            }
+        } else if (requestCode == REQUEST_TRUSTED_BLUETOOTH_PERMISSION) {
+            pendingBluetoothPicker = false;
         }
     }
 
@@ -452,6 +697,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         startActivity(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    private void openAllowedSettings(String action) {
+        AuthStore.allowSettingsNavigation(this);
+        Intent intent = new Intent(action);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     private boolean openFirstAvailableSettingsAction(String... actions) {
@@ -971,10 +1223,6 @@ public class MainActivity extends AppCompatActivity {
 
             CharSequence label = resolveInfo.loadLabel(packageManager);
             String appLabel = label == null ? packageName : label.toString();
-            if (shouldHideFromProtectedList(packageName, appLabel)
-                    && !AuthStore.isPackageProtected(this, packageName)) {
-                continue;
-            }
 
             Drawable icon = resolveInfo.loadIcon(packageManager);
             appsByPackage.put(packageName, new AppEntry(
@@ -1006,10 +1254,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
                 String appLabel = packageManager.getApplicationLabel(applicationInfo).toString();
-                if (shouldHideFromProtectedList(packageName, appLabel)
-                        && !AuthStore.isPackageProtected(this, packageName)) {
-                    continue;
-                }
 
                 Drawable icon = packageManager.getApplicationIcon(applicationInfo);
                 appsByPackage.put(packageName, new AppEntry(
@@ -1097,29 +1341,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return RISK_LOW;
-    }
-
-    private boolean shouldHideFromProtectedList(String packageName, String label) {
-        String normalizedPackage = packageName.toLowerCase(Locale.ROOT);
-        String normalizedLabel = label.toLowerCase(Locale.ROOT);
-        String value = normalizedPackage + " " + normalizedLabel;
-
-        return containsAny(value,
-                "secure folder", "pasta segura", "knox secure folder", "securefolder",
-                "app lock", "applock", "calculator vault", "gallery vault", "vault",
-                "wallet", "carteira", "samsung pass", "samsungpass", "passkey",
-                "authenticator", "autenticador", "bitwarden", "1password", "lastpass",
-                "keeper", "password manager", "gerenciador de senhas",
-                "bank", "banco", "bradesco", "itau", "itaú", "nubank", "santander",
-                "caixa", "bb.android", "banco do brasil", "intermedium", "inter bank",
-                "btgpactual", "btg", "c6bank", "c6 bank", "next", "neon", "sicredi",
-                "sicoob", "banrisul", "original", "pan", "bmg", "banestes", "banese",
-                "pagbank", "pagseguro", "picpay", "paypal", "mercadopago",
-                "mercado pago", "recargapay", "iti", "stone", "ton", "sumup",
-                "xpinc", "xp investimentos", "clear", "rico", "modalmais", "nuinvest",
-                "binance", "coinbase", "crypto", "bitcoin", "btc", "ethereum",
-                "trust wallet", "metamask",
-                "whatsapp", "telegram", "signal");
     }
 
     private boolean containsAny(String value, String... needles) {
