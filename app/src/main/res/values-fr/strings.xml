@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">Verrouillage d’écran requis</string>
     <string name="device_lock_required_message">App Lock fonctionne uniquement si l’appareil dispose d’un PIN, mot de passe, schéma ou biométrie configuré.</string>
     <string name="biometric_card_title">Biométrie native</string>
-    <string name="biometric_card_summary_ready">La biométrie native est configurée. Android peut utiliser le visage ou l’empreinte lorsque l’appareil le prend en charge.</string>
-    <string name="biometric_card_summary_setup">Configurez le déverrouillage facial natif ou l’empreinte dans les paramètres de l’appareil. App Lock l’utilisera si c’est pris en charge.</string>
-    <string name="biometric_card_action">Configurer</string>
+    <string name="biometric_card_summary_ready">Activée. App Lock peut utiliser le visage ou l’empreinte lorsque l’appareil le prend en charge.</string>
+    <string name="biometric_card_summary_setup">Aucune biométrie enregistrée. Touchez ici pour la configurer sur l’appareil.</string>
+    <string name="biometric_card_summary_disabled">Désactivée. App Lock utilisera le PIN, mot de passe ou schéma de l’appareil.</string>
     <string name="open_security_settings">Configurer le verrouillage</string>
     <string name="protection_disabled_warning_title">Protection des apps désactivée</string>
     <string name="protection_disabled_warning_message">Les apps sélectionnées ne sont pas verrouillées. Cela peut arriver si le raccourci d’accessibilité est utilisé pour désactiver la protection.</string>

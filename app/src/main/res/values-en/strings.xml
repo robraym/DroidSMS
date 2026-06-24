@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">Screen lock required</string>
     <string name="device_lock_required_message">App Lock only works when the device has a PIN, password, pattern, or biometrics set up.</string>
     <string name="biometric_card_title">Native biometrics</string>
-    <string name="biometric_card_summary_ready">Native biometrics are configured. Android can use face or fingerprint when supported by this device.</string>
-    <string name="biometric_card_summary_setup">Set up native face unlock or fingerprint in the device settings. App Lock will use it when supported.</string>
-    <string name="biometric_card_action">Configure</string>
+    <string name="biometric_card_summary_ready">On. App Lock can use face or fingerprint when supported by this device.</string>
+    <string name="biometric_card_summary_setup">No biometrics are enrolled. Tap here to set them up on this device.</string>
+    <string name="biometric_card_summary_disabled">Off. App Lock will use the device PIN, password, or pattern.</string>
     <string name="open_security_settings">Set up screen lock</string>
     <string name="protection_disabled_warning_title">App protection is off</string>
     <string name="protection_disabled_warning_message">Selected apps are not being locked. This can happen if the accessibility shortcut is used to turn protection off.</string>

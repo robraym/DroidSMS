@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">Displaysperre erforderlich</string>
     <string name="device_lock_required_message">App Lock funktioniert nur, wenn auf dem Gerät PIN, Passwort, Muster oder Biometrie eingerichtet ist.</string>
     <string name="biometric_card_title">Native Biometrie</string>
-    <string name="biometric_card_summary_ready">Native Biometrie ist eingerichtet. Android kann Gesicht oder Fingerabdruck verwenden, wenn das Gerät dies unterstützt.</string>
-    <string name="biometric_card_summary_setup">Richten Sie native Gesichtserkennung oder Fingerabdruck in den Geräteeinstellungen ein. App Lock verwendet sie, wenn sie unterstützt wird.</string>
-    <string name="biometric_card_action">Einrichten</string>
+    <string name="biometric_card_summary_ready">Ein. App Lock kann Gesicht oder Fingerabdruck verwenden, wenn das Gerät dies unterstützt.</string>
+    <string name="biometric_card_summary_setup">Keine Biometrie registriert. Tippen Sie hier, um sie auf dem Gerät einzurichten.</string>
+    <string name="biometric_card_summary_disabled">Aus. App Lock verwendet PIN, Passwort oder Muster des Geräts.</string>
     <string name="open_security_settings">Displaysperre einrichten</string>
     <string name="protection_disabled_warning_title">App-Schutz ist deaktiviert</string>
     <string name="protection_disabled_warning_message">Ausgewählte Apps werden nicht gesperrt. Das kann passieren, wenn der Bedienungshilfen-Kurzbefehl zum Deaktivieren des Schutzes verwendet wird.</string>

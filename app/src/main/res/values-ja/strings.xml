@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">画面ロックが必要です</string>
     <string name="device_lock_required_message">App Lock は、端末に PIN、パスワード、パターン、または生体認証が設定されている場合のみ動作します。</string>
     <string name="biometric_card_title">ネイティブ生体認証</string>
-    <string name="biometric_card_summary_ready">ネイティブ生体認証が設定されています。端末が対応している場合、Android は顔または指紋を使用できます。</string>
-    <string name="biometric_card_summary_setup">端末の設定でネイティブ顔認証または指紋を設定してください。対応している場合、App Lock が使用します。</string>
-    <string name="biometric_card_action">設定</string>
+    <string name="biometric_card_summary_ready">オン。端末が対応している場合、App Lock は顔または指紋を使用できます。</string>
+    <string name="biometric_card_summary_setup">生体認証が登録されていません。ここをタップして端末で設定してください。</string>
+    <string name="biometric_card_summary_disabled">オフ。App Lock は端末の PIN、パスワード、またはパターンを使用します。</string>
     <string name="open_security_settings">画面ロックを設定</string>
     <string name="protection_disabled_warning_title">アプリ保護がオフです</string>
     <string name="protection_disabled_warning_message">選択したアプリはロックされていません。ユーザー補助ショートカットで保護をオフにした場合に発生することがあります。</string>

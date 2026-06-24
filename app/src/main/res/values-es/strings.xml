@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">Bloqueo de pantalla necesario</string>
     <string name="device_lock_required_message">App Lock solo funciona cuando el dispositivo tiene PIN, contraseña, patrón o biometría configurados.</string>
     <string name="biometric_card_title">Biometría nativa</string>
-    <string name="biometric_card_summary_ready">La biometría nativa está configurada. Android puede usar rostro o huella cuando el dispositivo lo admite.</string>
-    <string name="biometric_card_summary_setup">Configura desbloqueo facial nativo o huella en los ajustes del dispositivo. App Lock lo usará cuando sea compatible.</string>
-    <string name="biometric_card_action">Configurar</string>
+    <string name="biometric_card_summary_ready">Activada. App Lock puede usar rostro o huella cuando el dispositivo lo admite.</string>
+    <string name="biometric_card_summary_setup">No hay biometría registrada. Toca aquí para configurarla en el dispositivo.</string>
+    <string name="biometric_card_summary_disabled">Desactivada. App Lock usará el PIN, la contraseña o el patrón del dispositivo.</string>
     <string name="open_security_settings">Configurar bloqueo</string>
     <string name="protection_disabled_warning_title">Protección de apps desactivada</string>
     <string name="protection_disabled_warning_message">Las apps seleccionadas no se están bloqueando. Esto puede ocurrir si se usa el acceso directo de accesibilidad para desactivar la protección.</string>

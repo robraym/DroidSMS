@@ -54,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String ACTION_MOTOROLA_FACE_ENROLL = "com.motorola.intent.action.FACE_ENROLL";
     private static final int REQUEST_TRUSTED_WIFI_PERMISSION = 1001;
     private static final int REQUEST_TRUSTED_BLUETOOTH_PERMISSION = 1002;
-    private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
+    private static final int AUTHENTICATORS_WITH_BIOMETRIC = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+    private static final int AUTHENTICATORS_DEVICE_CREDENTIAL =
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private static final int RISK_HIGH = 3;
     private static final int RISK_MODERATE = 2;
     private static final int RISK_LOW = 1;
@@ -108,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtDeviceAdminSummary;
     private TextView txtMinimizeUnlockSummary;
     private TextView txtNativeBiometricSummary;
-    private TextView btnNativeBiometricSettings;
     private TextView txtTrustedWifiSummary;
     private TextView btnTrustedWifi;
     private TextView txtTrustedBluetoothSummary;
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat switchAccessibility;
     private SwitchCompat switchDeviceAdmin;
     private SwitchCompat switchKeepUnlockedOnMinimize;
+    private SwitchCompat switchNativeBiometric;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName deviceAdminComponent;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -201,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.biometric_title))
                 .setConfirmationRequired(false)
-                .setAllowedAuthenticators(AUTHENTICATORS)
+                .setAllowedAuthenticators(getAllowedAuthenticators())
                 .build();
 
         biometricPrompt.authenticate(promptInfo);
@@ -218,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
         txtDeviceAdminSummary = findViewById(R.id.txtDeviceAdminSummary);
         txtMinimizeUnlockSummary = findViewById(R.id.txtMinimizeUnlockSummary);
         txtNativeBiometricSummary = findViewById(R.id.txtNativeBiometricSummary);
-        btnNativeBiometricSettings = findViewById(R.id.btnNativeBiometricSettings);
         txtTrustedWifiSummary = findViewById(R.id.txtTrustedWifiSummary);
         btnTrustedWifi = findViewById(R.id.btnTrustedWifi);
         txtTrustedBluetoothSummary = findViewById(R.id.txtTrustedBluetoothSummary);
@@ -226,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         switchAccessibility = findViewById(R.id.switchAccessibility);
         switchDeviceAdmin = findViewById(R.id.switchDeviceAdmin);
         switchKeepUnlockedOnMinimize = findViewById(R.id.switchKeepUnlockedOnMinimize);
+        switchNativeBiometric = findViewById(R.id.switchNativeBiometric);
     }
 
     private void showSettingsState() {
@@ -297,11 +299,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNativeBiometricState() {
-        txtNativeBiometricSummary.setText(isNativeBiometricReady()
+        boolean nativeBiometricReady = isNativeBiometricReady();
+        boolean nativeBiometricEnabled = AuthStore.isNativeBiometricEnabled(this) && nativeBiometricReady;
+
+        if (!nativeBiometricReady) {
+            txtNativeBiometricSummary.setText(R.string.biometric_card_summary_setup);
+            configureSwitch(switchNativeBiometric, false, false);
+            cardNativeBiometric.setOnClickListener(view -> openNativeBiometricSettings());
+            switchNativeBiometric.setOnClickListener(view -> {
+                switchNativeBiometric.setChecked(false);
+                openNativeBiometricSettings();
+            });
+            return;
+        }
+
+        updateNativeBiometricSummary(nativeBiometricEnabled);
+        configureSwitch(switchNativeBiometric, nativeBiometricEnabled, true);
+        cardNativeBiometric.setOnClickListener(view ->
+                setNativeBiometricPreference(!AuthStore.isNativeBiometricEnabled(this)));
+        switchNativeBiometric.setOnClickListener(view -> {
+            boolean enabled = switchNativeBiometric.isChecked();
+            setNativeBiometricPreference(enabled);
+        });
+    }
+
+    private void setNativeBiometricPreference(boolean enabled) {
+        AuthStore.setNativeBiometricEnabled(this, enabled);
+        switchNativeBiometric.setChecked(enabled);
+        updateNativeBiometricSummary(enabled);
+    }
+
+    private void updateNativeBiometricSummary(boolean enabled) {
+        txtNativeBiometricSummary.setText(enabled
                 ? R.string.biometric_card_summary_ready
-                : R.string.biometric_card_summary_setup);
-        cardNativeBiometric.setOnClickListener(view -> openNativeBiometricSettings());
-        btnNativeBiometricSettings.setOnClickListener(view -> openNativeBiometricSettings());
+                : R.string.biometric_card_summary_disabled);
     }
 
     private void showTrustedWifiState() {
@@ -323,13 +354,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTrustedBluetoothState() {
-        List<TrustedBluetooth.Device> trustedDevices = getSortedTrustedBluetoothDevices();
-        if (!trustedDevices.isEmpty()) {
+        List<TrustedBluetooth.DeviceGroup> trustedDeviceGroups = getSortedTrustedBluetoothDeviceGroups();
+        if (!trustedDeviceGroups.isEmpty()) {
             txtTrustedBluetoothSummary.setText(getString(
                     TrustedBluetooth.isAnyTrustedDeviceConnected(this)
                             ? R.string.trusted_bluetooth_configured_active
                             : R.string.trusted_bluetooth_configured,
-                    TextUtils.join(", ", getBluetoothDeviceLabels(trustedDevices))));
+                    TextUtils.join(", ", getBluetoothDeviceLabels(trustedDeviceGroups))));
             btnTrustedBluetooth.setText(R.string.trusted_bluetooth_manage);
             btnTrustedBluetooth.setOnClickListener(view -> showTrustedBluetoothDialog());
             return;
@@ -346,22 +377,19 @@ public class MainActivity extends AppCompatActivity {
         return trustedSsids;
     }
 
-    private List<TrustedBluetooth.Device> getSortedTrustedBluetoothDevices() {
+    private List<TrustedBluetooth.DeviceGroup> getSortedTrustedBluetoothDeviceGroups() {
         List<TrustedBluetooth.Device> trustedDevices = new ArrayList<>();
         for (String address : AuthStore.getTrustedBluetoothAddresses(this)) {
             trustedDevices.add(new TrustedBluetooth.Device(
                     AuthStore.getTrustedBluetoothName(this, address),
                     address));
         }
-        Collections.sort(trustedDevices, (first, second) ->
-                first.getLabel().toLowerCase(Locale.getDefault())
-                        .compareTo(second.getLabel().toLowerCase(Locale.getDefault())));
-        return trustedDevices;
+        return TrustedBluetooth.groupDevices(trustedDevices);
     }
 
-    private List<String> getBluetoothDeviceLabels(List<TrustedBluetooth.Device> trustedDevices) {
+    private List<String> getBluetoothDeviceLabels(List<TrustedBluetooth.DeviceGroup> trustedDevices) {
         List<String> labels = new ArrayList<>();
-        for (TrustedBluetooth.Device device : trustedDevices) {
+        for (TrustedBluetooth.DeviceGroup device : trustedDevices) {
             labels.add(device.getLabel());
         }
         return labels;
@@ -506,8 +534,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout listTrustedBluetooth = dialogView.findViewById(R.id.listTrustedBluetooth);
         listTrustedBluetooth.removeAllViews();
 
-        List<TrustedBluetooth.Device> trustedDevices = getSortedTrustedBluetoothDevices();
-        if (trustedDevices.isEmpty()) {
+        List<TrustedBluetooth.DeviceGroup> trustedDeviceGroups = getSortedTrustedBluetoothDeviceGroups();
+        if (trustedDeviceGroups.isEmpty()) {
             TextView empty = new TextView(this);
             empty.setText(R.string.trusted_bluetooth_empty);
             empty.setTextColor(getColor(R.color.textSecondary));
@@ -516,12 +544,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        for (TrustedBluetooth.Device device : trustedDevices) {
+        for (TrustedBluetooth.DeviceGroup device : trustedDeviceGroups) {
             listTrustedBluetooth.addView(createTrustedBluetoothRow(dialogView, device));
         }
     }
 
-    private View createTrustedBluetoothRow(View dialogView, TrustedBluetooth.Device device) {
+    private View createTrustedBluetoothRow(View dialogView, TrustedBluetooth.DeviceGroup device) {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(android.view.Gravity.CENTER_VERTICAL);
         row.setMinimumHeight(dp(44));
@@ -537,9 +565,10 @@ public class MainActivity extends AppCompatActivity {
         textColumn.addView(deviceName);
 
         TextView deviceAddress = new TextView(this);
-        deviceAddress.setText(device.address);
+        deviceAddress.setText(device.getPrimaryAddress());
         deviceAddress.setTextColor(getColor(R.color.textSecondary));
         deviceAddress.setTextSize(12);
+        deviceAddress.setVisibility(device.hasMultipleInternalDevices() ? View.GONE : View.VISIBLE);
         textColumn.addView(deviceAddress);
         row.addView(textColumn, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
@@ -555,7 +584,9 @@ public class MainActivity extends AppCompatActivity {
         btnRemove.setTextSize(13);
         btnRemove.setTypeface(null, Typeface.BOLD);
         btnRemove.setOnClickListener(view -> {
-            AuthStore.removeTrustedBluetoothDevice(this, device.address);
+            for (TrustedBluetooth.Device internalDevice : device.getDevices()) {
+                AuthStore.removeTrustedBluetoothDevice(this, internalDevice.address);
+            }
             Toast.makeText(
                     this,
                     getString(R.string.trusted_bluetooth_removed, device.getLabel()),
@@ -577,7 +608,7 @@ public class MainActivity extends AppCompatActivity {
         }
         pendingBluetoothPicker = false;
 
-        List<TrustedBluetooth.Device> devices = TrustedBluetooth.getBondedDevices(this);
+        List<TrustedBluetooth.DeviceGroup> devices = TrustedBluetooth.getBondedDeviceGroups(this);
         if (devices.isEmpty()) {
             Toast.makeText(this, R.string.trusted_bluetooth_unavailable, Toast.LENGTH_LONG).show();
             openAllowedSettings(Settings.ACTION_BLUETOOTH_SETTINGS);
@@ -590,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .create();
 
-        for (TrustedBluetooth.Device device : devices) {
+        for (TrustedBluetooth.DeviceGroup device : devices) {
             listBluetoothDevices.addView(createBluetoothPickerRow(dialog, device));
         }
 
@@ -605,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private View createBluetoothPickerRow(AlertDialog dialog, TrustedBluetooth.Device device) {
+    private View createBluetoothPickerRow(AlertDialog dialog, TrustedBluetooth.DeviceGroup device) {
         LinearLayout row = new LinearLayout(this);
         row.setBackgroundResource(R.drawable.settings_text_action_ripple);
         row.setClickable(true);
@@ -623,13 +654,16 @@ public class MainActivity extends AppCompatActivity {
         row.addView(deviceName);
 
         TextView deviceAddress = new TextView(this);
-        deviceAddress.setText(device.address);
+        deviceAddress.setText(device.getPrimaryAddress());
         deviceAddress.setTextColor(getColor(R.color.textSecondary));
         deviceAddress.setTextSize(12);
+        deviceAddress.setVisibility(device.hasMultipleInternalDevices() ? View.GONE : View.VISIBLE);
         row.addView(deviceAddress);
 
         row.setOnClickListener(view -> {
-            AuthStore.addTrustedBluetoothDevice(this, device.address, device.getLabel());
+            for (TrustedBluetooth.Device internalDevice : device.getDevices()) {
+                AuthStore.addTrustedBluetoothDevice(this, internalDevice.address, device.getLabel());
+            }
             TrustedBluetooth.warmUp(this);
             Toast.makeText(
                     this,
@@ -683,7 +717,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Intent biometricEnroll = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
-            biometricEnroll.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, AUTHENTICATORS);
+            biometricEnroll.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, AUTHENTICATORS_WITH_BIOMETRIC);
             if (canOpen(biometricEnroll)) {
                 startActivity(biometricEnroll);
                 return;
@@ -1358,13 +1392,20 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
-        return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+        return biometricManager.canAuthenticate(getAllowedAuthenticators())
+                == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
     private boolean isNativeBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
         return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
                 == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private int getAllowedAuthenticators() {
+        return AuthStore.isNativeBiometricEnabled(this) && isNativeBiometricReady()
+                ? AUTHENTICATORS_WITH_BIOMETRIC
+                : AUTHENTICATORS_DEVICE_CREDENTIAL;
     }
 
     private static class AppEntry {

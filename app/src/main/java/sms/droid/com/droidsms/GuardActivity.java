@@ -27,8 +27,10 @@ public class GuardActivity extends AppCompatActivity {
             "sms.droid.com.droidsms.extra.WIFI_CONFIRMATION_REQUIRED";
     private static final String TAG = "AppLockGuard";
     private static final int REQUEST_TRUSTED_WIFI_PERMISSION = 3001;
-    private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
+    private static final int AUTHENTICATORS_WITH_BIOMETRIC = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+    private static final int AUTHENTICATORS_DEVICE_CREDENTIAL =
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
     private String targetPackage;
     private boolean promptShown;
@@ -167,7 +169,7 @@ public class GuardActivity extends AppCompatActivity {
                 .setTitle(getString(R.string.biometric_title))
                 .setSubtitle(getString(R.string.biometric_subtitle))
                 .setConfirmationRequired(false)
-                .setAllowedAuthenticators(AUTHENTICATORS)
+                .setAllowedAuthenticators(getAllowedAuthenticators())
                 .build();
 
         biometricPrompt.authenticate(promptInfo);
@@ -228,7 +230,20 @@ public class GuardActivity extends AppCompatActivity {
 
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
-        return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+        return biometricManager.canAuthenticate(getAllowedAuthenticators())
+                == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private boolean isNativeBiometricReady() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+                == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private int getAllowedAuthenticators() {
+        return AuthStore.isNativeBiometricEnabled(this) && isNativeBiometricReady()
+                ? AUTHENTICATORS_WITH_BIOMETRIC
+                : AUTHENTICATORS_DEVICE_CREDENTIAL;
     }
 
     private void protectBackground() {

@@ -19,8 +19,10 @@ import androidx.biometric.BiometricManager;
 
 public class SmsGuardAccessibilityService extends AccessibilityService {
     private static final String TAG = "AppLockGuard";
-    private static final int AUTHENTICATORS = BiometricManager.Authenticators.BIOMETRIC_WEAK
+    private static final int AUTHENTICATORS_WITH_BIOMETRIC = BiometricManager.Authenticators.BIOMETRIC_WEAK
             | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+    private static final int AUTHENTICATORS_DEVICE_CREDENTIAL =
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     private String lastPackageName = "";
     private String lastPromptPackageName = "";
     private String lastProtectedPackageName = "";
@@ -279,7 +281,20 @@ public class SmsGuardAccessibilityService extends AccessibilityService {
 
     private boolean isBiometricReady() {
         BiometricManager biometricManager = BiometricManager.from(this);
-        return biometricManager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS;
+        return biometricManager.canAuthenticate(getAllowedAuthenticators())
+                == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private boolean isNativeBiometricReady() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+                == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private int getAllowedAuthenticators() {
+        return AuthStore.isNativeBiometricEnabled(this) && isNativeBiometricReady()
+                ? AUTHENTICATORS_WITH_BIOMETRIC
+                : AUTHENTICATORS_DEVICE_CREDENTIAL;
     }
 
     private boolean hasUnlockedProtectedSession() {

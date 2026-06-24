@@ -90,6 +90,35 @@ final class TrustedBluetooth {
         return devices;
     }
 
+    static List<DeviceGroup> getBondedDeviceGroups(Context context) {
+        return groupDevices(getBondedDevices(context));
+    }
+
+    static List<DeviceGroup> groupDevices(List<Device> devices) {
+        Map<String, List<Device>> devicesByLabel = new HashMap<>();
+        for (Device device : devices) {
+            String key = getDeviceGroupKey(device);
+            List<Device> groupDevices = devicesByLabel.get(key);
+            if (groupDevices == null) {
+                groupDevices = new ArrayList<>();
+                devicesByLabel.put(key, groupDevices);
+            }
+            groupDevices.add(device);
+        }
+
+        List<DeviceGroup> groups = new ArrayList<>();
+        for (List<Device> groupDevices : devicesByLabel.values()) {
+            Collections.sort(groupDevices, (first, second) ->
+                    first.address.toLowerCase(Locale.getDefault())
+                            .compareTo(second.address.toLowerCase(Locale.getDefault())));
+            groups.add(new DeviceGroup(groupDevices));
+        }
+        Collections.sort(groups, (first, second) ->
+                first.getLabel().toLowerCase(Locale.getDefault())
+                        .compareTo(second.getLabel().toLowerCase(Locale.getDefault())));
+        return groups;
+    }
+
     static boolean isAnyTrustedDeviceConnected(Context context) {
         return getConnectedTrustedDevice(context) != null;
     }
@@ -248,6 +277,38 @@ final class TrustedBluetooth {
             return new Device(name, address);
         } catch (SecurityException exception) {
             return null;
+        }
+    }
+
+    private static String getDeviceGroupKey(Device device) {
+        String label = device.getLabel();
+        if (!TextUtils.isEmpty(label) && !TextUtils.equals(label, device.address)) {
+            return label.trim().toLowerCase(Locale.getDefault());
+        }
+        return device.address.toLowerCase(Locale.getDefault());
+    }
+
+    static final class DeviceGroup {
+        private final List<Device> devices;
+
+        DeviceGroup(List<Device> devices) {
+            this.devices = new ArrayList<>(devices);
+        }
+
+        String getLabel() {
+            return devices.isEmpty() ? "" : devices.get(0).getLabel();
+        }
+
+        List<Device> getDevices() {
+            return new ArrayList<>(devices);
+        }
+
+        boolean hasMultipleInternalDevices() {
+            return devices.size() > 1;
+        }
+
+        String getPrimaryAddress() {
+            return devices.isEmpty() ? "" : devices.get(0).address;
         }
     }
 

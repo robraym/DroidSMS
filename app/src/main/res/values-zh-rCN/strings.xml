@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">需要屏幕锁定</string>
     <string name="device_lock_required_message">App Lock 仅在设备已设置 PIN、密码、图案或生物识别时工作。</string>
     <string name="biometric_card_title">原生生物识别</string>
-    <string name="biometric_card_summary_ready">已配置原生生物识别。设备支持时，Android 可使用面部或指纹。</string>
-    <string name="biometric_card_summary_setup">在设备设置中配置原生面部解锁或指纹。支持时，App Lock 将使用它。</string>
-    <string name="biometric_card_action">配置</string>
+    <string name="biometric_card_summary_ready">已开启。设备支持时，App Lock 可使用面部或指纹。</string>
+    <string name="biometric_card_summary_setup">未注册生物识别。点按此处在设备上设置。</string>
+    <string name="biometric_card_summary_disabled">已关闭。App Lock 将使用设备 PIN、密码或图案。</string>
     <string name="open_security_settings">设置屏幕锁定</string>
     <string name="protection_disabled_warning_title">应用保护已关闭</string>
     <string name="protection_disabled_warning_message">所选应用当前未被锁定。如果使用无障碍快捷方式关闭保护，可能会出现这种情况。</string>

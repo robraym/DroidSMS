@@ -11,9 +11,9 @@
     <string name="device_lock_required_title">화면 잠금 필요</string>
     <string name="device_lock_required_message">App Lock은 기기에 PIN, 비밀번호, 패턴 또는 생체 인증이 설정되어 있을 때만 작동합니다.</string>
     <string name="biometric_card_title">기본 생체 인증</string>
-    <string name="biometric_card_summary_ready">기본 생체 인증이 설정되어 있습니다. 기기가 지원하면 Android가 얼굴 또는 지문을 사용할 수 있습니다.</string>
-    <string name="biometric_card_summary_setup">기기 설정에서 기본 얼굴 잠금 해제 또는 지문을 설정하세요. 지원되는 경우 App Lock이 이를 사용합니다.</string>
-    <string name="biometric_card_action">설정</string>
+    <string name="biometric_card_summary_ready">켜짐. 기기가 지원하면 App Lock이 얼굴 또는 지문을 사용할 수 있습니다.</string>
+    <string name="biometric_card_summary_setup">등록된 생체 인증이 없습니다. 여기를 눌러 기기에서 설정하세요.</string>
+    <string name="biometric_card_summary_disabled">꺼짐. App Lock은 기기의 PIN, 비밀번호 또는 패턴을 사용합니다.</string>
     <string name="open_security_settings">화면 잠금 설정</string>
     <string name="protection_disabled_warning_title">앱 보호가 꺼져 있음</string>
     <string name="protection_disabled_warning_message">선택한 앱이 잠기지 않습니다. 접근성 바로가기로 보호를 끈 경우 이런 일이 발생할 수 있습니다.</string>

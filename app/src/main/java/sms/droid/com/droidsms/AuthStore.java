@@ -28,6 +28,7 @@ final class AuthStore {
     private static final String KEY_UNLOCKED_PACKAGE = "unlocked_package";
     private static final String KEY_UNLOCKED_PACKAGES = "unlocked_packages";
     private static final String KEY_UNLOCKED_UNTIL = "unlocked_until";
+    private static final String KEY_NATIVE_BIOMETRIC_ENABLED = "native_biometric_enabled";
     private static final String KEY_KEEP_UNLOCKED_ON_MINIMIZE = "keep_unlocked_on_minimize";
     private static final String KEY_SETTINGS_NAVIGATION_ALLOWED_UNTIL = "settings_navigation_allowed_until";
     private static final String KEY_ACCESSIBILITY_DISCLOSURE_ACCEPTED = "accessibility_disclosure_accepted";
@@ -156,6 +157,16 @@ final class AuthStore {
     static void setKeepUnlockedOnMinimizeEnabled(Context context, boolean enabled) {
         prefs(context).edit()
                 .putBoolean(KEY_KEEP_UNLOCKED_ON_MINIMIZE, enabled)
+                .apply();
+    }
+
+    static boolean isNativeBiometricEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_NATIVE_BIOMETRIC_ENABLED, true);
+    }
+
+    static void setNativeBiometricEnabled(Context context, boolean enabled) {
+        prefs(context).edit()
+                .putBoolean(KEY_NATIVE_BIOMETRIC_ENABLED, enabled)
                 .apply();
     }
 
